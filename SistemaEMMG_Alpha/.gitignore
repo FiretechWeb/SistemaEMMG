@@ -1,0 +1,17 @@
+*.ncb
+*.suo
+*.pdb
+*.ilk
+*.aps
+*.user
+/build
+/build_vc2015
+/build_vc2015-32
+/build_vc2015-64
+/build_vc2017-64
+/debug
+/Build
+/Debug
+/BUILD
+/bin
+/obj
