@@ -5,8 +5,35 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaEMMG_Alpha"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Sistema Comprobantes (Alpha)" Height="450" Width="800" MinWidth="534" MinHeight="300" ResizeMode="CanResizeWithGrip">
+    <DockPanel>
+        <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="50" VerticalAlignment="Top">
+            <Image Width="30" Margin="5, 0, 5, 0" DockPanel.Dock="Left"  HorizontalAlignment="Left" Source=".\graphics\logo.png" />
+            <Label DockPanel.Dock="Left" Foreground="White" FontFamily="Verdana" VerticalAlignment="Center" FontWeight="Black">Sistema Comprobantes</Label>
+            <Label DockPanel.Dock="Right" Margin="5, 0, 5, 2" HorizontalAlignment="Right" Foreground="#33435a" FontFamily="Verdana" VerticalAlignment="Bottom" FontWeight="Black">Stradex()</Label>
+        </DockPanel>
+        <DockPanel Background="Black"  Height="15" DockPanel.Dock="Top" VerticalAlignment="Top" >
+            <!--
+              <Button Width="60" DockPanel.Dock="Left" HorizontalAlignment="Left" FontWeight="Bold" Margin="3, 3, 3, 3">Archivo</Button>
+            <Button Width="80" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Exportar</Button>
+            <Button Width="60" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Bancos</Button>
+            <Button Width="100" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Comprobantes</Button>
+            <Button Width="75" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Consultas</Button>
+           -->
+        </DockPanel>
+        <TabControl>
+            <TabItem Header="Cuentas" FontWeight="Bold">
+                
+            </TabItem>
+            <TabItem Header="Entidades" FontWeight="Bold">
+
+            </TabItem>
+            <TabItem Header="Bancos" FontWeight="Bold">
+
+            </TabItem>
+            <TabItem Header="Comprobantes" FontWeight="Bold">
+
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>
