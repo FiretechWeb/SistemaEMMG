@@ -148,8 +148,6 @@ namespace SistemaEMMG_Alpha
             }
             DBEmpresa newEmpresa = new DBEmpresa(cuitCuenta, nombreCuenta);
 
-            empresas[0].PushToDatabase(conn);
-
             if (!newEmpresa.PushToDatabase(conn))
             {
                 return false;

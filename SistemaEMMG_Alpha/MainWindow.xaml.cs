@@ -106,7 +106,7 @@ namespace SistemaEMMG_Alpha
              }
             else
             {
-                lblCuentaSeleccionada.Content = $"Cuenta seleccionada: {dbData.empresas[(int)dbData.idCuentaSeleccionada].GetRazonSocial()}";
+                lblCuentaSeleccionada.Content = $"{dbData.empresas[(int)dbData.idCuentaSeleccionada].GetRazonSocial()}";
             }
         }
         public MainWindow()
@@ -197,8 +197,16 @@ namespace SistemaEMMG_Alpha
 
         private void btnEliminarCuenta(object sender, RoutedEventArgs e)
         {
-            dbData.EliminarCuentaDeEmpresa((int)dbData.idCuentaSeleccionada, dbCon.Connection);
-            guiCuentasRefresh();
+            if (MessageBox.Show("¿Seguro que queres eliminar una cuenta?, vas a perder todos los datos asociados a esta cuenta: Clientes, Proovedores, comprobantes, etc... Recomiendo hacer un backup primero.", "Confirmación", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                dbData.EliminarCuentaDeEmpresa((int)dbData.idCuentaSeleccionada, dbCon.Connection);
+                guiCuentasRefresh();
+            }
+            else
+            {
+                return;
+            }
+
         }
     }
 }
