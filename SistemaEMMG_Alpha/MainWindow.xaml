@@ -13,7 +13,7 @@
             <Label DockPanel.Dock="Left" Foreground="White" FontFamily="Verdana" VerticalAlignment="Center" FontWeight="Black">Sistema Comprobantes</Label>
             <Label DockPanel.Dock="Right" Margin="5, 0, 5, 2" HorizontalAlignment="Right" Foreground="#33435a" FontFamily="Verdana" VerticalAlignment="Bottom" FontWeight="Black">Stradex()</Label>
         </DockPanel>
-        <DockPanel Background="Black"  Height="15" DockPanel.Dock="Top" VerticalAlignment="Top" >
+        <DockPanel Background="Black"  Height="26" DockPanel.Dock="Top" VerticalAlignment="Top" >
             <!--
               <Button Width="60" DockPanel.Dock="Left" HorizontalAlignment="Left" FontWeight="Bold" Margin="3, 3, 3, 3">Archivo</Button>
             <Button Width="80" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Exportar</Button>
@@ -21,6 +21,8 @@
             <Button Width="100" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Comprobantes</Button>
             <Button Width="75" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Consultas</Button>
             -->
+                <Button x:Name="btnImportDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="120" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="False">Importar de Backup</Button>
+                <Button x:Name="btnBackupDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="135" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnBackupDB_Click">Backup Base de Datos</Button>
         </DockPanel>
         <!-- START: Contenido -->
         <TabControl>
@@ -54,7 +56,7 @@
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" Grid.Row="0" Grid.Column="0">Seleccionar</Button>
-                                <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" Grid.Row="0" Grid.Column="1" IsEnabled="false">Eliminar</Button>
+                                <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" Grid.Row="0" Grid.Column="1">Eliminar</Button>
                             </Grid>
                         </DockPanel>
                     </Grid>

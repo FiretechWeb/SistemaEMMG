@@ -134,5 +134,12 @@ namespace SistemaEMMG_Alpha
                 guiCuentasRefresh();
             }
         }
+
+        private void btnBackupDB_Click(object sender, RoutedEventArgs e)
+        {
+            System.IO.Directory.CreateDirectory("backups");
+            DateTime dt = DateTime.Now;
+            dbCon.Backup($"backups/dbbackup_{dt.ToString("dd_MM_yyyy")}.sql");
+        }
     }
 }
