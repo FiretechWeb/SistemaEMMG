@@ -106,7 +106,19 @@ namespace SistemaEMMG_Alpha
             empresaSeleccionada.GetAllEntidadesComerciales(conn);
         }
 
-        public DBEmpresa GetCurrentAccount() => empresas[(int)idCuentaSeleccionada];
+        public DBEmpresa GetCurrentAccount() => empresas[GetCuentaIndexByID(idCuentaSeleccionada)];
+
+        public int GetCuentaIndexByID(long cuentaID)
+        {
+            for (int i=0; i < empresas.Count; i++)
+            {
+                if (empresas[i].GetID() == cuentaID)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
         public bool EliminarCuentaDeEmpresa(int index, MySqlConnection conn)
         {

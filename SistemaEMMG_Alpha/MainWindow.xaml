@@ -83,7 +83,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="1" Grid.Row="0">
-                                <ListBox x:Name="listEntidadesComerciales" Margin="10, 10, 10, 40" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Auto" ></ListBox>
+                                <ListBox x:Name="listEntidadesComerciales" Margin="10, 10, 10, 40" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="listEntidadesComerciales_SelectionChanged" ></ListBox>
                             </Grid>
                             
                             <Grid Grid.Column="0" Grid.Row="0">
@@ -91,15 +91,44 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="5, 5, 5, 5">Tipo de Entidad:</Label>
+                                    <ComboBox x:Name="cmbTipoEC" Margin="5, 5, 5, 5" Grid.Row="0" Grid.Column="1" Height="25" VerticalAlignment="Center"></ComboBox>
+                                    <Label Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Margin="5, 5, 5, 5">CUIT:</Label>
+                                    <TextBox x:Name="txbCUITEC"  Margin="5, 5, 5, 5" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MaxLength="32" PreviewTextInput="txbCUITEC_PreviewTextInput"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Margin="5, 5, 5, 5">DNI:</Label>
+                                    <TextBox x:Name="txbDNIEC"  Margin="5, 5, 5, 5" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" MaxLength="32" PreviewTextInput="txbDNIEC_PreviewTextInput"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Margin="5, 5, 5, 5">Razón Social:</Label>
+                                    <TextBox x:Name="tbxRazonSocialEC"  Margin="5, 5, 5, 5" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" Margin="5, 5, 5, 5">Email:</Label>
+                                    <TextBox x:Name="tbxEmailEC"  Margin="5, 5, 5, 5" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" Margin="5, 5, 5, 5">Teléfono:</Label>
+                                    <TextBox x:Name="tbxTelEC"  Margin="5, 5, 5, 5" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="6" VerticalAlignment="Center" Margin="5, 5, 5, 5">Celular:</Label>
+                                    <TextBox x:Name="tbxCelEC"  Margin="5, 5, 5, 5" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                </Grid>
                                 <Grid Grid.Row="1" Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0, 5, 0">Agregar</Button>
-                                    <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0, 5, 0">Modificar</Button>
-                                    <Button Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0">Eliminar</Button>
+                                    <Button x:Name="btnAgregarEC" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0, 5, 0" Click="btnAgregarEC_Click">Agregar</Button>
+                                    <Button x:Name="btnModificarEC" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0, 5, 0" Click="btnModificarEC_Click">Modificar</Button>
+                                    <Button x:Name="btnEliminarEC" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0" Click="btnEliminarEC_Click">Eliminar</Button>
                                 </Grid>
                             </Grid>
                         </Grid>

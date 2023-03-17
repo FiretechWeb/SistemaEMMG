@@ -271,6 +271,58 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
+        public static DBEntidades GetByID(MySqlConnection conn, DBEmpresa empresa, int id)
+        {
+            DBEntidades returnEntidad = null;
+            try
+            {
+                string query = $"SELECT * FROM ent_comerciales WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    returnEntidad = new DBEntidades(empresa, reader.GetInt64Safe("ec_te_id"), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener una entidad comercial en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEntidad;
+        }
+        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBEmpresa empresa, int id)
+        {
+            foreach (DBEntidades entidadComercial in listaEntidades)
+            {
+                if (entidadComercial.GetID() == id && entidadComercial.GetCuentaID() == empresa.GetID())
+                {
+                    return entidadComercial;
+                }
+            }
+            
+            return null;
+        }
+
+        public static bool CheckIfExistsInList(List<DBEntidades> listaEntidades, DBEntidades ent, bool strictNameAndCUIT = false)
+        {
+            foreach (DBEntidades entidadComercial in listaEntidades)
+            {
+                if (entidadComercial.GetCuentaID() != ent.GetCuentaID())
+                {
+                    continue;
+                }
+                if (entidadComercial.GetID() == ent.GetID())
+                {
+                    return true;
+                } else if (strictNameAndCUIT && entidadComercial.GetCUIT() == ent.GetCUIT() && entidadComercial.GetRazonSocial().Trim().ToLower().Equals(ent.GetRazonSocial().Trim().ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public EntidadesComercialesData Data
         {
             get => _data;
@@ -341,10 +393,16 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBEntidades: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            if (deletedCorrectly)
+            {
+                _cuentaEmpresa.RemoveEntidad(this);
+            }
             return deletedCorrectly;
         }
 
         public long GetID() => _data.ec_id;
+
+        public long GetCuentaID() => _cuentaEmpresa.GetID();
 
         public long GetCUIT() => _data.ec_cuit;
 

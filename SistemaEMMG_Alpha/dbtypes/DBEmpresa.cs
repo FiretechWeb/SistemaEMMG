@@ -193,6 +193,26 @@ namespace SistemaEMMG_Alpha
 
             return returnList;
         }
+
+        public DBEntidades GetEntidadByID(int ec_id)
+        {
+            return DBEntidades.GetByID(_db_entidades_comerciales, this, ec_id);
+        }
+
+        public bool AddNewEntidad(DBEntidades newEntidadComercial)
+        {
+            if (DBEntidades.CheckIfExistsInList(_db_entidades_comerciales, newEntidadComercial, true))
+            {
+                return false; //already exists, at least cuit and name-
+            } 
+            _db_entidades_comerciales.Add(newEntidadComercial);
+            return true;
+        }
+        public void RemoveEntidad(DBEntidades entRemove)
+        {
+            _db_entidades_comerciales.Remove(entRemove);
+        }
+
         public EmpresasData Data
         {
             get => _data;

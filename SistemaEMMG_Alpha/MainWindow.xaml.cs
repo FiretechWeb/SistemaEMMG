@@ -78,7 +78,7 @@ namespace SistemaEMMG_Alpha
             dbData.ReadEmpresasFromDB(dbCon.Connection);
             if (dbData.empresas.Count > 0)
             {
-                dbData.idCuentaSeleccionada = 0;
+                dbData.idCuentaSeleccionada = dbData.empresas[0].GetID();
             } else
             {
                 dbData.idCuentaSeleccionada = -1;
@@ -103,12 +103,12 @@ namespace SistemaEMMG_Alpha
             {
                 if (dbData.idCuentaSeleccionada < 0)
                 {
-                    dbData.idCuentaSeleccionada = 0;
+                    dbData.idCuentaSeleccionada = dbData.empresas[0].GetID();
                 } else if (dbData.idCuentaSeleccionada >= dbData.empresas.Count)
                 {
-                    dbData.idCuentaSeleccionada = dbData.empresas.Count-1;
+                    dbData.idCuentaSeleccionada = dbData.empresas[dbData.empresas.Count - 1].GetID();
                 }
-                cmbCuentasEmpresas.SelectedIndex = (int)dbData.idCuentaSeleccionada;
+                cmbCuentasEmpresas.SelectedValue = dbData.idCuentaSeleccionada;
             }
             guiRefreshCuentaSeleccionadaLabel();
         }
@@ -120,6 +120,7 @@ namespace SistemaEMMG_Alpha
                 dbData.ReadEntidadesComercialesFromDB(dbCon.Connection);
             }
             List<DBEntidades> entidadesComercialesLista = dbData.GetCurrentAccount().GetAllEntidadesComerciales();
+            guiRefreshTipoEntidadesComerciales();
 
             listEntidadesComerciales.Items.Clear();
             listEntidadesComerciales.SelectedValuePath = "Key";
@@ -128,17 +129,65 @@ namespace SistemaEMMG_Alpha
             {
                 listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(entidadComercial.GetID(), $"{entidadComercial.GetTipoEntidad().GetName()}: {entidadComercial.GetRazonSocial()}"));
             }
+            if (listEntidadesComerciales.Items.Count > 0)
+            {
+                listEntidadesComerciales.SelectedIndex = 0;
+            }
+
+            guiRefreshEntidadesForm();
+        }
+
+        private void guiRefreshEntidadesForm()
+        {
+            if (listEntidadesComerciales.SelectedItem is null)
+            {
+                return;
+            }
+            long listECSelectedID = ((KeyValuePair<long, string>)listEntidadesComerciales.SelectedItem).Key;
+
+            if (listECSelectedID < 0)
+            {
+                return;
+            }
+            DBEntidades selectedEntidad = dbData.GetCurrentAccount().GetEntidadByID((int)listECSelectedID);
+            foreach (KeyValuePair<long, string> cbItem in cmbTipoEC.Items)
+            {
+                if (cbItem.Key == selectedEntidad.GetTipoEntidad().GetID())
+                {
+                    cmbTipoEC.SelectedValue = cbItem.Key;
+                    break;
+                }
+            }
+
+            txbCUITEC.Text = selectedEntidad.GetCUIT().ToString();
+            txbDNIEC.Text = selectedEntidad.GetDNI().ToString();
+            tbxRazonSocialEC.Text = selectedEntidad.GetRazonSocial();
+            tbxEmailEC.Text = selectedEntidad.GetEmail();
+            tbxTelEC.Text = selectedEntidad.GetTelefono();
+            tbxCelEC.Text = selectedEntidad.GetCelular();
+        }
+        private void guiRefreshTipoEntidadesComerciales()
+        {
+            List<DBTipoEntidad> tiposEntidadesComerciales = DBTipoEntidad.GetAll();
+            cmbTipoEC.Items.Clear();
+            cmbTipoEC.SelectedValuePath = "Key";
+            cmbTipoEC.DisplayMemberPath = "Value";
+
+            foreach (DBTipoEntidad tipoEntidad in tiposEntidadesComerciales)
+            {
+                cmbTipoEC.Items.Add(new KeyValuePair<long, string>(tipoEntidad.GetID(), tipoEntidad.GetName()));
+            }
         }
 
         private void guiRefreshCuentaSeleccionadaLabel()
         {
-            if (dbData.idCuentaSeleccionada < 0 || dbData.idCuentaSeleccionada >= dbData.empresas.Count)
+            if (dbData.idCuentaSeleccionada < 0)
             {
                 lblCuentaSeleccionada.Content = "No hay cuentas. Por favor cree una para usar el sistema.";
              }
             else
             {
-                lblCuentaSeleccionada.Content = $"{dbData.empresas[(int)dbData.idCuentaSeleccionada].GetRazonSocial()}";
+                lblCuentaSeleccionada.Content = $"{dbData.empresas[dbData.GetCuentaIndexByID(dbData.idCuentaSeleccionada)].GetRazonSocial()}";
             }
         }
         public MainWindow()
@@ -172,9 +221,13 @@ namespace SistemaEMMG_Alpha
         private void cmbCuentasEmpresas_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox cmbSender = sender as ComboBox;
-            if (dbData.idCuentaSeleccionada != cmbSender.SelectedIndex)
+            if (cmbSender.SelectedItem is null)
             {
-                dbData.idCuentaSeleccionada = cmbSender.SelectedIndex;
+                return;
+            }
+            if (dbData.idCuentaSeleccionada != ((KeyValuePair<long, string>)cmbSender.SelectedItem).Key)
+            {
+                dbData.idCuentaSeleccionada = ((KeyValuePair<long, string>)cmbSender.SelectedItem).Key;
                 guiRefreshCuentaSeleccionadaLabel();
             }
         }
@@ -231,7 +284,7 @@ namespace SistemaEMMG_Alpha
         {
             if (MessageBox.Show("¿Seguro que queres eliminar una cuenta?, vas a perder todos los datos asociados a esta cuenta: Clientes, Proovedores, comprobantes, etc... Recomiendo hacer un backup primero.", "Confirmación", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                dbData.EliminarCuentaDeEmpresa((int)dbData.idCuentaSeleccionada, dbCon.Connection);
+                dbData.EliminarCuentaDeEmpresa(dbData.GetCuentaIndexByID(dbData.idCuentaSeleccionada), dbCon.Connection);
                 guiCuentasRefresh();
             }
             else
@@ -288,5 +341,84 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        private void listEntidadesComerciales_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            guiRefreshEntidadesForm();
+        }
+
+        private void btnModificarEC_Click(object sender, RoutedEventArgs e)
+        {
+            if (listEntidadesComerciales.SelectedItem is null)
+            {
+                return;
+            }
+
+            long listECSelectedID = ((KeyValuePair<long, string>)listEntidadesComerciales.SelectedItem).Key;
+
+            if (listECSelectedID < 0)
+            {
+                return;
+            }
+
+            DBEntidades selectedEntidad = dbData.GetCurrentAccount().GetEntidadByID((int)listECSelectedID);
+            selectedEntidad.SetRazonSocial(tbxRazonSocialEC.Text);
+            selectedEntidad.SetCuit(Convert.ToInt64(txbCUITEC.Text));
+            selectedEntidad.SetEmail(tbxEmailEC.Text);
+            selectedEntidad.SetTelefono(tbxTelEC.Text);
+            selectedEntidad.SetCelular(tbxCelEC.Text);
+            selectedEntidad.SetDNI(Convert.ToInt64(txbDNIEC.Text));
+            selectedEntidad.TipoEntidad = DBTipoEntidad.GetByID(((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key);
+
+            selectedEntidad.PushToDatabase(dbCon.Connection);
+
+            guiEntidadesRefresh();
+        }
+
+        private void btnAgregarEC_Click(object sender, RoutedEventArgs e)
+        {
+            //AddNewEntidad
+            DBEntidades nuevaEntidad = new DBEntidades(dbData.GetCurrentAccount(), ((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key, Convert.ToInt64(txbCUITEC.Text), tbxRazonSocialEC.Text);
+            nuevaEntidad.SetEmail(tbxEmailEC.Text);
+            nuevaEntidad.SetTelefono(tbxTelEC.Text);
+            nuevaEntidad.SetCelular(tbxCelEC.Text);
+            nuevaEntidad.SetDNI(Convert.ToInt64(txbDNIEC.Text));
+
+            dbData.GetCurrentAccount().AddNewEntidad(nuevaEntidad);
+            nuevaEntidad.PushToDatabase(dbCon.Connection);
+            guiEntidadesRefresh();
+
+        }
+
+        private void btnEliminarEC_Click(object sender, RoutedEventArgs e)
+        {
+            if (listEntidadesComerciales.SelectedItem is null)
+            {
+                return;
+            }
+
+            long listECSelectedID = ((KeyValuePair<long, string>)listEntidadesComerciales.SelectedItem).Key;
+
+            if (listECSelectedID < 0)
+            {
+                return;
+            }
+
+            DBEntidades selectedEntidad = dbData.GetCurrentAccount().GetEntidadByID((int)listECSelectedID);
+
+            selectedEntidad.DeleteFromDatabase(dbCon.Connection);
+            guiEntidadesRefresh();
+        }
+
+        private void txbCUITEC_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txbDNIEC_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
     }
 }
