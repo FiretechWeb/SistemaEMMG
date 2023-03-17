@@ -28,6 +28,53 @@ namespace SistemaEMMG_Alpha
     public class DBTipoEntidad : DBInterface
     {
         private TiposEntidadesData _data;
+        private static List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
+        public static bool TipoEntidadYaExiste(string tipoEntidadNombre, List<DBTipoEntidad> tiposEntidades)
+        {
+            foreach(DBTipoEntidad tipoEntidad in tiposEntidades)
+            {
+                if (tipoEntidadNombre.Trim().ToLower().Equals(tipoEntidad.GetName().Trim().ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static List<DBTipoEntidad> UpdateAll(MySqlConnection conn)
+        {
+            List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();
+            try
+            {
+                string query = $"SELECT * FROM tipos_entidades";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                _db_tipos_entidades.Clear();
+
+                while (reader.Read())
+                {
+                    _db_tipos_entidades.Add(new DBTipoEntidad(reader.GetInt64("te_id"), reader.GetString("te_nombre")));
+                    returnList.Add(new DBTipoEntidad(reader.GetInt64("te_id"), reader.GetString("te_nombre"))); //Waste of persformance but helps with making the code less propense to error.
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todas los tipos de entidades, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static List<DBTipoEntidad> GetAll()
+        {
+            List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();
+            foreach (DBTipoEntidad tipoEntidad in _db_tipos_entidades)
+            {
+                returnList.Add(new DBTipoEntidad(tipoEntidad.GetID(), tipoEntidad.GetName()));
+            }
+            return returnList;
+        }
 
         public DBTipoEntidad(TiposEntidadesData newData)
         {

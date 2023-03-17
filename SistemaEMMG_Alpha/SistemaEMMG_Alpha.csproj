@@ -103,7 +103,9 @@
     </Compile>
     <Compile Include="DBConnection.cs" />
     <Compile Include="DBFields.cs" />
+    <Compile Include="DBInterface.cs" />
     <Compile Include="dbtypes\DBEmpresa.cs" />
+    <Compile Include="dbtypes\DBEntidades.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

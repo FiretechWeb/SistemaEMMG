@@ -29,6 +29,42 @@ namespace SistemaEMMG_Alpha
     public class DBEmpresa : DBInterface
     {
         private EmpresasData _data;
+        private static List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
+        public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
+        {
+            List<DBEmpresa> returnList = new List<DBEmpresa>();
+            try
+            {
+                string query = $"SELECT * FROM empresas";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                _db_empresas.Clear();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBEmpresa(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs")));
+                    _db_empresas.Add(new DBEmpresa(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs")));
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todas las empresas, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static List<DBEmpresa> GetAll()
+        {
+            List<DBEmpresa> returnList = new List<DBEmpresa>();
+            foreach (DBEmpresa empresa in _db_empresas)
+            {
+                returnList.Add(new DBEmpresa(empresa.GetID(), empresa.GetCUIT(), empresa.GetRazonSocial()));
+            }
+            return returnList;
+        }
 
         public static bool EmpresaYaExiste(string str, long cuit, List<DBEmpresa> empresas)
         {
@@ -41,27 +77,7 @@ namespace SistemaEMMG_Alpha
             }
             return false;
         }
-
-        public static List<DBEmpresa> GetEmpresasFromDataBase(MySqlConnection conn)
-        {
-            List<DBEmpresa> empresas = new List<DBEmpresa>();
-            try
-            {
-                string query = $"SELECT * FROM empresas";
-                var cmd = new MySqlCommand(query, conn);
-                var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    empresas.Add(new DBEmpresa(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs")));
-                }
-
-                reader.Close();
-            } catch (Exception ex)
-            {
-                MessageBox.Show("Error al tratar de obtener todas las empresas, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            return empresas;
-        }
+        public static bool EmpresaYaExiste(string str, long cuit) => EmpresaYaExiste(str, cuit, _db_empresas);
 
         public DBEmpresa(EmpresasData newData)
         {

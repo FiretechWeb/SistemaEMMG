@@ -115,9 +115,17 @@ namespace SistemaEMMG_Alpha
 
         private void guiEntidadesRefresh(bool refreshDataBase=false)
         {
+            if (refreshDataBase)
+            {
+                dbData.ReadTiposEntidadesFromDB(dbCon.Connection);
+            }
             listEntidadesComerciales.Items.Clear();
             listEntidadesComerciales.SelectedValuePath = "Key";
             listEntidadesComerciales.DisplayMemberPath = "Value";
+            foreach (DBTipoEntidad tipoEntidad in dbData.tipos_entidades)
+            {
+                listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(tipoEntidad.GetID(), tipoEntidad.GetName()));
+            }
         }
 
         private void guiRefreshCuentaSeleccionadaLabel()
@@ -269,6 +277,7 @@ namespace SistemaEMMG_Alpha
                         break;
                     case TabItemsSelections.TI_ENTIDADES:
                         Console.WriteLine("TI_ENTIDADES");
+                        guiEntidadesRefresh(true);
                         break;
                     case TabItemsSelections.TI_COMPROBANTES:
                         Console.WriteLine("TI_COMPROBANTES");

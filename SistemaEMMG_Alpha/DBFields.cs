@@ -81,14 +81,23 @@ namespace SistemaEMMG_Alpha
         private static DBFields _instance = null;
         public long idCuentaSeleccionada = 0;
         public List<DBEmpresa> empresas;
+        public List<DBTipoEntidad> tipos_entidades;
 
+        public void ReadTiposEntidadesFromDB(MySqlConnection conn)
+        {
+            if (!(tipos_entidades is null))
+            {
+                tipos_entidades.Clear();
+            }
+            tipos_entidades = DBTipoEntidad.UpdateAll(conn);
+        }
         public void ReadEmpresasFromDB(MySqlConnection conn)
         {
             if (!(empresas is null))
             {
                 empresas.Clear();
             }
-            empresas = DBEmpresa.GetEmpresasFromDataBase(conn);
+            empresas = DBEmpresa.UpdateAll(conn);
         }
 
         public bool EliminarCuentaDeEmpresa(int index, MySqlConnection conn)
