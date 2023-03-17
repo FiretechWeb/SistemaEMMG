@@ -30,7 +30,7 @@
                         <RowDefinition Height="35"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">Cuenta Seleccionada: EMMG</Label>
+                    <Label x:Name="lblCuentaSeleccionada" Grid.Column="0" Grid.Row="0" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">Cuenta Seleccionada: EMMG</Label>
                     <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"></RowDefinition>
@@ -43,10 +43,8 @@
                     <Grid Grid.Column="0" Grid.Row="0" Margin="10, 10, 10, 10">
                         <DockPanel>
                             <Label FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0, 5, 0, 5" DockPanel.Dock="Top" VerticalAlignment="Top">Seleccionar Cuenta</Label>
-                            <ComboBox VerticalAlignment="Top"  Margin="0, 5, 0, 5" SelectedIndex="0" DockPanel.Dock="Top">
-                                <ComboBoxItem>EMMG</ComboBoxItem>
-                                <ComboBoxItem>First of the fallen</ComboBoxItem>
-                            </ComboBox>
+                                    <ComboBox x:Name="cmbCuentasEmpresas" VerticalAlignment="Top"  Margin="0, 5, 0, 5" DockPanel.Dock="Top" SelectionChanged="cmbCuentasEmpresas_SelectionChanged">
+                                    </ComboBox>
                             <Grid VerticalAlignment="Top" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"></RowDefinition>
@@ -85,5 +83,16 @@
     <!-- START: Version info -->
     <Label VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3, 3, 3, 3" Foreground="BlueViolet">Versión Alpha 1</Label>
     <!-- END: Version info -->
+    <!-- START: Error Database Connection -->
+    <Grid x:Name="errorScreen" Background="#EE000000" Visibility="Collapsed">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="4*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Foreground="Red" FontSize="28" FontWeight="Black" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="0">¡Error al conectarse con la base de datos!</Label>
+        <Label HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Grid.Row="1" FontSize="16" FontWeight="Bold">Prueba reiniciando el servidor Apache o verificando los datos de conexión.</Label>
+            <Button x:Name="btnDbReconnect" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnDbReconnect_Click">Intentar conectar de nuevo</Button>
+    </Grid>
+    <!-- END: Error Database Connection -->
     </Grid>
 </Window>
