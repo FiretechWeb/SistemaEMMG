@@ -104,6 +104,7 @@
     <Compile Include="DBConnection.cs" />
     <Compile Include="DBFields.cs" />
     <Compile Include="DBInterface.cs" />
+    <Compile Include="DBExtensions.cs" />
     <Compile Include="dbtypes\DBEmpresa.cs" />
     <Compile Include="dbtypes\DBEntidades.cs" />
     <Compile Include="MainWindow.xaml.cs">

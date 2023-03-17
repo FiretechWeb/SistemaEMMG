@@ -28,9 +28,12 @@ namespace SistemaEMMG_Alpha
     }
     public class DBEmpresa : DBInterface
     {
-        private EmpresasData _data;
-        private static List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
-        public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
+        /*************************
+         * Global Static STUFFF *
+         ************************/
+        private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
+
+           public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
         {
             List<DBEmpresa> returnList = new List<DBEmpresa>();
             try
@@ -43,8 +46,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBEmpresa(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs")));
-                    _db_empresas.Add(new DBEmpresa(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs")));
+                    returnList.Add(new DBEmpresa(reader.GetInt64Safe("em_id"), reader.GetInt64Safe("em_cuit"), reader.GetStringSafe("em_rs")));
+                    _db_empresas.Add(new DBEmpresa(reader.GetInt64Safe("em_id"), reader.GetInt64Safe("em_cuit"), reader.GetStringSafe("em_rs")));
                 }
 
                 reader.Close();
@@ -79,6 +82,13 @@ namespace SistemaEMMG_Alpha
         }
         public static bool EmpresaYaExiste(string str, long cuit) => EmpresaYaExiste(str, cuit, _db_empresas);
 
+        /***************
+         * Local STUFF *
+         ***************/
+
+        private EmpresasData _data;
+        private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
+
         public DBEmpresa(EmpresasData newData)
         {
             _data = newData;
@@ -100,7 +110,7 @@ namespace SistemaEMMG_Alpha
                
                 while (reader.Read())
                 {
-                    _data = new EmpresasData(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs"));
+                    _data = new EmpresasData(reader.GetInt64Safe("em_id"), reader.GetInt64Safe("em_cuit"), reader.GetStringSafe("em_rs"));
                 }
 
                 reader.Close();
@@ -162,6 +172,27 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
+        public List<DBEntidades> GetAllEntidadesComerciales(MySqlConnection conn) //Get directly from database
+        {
+            List<DBEntidades> returnList = DBEntidades.GetAll(conn, this);
+            _db_entidades_comerciales.Clear();
+            foreach (DBEntidades entidadComercial in returnList)
+            {
+                _db_entidades_comerciales.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data));
+            }
+            return returnList;
+        }
+        public List<DBEntidades> GetAllEntidadesComerciales() //Get CACHE
+        {
+            List<DBEntidades> returnList = new List<DBEntidades>();
+
+            foreach (DBEntidades entidadComercial in _db_entidades_comerciales)
+            {
+                returnList.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data));
+            }
+
+            return returnList;
+        }
         public EmpresasData Data
         {
             get => _data;

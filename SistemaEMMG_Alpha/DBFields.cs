@@ -99,6 +99,14 @@ namespace SistemaEMMG_Alpha
             }
             empresas = DBEmpresa.UpdateAll(conn);
         }
+        public void ReadEntidadesComercialesFromDB(MySqlConnection conn)
+        {
+            ReadTiposEntidadesFromDB(conn); //We need to make sure we have the tipos_entidades data first.
+            DBEmpresa empresaSeleccionada = GetCurrentAccount();
+            empresaSeleccionada.GetAllEntidadesComerciales(conn);
+        }
+
+        public DBEmpresa GetCurrentAccount() => empresas[(int)idCuentaSeleccionada];
 
         public bool EliminarCuentaDeEmpresa(int index, MySqlConnection conn)
         {

@@ -117,14 +117,16 @@ namespace SistemaEMMG_Alpha
         {
             if (refreshDataBase)
             {
-                dbData.ReadTiposEntidadesFromDB(dbCon.Connection);
+                dbData.ReadEntidadesComercialesFromDB(dbCon.Connection);
             }
+            List<DBEntidades> entidadesComercialesLista = dbData.GetCurrentAccount().GetAllEntidadesComerciales();
+
             listEntidadesComerciales.Items.Clear();
             listEntidadesComerciales.SelectedValuePath = "Key";
             listEntidadesComerciales.DisplayMemberPath = "Value";
-            foreach (DBTipoEntidad tipoEntidad in dbData.tipos_entidades)
+            foreach (DBEntidades entidadComercial in entidadesComercialesLista)
             {
-                listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(tipoEntidad.GetID(), tipoEntidad.GetName()));
+                listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(entidadComercial.GetID(), entidadComercial.GetRazonSocial()));
             }
         }
 
