@@ -26,7 +26,7 @@ namespace SistemaEMMG_Alpha
             return $"ID: {em_id} - Nombre Empresa: {em_rs} - CUIT: {em_cuit}";
         }
     }
-    public class DBEmpresa
+    public class DBEmpresa : DBInterface
     {
         private EmpresasData _data;
 
@@ -72,10 +72,8 @@ namespace SistemaEMMG_Alpha
         {
             _data = new EmpresasData(id, cuit, rs);
         }
-        public DBEmpresa(long cuit, string rs)
-        {
-            _data = new EmpresasData(-1, cuit, rs); //-1 means that it should be inserted into the DATABASE
-        }
+        public DBEmpresa(long cuit, string rs) : this(-1, cuit, rs) { }
+
         public DBEmpresa(MySqlConnection conn, int id)
         {
             try

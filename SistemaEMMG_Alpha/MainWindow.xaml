@@ -14,20 +14,13 @@
             <Label DockPanel.Dock="Right" Margin="5, 0, 5, 2" HorizontalAlignment="Right" Foreground="#33435a" FontFamily="Verdana" VerticalAlignment="Bottom" FontWeight="Black">Stradex()</Label>
         </DockPanel>
         <DockPanel Background="Black"  Height="26" DockPanel.Dock="Top" VerticalAlignment="Top" >
-            <!--
-              <Button Width="60" DockPanel.Dock="Left" HorizontalAlignment="Left" FontWeight="Bold" Margin="3, 3, 3, 3">Archivo</Button>
-            <Button Width="80" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Exportar</Button>
-            <Button Width="60" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Bancos</Button>
-            <Button Width="100" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Comprobantes</Button>
-            <Button Width="75" DockPanel.Dock="Left" HorizontalAlignment="Left"  FontWeight="Bold" Margin="3, 3, 3, 3">Consultas</Button>
-            -->
-                <Label x:Name="lblCuentaSeleccionada" DockPanel.Dock="Left" FontSize="13" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White">Cuenta</Label>
-                <Button x:Name="btnImportDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="False">Importar</Button>
-                <Button x:Name="btnBackupDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnBackupDB_Click">Backup</Button>
+           <Label x:Name="lblCuentaSeleccionada" DockPanel.Dock="Left" FontSize="13" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White">Cuenta</Label>
+           <Button x:Name="btnImportDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="False">Importar</Button>
+           <Button x:Name="btnBackupDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnBackupDB_Click">Backup</Button>
         </DockPanel>
         <!-- START: Contenido -->
-        <TabControl>
-            <TabItem Header="Cuentas" FontWeight="Bold">
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
+            <TabItem x:Name="tabCuentas" Header="Cuentas" FontWeight="Bold">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*"></RowDefinition>
@@ -77,12 +70,45 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-            <TabItem Header="Entidades" FontWeight="Bold">
+            <TabItem x:Name="tabEntidades" Header="Entidades" FontWeight="Bold">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="Bold">Entidades comerciales</Label>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="1" Grid.Row="0">
+                                <ListBox x:Name="listEntidadesComerciales" Margin="10, 10, 10, 40" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Auto" ></ListBox>
+                            </Grid>
+                            
+                            <Grid Grid.Column="0" Grid.Row="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="1" Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0, 5, 0">Agregar</Button>
+                                    <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0, 5, 0">Modificar</Button>
+                                    <Button Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0">Eliminar</Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
             </TabItem>
-            <TabItem Header="Bancos" FontWeight="Bold">
+            <TabItem x:Name="tabBancos" Header="Bancos" FontWeight="Bold">
 
             </TabItem>
-            <TabItem Header="Comprobantes" FontWeight="Bold">
+            <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold">
 
             </TabItem>
         </TabControl>

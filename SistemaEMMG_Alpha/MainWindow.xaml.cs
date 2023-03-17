@@ -25,6 +25,14 @@ namespace SistemaEMMG_Alpha
     /// 
     public partial class MainWindow : Window
     {
+        enum TabItemsSelections
+        {
+            TI_CUENTAS,
+            TI_ENTIDADES,
+            TI_BANCOS,
+            TI_COMPROBANTES
+        };
+        public short oldTabItemSelection = -1; //To avoid bug with Tab Items
         public DBConnection dbCon = null;
         public DBFields dbData = null; // Aca está la papa
         private bool ConnectWithDatabase()
@@ -78,8 +86,12 @@ namespace SistemaEMMG_Alpha
             guiCuentasRefresh();
         }
         
-        private void guiCuentasRefresh()
+        private void guiCuentasRefresh(bool refreshDatabase=false)
         {
+            if (refreshDatabase)
+            {
+                dbData.ReadEmpresasFromDB(dbCon.Connection);
+            }
             cmbCuentasEmpresas.Items.Clear();
             cmbCuentasEmpresas.SelectedValuePath = "Key";
             cmbCuentasEmpresas.DisplayMemberPath = "Value";
@@ -92,10 +104,20 @@ namespace SistemaEMMG_Alpha
                 if (dbData.idCuentaSeleccionada < 0)
                 {
                     dbData.idCuentaSeleccionada = 0;
+                } else if (dbData.idCuentaSeleccionada >= dbData.empresas.Count)
+                {
+                    dbData.idCuentaSeleccionada = dbData.empresas.Count-1;
                 }
                 cmbCuentasEmpresas.SelectedIndex = (int)dbData.idCuentaSeleccionada;
             }
             guiRefreshCuentaSeleccionadaLabel();
+        }
+
+        private void guiEntidadesRefresh(bool refreshDataBase=false)
+        {
+            listEntidadesComerciales.Items.Clear();
+            listEntidadesComerciales.SelectedValuePath = "Key";
+            listEntidadesComerciales.DisplayMemberPath = "Value";
         }
 
         private void guiRefreshCuentaSeleccionadaLabel()
@@ -208,5 +230,52 @@ namespace SistemaEMMG_Alpha
             }
 
         }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(e.Source is TabControl)
+            {
+                short newTabItemSelection = oldTabItemSelection;
+                if(tabBancos.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_BANCOS;
+                } else if (tabComprobantes.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_COMPROBANTES;
+                } else if (tabCuentas.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_CUENTAS;
+                } else if (tabEntidades.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_ENTIDADES;
+                }
+
+                if (oldTabItemSelection == newTabItemSelection || oldTabItemSelection == -1)
+                {
+                    oldTabItemSelection = newTabItemSelection;
+                    return;
+                }
+
+                oldTabItemSelection = newTabItemSelection;
+
+                switch ((TabItemsSelections)newTabItemSelection)
+                {
+                    case TabItemsSelections.TI_CUENTAS:
+                        guiCuentasRefresh(true);
+                        Console.WriteLine("TI_CUENTAS");
+                        break;
+                    case TabItemsSelections.TI_BANCOS:
+                        Console.WriteLine("TI_BANCOS");
+                        break;
+                    case TabItemsSelections.TI_ENTIDADES:
+                        Console.WriteLine("TI_ENTIDADES");
+                        break;
+                    case TabItemsSelections.TI_COMPROBANTES:
+                        Console.WriteLine("TI_COMPROBANTES");
+                        break;
+                }
+            }
+        }
+
     }
 }

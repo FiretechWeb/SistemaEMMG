@@ -9,17 +9,6 @@ using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
-    public struct TiposEntidadesData
-    {
-        public TiposEntidadesData(long id, string nom)
-        {
-            te_id = id;
-            te_nombre = nom; //Event handler to check that nom is not longer than 32 characters
-        }
-        public long te_id { get; set; }
-        public string te_nombre { get; set; }
-    }
-
     public struct BancosData
     {
         public BancosData (long id, string nom)
@@ -50,28 +39,6 @@ namespace SistemaEMMG_Alpha
         public long fp_id { get; set; }
         public string fp_nombre { get; set; }
     }
-    public struct EntidadesComercialesData
-    {
-        public EntidadesComercialesData(long id, long cuit, long dni, string rs, string email, string tel, string cel)
-        {
-            ec_id = id;
-            ec_cuit = cuit;
-            ec_dni = dni;
-            ec_rs = rs;
-            ec_email = email;
-            ec_telefono = tel;
-            ec_celular = cel;
-        }
-        //Class handles ec_em_id y ec_te_id since it is better to hold references to those dataTypes instead of values
-        public long ec_id { get; set; }
-        public long ec_cuit { get; set; }
-        public long ec_dni { get; set; }
-        public string ec_rs { get; set; }
-        public string ec_email { get; set; }
-        public string ec_telefono {get; set; }
-        public string ec_celular { get; set; }
-    }
-
     public struct ComprobantesData
     {
         public ComprobantesData(long id, DateTime fecha, DateTime pago, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido)
