@@ -30,6 +30,18 @@ namespace SistemaEMMG_Alpha
     {
         private EmpresasData _data;
 
+        public static bool EmpresaYaExiste(string str, long cuit, List<DBEmpresa> empresas)
+        {
+            foreach (DBEmpresa empresa in empresas)
+            {
+                if (str.ToLower().Equals(empresa.GetRazonSocial().ToLower()) || empresa.GetCUIT() == cuit)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static List<DBEmpresa> GetEmpresasFromDataBase(MySqlConnection conn)
         {
             List<DBEmpresa> empresas = new List<DBEmpresa>();
@@ -42,6 +54,8 @@ namespace SistemaEMMG_Alpha
                 {
                     empresas.Add(new DBEmpresa(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs")));
                 }
+
+                reader.Close();
             } catch (Exception ex)
             {
                 MessageBox.Show("Error al tratar de obtener todas las empresas, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -58,7 +72,10 @@ namespace SistemaEMMG_Alpha
         {
             _data = new EmpresasData(id, cuit, rs);
         }
-
+        public DBEmpresa(long cuit, string rs)
+        {
+            _data = new EmpresasData(-1, cuit, rs); //-1 means that it should be inserted into the DATABASE
+        }
         public DBEmpresa(MySqlConnection conn, int id)
         {
             try
@@ -66,10 +83,13 @@ namespace SistemaEMMG_Alpha
                 string query = $"SELECT * FROM empresas WHERE em_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
+               
                 while (reader.Read())
                 {
                     _data = new EmpresasData(reader.GetInt64("em_id"), reader.GetInt64("em_cuit"), reader.GetString("em_rs"));
                 }
+
+                reader.Close();
             } catch (Exception ex)
             {
                 MessageBox.Show("Error en el constructor de DBEmpresa, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -80,8 +100,22 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"UPDATE empresas SET em_cuit = {_data.em_cuit}, em_rs = '{_data.em_rs}' WHERE em_id = {_data.em_cuit}";
+                //First check if the record already exists in the DB
+                string query = $"SELECT COUNT(*) FROM empresas WHERE em_id = {_data.em_id}";
                 var cmd = new MySqlCommand(query, conn);
+                int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
+
+                //if exists already, just update
+                if (recordsCount > 0)
+                {
+                    query = $"UPDATE empresas SET em_cuit = {_data.em_cuit}, em_rs = '{_data.em_rs}' WHERE em_id = {_data.em_id}";
+
+                 } else //if does not exists, insert into
+                {
+                    query = $"INSERT INTO empresas (em_cuit, em_rs) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
+                }
+                //if not, add
+                cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
             } catch (Exception ex)
             {
@@ -92,17 +126,19 @@ namespace SistemaEMMG_Alpha
 
         public bool DeleteFromDatabase(MySqlConnection conn)
         {
+            bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM empresas WHERE em_id = {_data.em_cuit}";
+                string query = $"DELETE FROM empresas WHERE em_id = {_data.em_id}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
+                deletedCorrectly = true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBEmpresa: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            return false;
+            return deletedCorrectly;
         }
 
         public EmpresasData Data

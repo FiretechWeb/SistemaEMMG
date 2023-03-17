@@ -8,8 +8,8 @@
         Title="Sistema Comprobantes (Alpha)" Height="450" Width="800" MinWidth="534" MinHeight="300" ResizeMode="CanResizeWithGrip">
     <Grid>
     <DockPanel Canvas.Left="0" Canvas.Top="0" Canvas.Right="0" Canvas.Bottom="0">
-        <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="50" VerticalAlignment="Top">
-            <Image Width="30" Margin="5, 0, 5, 0" DockPanel.Dock="Left"  HorizontalAlignment="Left" Source=".\graphics\logo.png" />
+        <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="40" VerticalAlignment="Top">
+            <Image Width="25" Margin="5, 0, 5, 0" DockPanel.Dock="Left"  HorizontalAlignment="Left" Source=".\graphics\logo.png" />
             <Label DockPanel.Dock="Left" Foreground="White" FontFamily="Verdana" VerticalAlignment="Center" FontWeight="Black">Sistema Comprobantes</Label>
             <Label DockPanel.Dock="Right" Margin="5, 0, 5, 2" HorizontalAlignment="Right" Foreground="#33435a" FontFamily="Verdana" VerticalAlignment="Bottom" FontWeight="Black">Stradex()</Label>
         </DockPanel>
@@ -56,15 +56,28 @@
                                     <ColumnDefinition Width="1*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" Grid.Row="0" Grid.Column="0">Seleccionar</Button>
-                                <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" Grid.Row="0" Grid.Column="1">Eliminar</Button>
+                                <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" Grid.Row="0" Grid.Column="1" Click="btnEliminarCuenta">Eliminar</Button>
                             </Grid>
                         </DockPanel>
                     </Grid>
                     <Grid Grid.Column="1" Grid.Row="0" Margin="10, 10, 10, 10">
                         <DockPanel>
                             <Label FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0, 5, 0, 5" DockPanel.Dock="Top" VerticalAlignment="Top">Crear Cuenta</Label>
-                            <TextBox VerticalAlignment="Top" Margin="0, 5, 0, 5" MaxLength="60" DockPanel.Dock="Top" >Nueva Empresa...</TextBox>
-                            <Button VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" DockPanel.Dock="Top">Agregar</Button>
+                            <Grid DockPanel.Dock="Top">
+                              <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                               </Grid.RowDefinitions>
+                               <Grid.ColumnDefinitions>
+                                  <ColumnDefinition Width="100"></ColumnDefinition>
+                                  <ColumnDefinition></ColumnDefinition>
+                                  </Grid.ColumnDefinitions>
+                                <Label FontWeight="Bold" Grid.Column="0" Grid.Row="0">CUIT: </Label>
+                                <TextBox Grid.Column="1" Grid.Row="0" x:Name="txbNuevaCuentaCUIT" VerticalAlignment="Top" Margin="0, 5, 0, 5" MaxLength="60" DockPanel.Dock="Top" TextChanged="txbNuevaCuentaCUIT_TextChanged" PreviewTextInput="txbNuevaCuentaCUIT_PreviewTextInput"></TextBox>
+                                        <Label FontWeight="Bold" Grid.Column="0" Grid.Row="1">Razón Social:</Label>
+                                <TextBox Grid.Column="1" Grid.Row="1" x:Name="txbNuevaCuentaNombre" VerticalAlignment="Top" Margin="0, 5, 0, 5" MaxLength="60" DockPanel.Dock="Top" TextChanged="txbNuevaCuentaNombre_TextChanged" ></TextBox>
+                             </Grid>
+                            <Button x:Name="btnAddNewAccount" VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0, 5, 0, 5" DockPanel.Dock="Top" Click="btnAddNewAccount_Click" IsEnabled="False">Agregar</Button>
                         </DockPanel>
                     </Grid>
                 </Grid>

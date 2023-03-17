@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
@@ -121,6 +122,41 @@ namespace SistemaEMMG_Alpha
                 empresas.Clear();
             }
             empresas = DBEmpresa.GetEmpresasFromDataBase(conn);
+        }
+
+        public bool EliminarCuentaDeEmpresa(int index, MySqlConnection conn)
+        {
+            if (index < 0 || index >= empresas.Count)
+            {
+                return false;
+            }
+            if (empresas[index].DeleteFromDatabase(conn))
+            {
+                empresas.RemoveAt(index);
+            }
+
+            return true;
+
+        }
+
+        public bool AgregarNuevaCuentaDeEmpresa(string nombreCuenta, long cuitCuenta, MySqlConnection conn)
+        {
+            if (DBEmpresa.EmpresaYaExiste(nombreCuenta, cuitCuenta, empresas))
+            {
+                MessageBox.Show("¡La cuenta de empresa que quiso crear ya existe!, el CUIT y la razón social deben ser únicas.");
+                return false;
+            }
+            DBEmpresa newEmpresa = new DBEmpresa(cuitCuenta, nombreCuenta);
+
+            empresas[0].PushToDatabase(conn);
+
+            if (!newEmpresa.PushToDatabase(conn))
+            {
+                return false;
+            }
+            empresas.Add(newEmpresa);
+
+            return true;
         }
     }
 }

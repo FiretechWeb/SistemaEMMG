@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Text.RegularExpressions;
 
 
 namespace SistemaEMMG_Alpha
@@ -88,12 +89,24 @@ namespace SistemaEMMG_Alpha
             }
             if (dbData.empresas.Count > 0)
             {
+                if (dbData.idCuentaSeleccionada < 0)
+                {
+                    dbData.idCuentaSeleccionada = 0;
+                }
                 cmbCuentasEmpresas.SelectedIndex = (int)dbData.idCuentaSeleccionada;
-                lblCuentaSeleccionada.Content = $"Cuenta seleccionada: {dbData.empresas[(int)dbData.idCuentaSeleccionada].GetRazonSocial()}";
             }
-            else
+            guiRefreshCuentaSeleccionadaLabel();
+        }
+
+        private void guiRefreshCuentaSeleccionadaLabel()
+        {
+            if (dbData.idCuentaSeleccionada < 0 || dbData.idCuentaSeleccionada >= dbData.empresas.Count)
             {
                 lblCuentaSeleccionada.Content = "No hay cuentas. Por favor cree una para usar el sistema.";
+             }
+            else
+            {
+                lblCuentaSeleccionada.Content = $"Cuenta seleccionada: {dbData.empresas[(int)dbData.idCuentaSeleccionada].GetRazonSocial()}";
             }
         }
         public MainWindow()
@@ -126,12 +139,11 @@ namespace SistemaEMMG_Alpha
 
         private void cmbCuentasEmpresas_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MessageBox.Show("Cuenta seleccionada changed...");
             ComboBox cmbSender = sender as ComboBox;
             if (dbData.idCuentaSeleccionada != cmbSender.SelectedIndex)
             {
                 dbData.idCuentaSeleccionada = cmbSender.SelectedIndex;
-                guiCuentasRefresh();
+                guiRefreshCuentaSeleccionadaLabel();
             }
         }
 
@@ -140,6 +152,53 @@ namespace SistemaEMMG_Alpha
             System.IO.Directory.CreateDirectory("backups");
             DateTime dt = DateTime.Now;
             dbCon.Backup($"backups/dbbackup_{dt.ToString("dd_MM_yyyy")}.sql");
+        }
+
+        private void btnAddNewAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txbNuevaCuentaNombre.Text.Trim()) || string.IsNullOrEmpty(txbNuevaCuentaCUIT.Text.Trim()))
+            {
+                return;
+            }
+            dbData.AgregarNuevaCuentaDeEmpresa(txbNuevaCuentaNombre.Text.Trim(), Convert.ToInt64(txbNuevaCuentaCUIT.Text.Trim()), dbCon.Connection);
+            txbNuevaCuentaNombre.Text = "";
+            txbNuevaCuentaCUIT.Text = "";
+            guiCuentasRefresh();
+        }
+
+        private void txbNuevaCuentaNombre_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txbNuevaCuentaNombre.Text.Trim()) || string.IsNullOrEmpty(txbNuevaCuentaCUIT.Text.Trim()))
+            {
+                btnAddNewAccount.IsEnabled = false;
+            } else
+            {
+                btnAddNewAccount.IsEnabled = true;
+            }
+        }
+
+        private void txbNuevaCuentaCUIT_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txbNuevaCuentaNombre.Text.Trim()) || string.IsNullOrEmpty(txbNuevaCuentaCUIT.Text.Trim()))
+            {
+                btnAddNewAccount.IsEnabled = false;
+            }
+            else
+            {
+                btnAddNewAccount.IsEnabled = true;
+            }
+        }
+
+        private void txbNuevaCuentaCUIT_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void btnEliminarCuenta(object sender, RoutedEventArgs e)
+        {
+            dbData.EliminarCuentaDeEmpresa((int)dbData.idCuentaSeleccionada, dbCon.Connection);
+            guiCuentasRefresh();
         }
     }
 }
