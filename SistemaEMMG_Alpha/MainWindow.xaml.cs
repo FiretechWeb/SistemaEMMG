@@ -126,7 +126,7 @@ namespace SistemaEMMG_Alpha
             listEntidadesComerciales.DisplayMemberPath = "Value";
             foreach (DBEntidades entidadComercial in entidadesComercialesLista)
             {
-                listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(entidadComercial.GetID(), entidadComercial.GetRazonSocial()));
+                listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(entidadComercial.GetID(), $"{entidadComercial.GetTipoEntidad().GetName()}: {entidadComercial.GetRazonSocial()}"));
             }
         }
 

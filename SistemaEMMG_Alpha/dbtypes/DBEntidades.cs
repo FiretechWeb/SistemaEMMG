@@ -69,7 +69,10 @@ namespace SistemaEMMG_Alpha
         {
             foreach (DBTipoEntidad tmpTipo in _db_tipos_entidades)
             {
-                return tmpTipo.Clone(); //Clone in case _db_tipos_entidades list is cleared...
+                if (tmpTipo.GetID() == te_id)
+                {
+                    return tmpTipo.Clone(); //Clone in case _db_tipos_entidades list is cleared...
+                }
             }
             return null;
         }
