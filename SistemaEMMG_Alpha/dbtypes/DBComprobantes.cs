@@ -43,6 +43,9 @@ namespace SistemaEMMG_Alpha
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
 
+        public static string GetDBTableName() => db_table;
+        string DBInterface.GetDBTableName() => GetDBTableName();
+
         /*
          * SELECT * FROM comprobantes
          * JOIN tipos_comprobantes ON tipos_comprobantes.tc_id = comprobantes.cm_tc_id
@@ -80,8 +83,8 @@ namespace SistemaEMMG_Alpha
                 string tc_table = DBTiposComprobantes.GetDBTableName();
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id AND {ec_table}.ec_em_id = {db_table}.cm_em_id 
                 JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
                 WHERE cm_em_id = {cuenta.GetID()}";
 
@@ -117,7 +120,7 @@ namespace SistemaEMMG_Alpha
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id AND {ec_table}.ec_em_id = {db_table}.cm_em_id 
                 JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
                 WHERE cm_em_id = {entidadComercial.GetCuentaID()} AND cm_ec_id = {entidadComercial.GetID()}";
 
@@ -150,7 +153,7 @@ namespace SistemaEMMG_Alpha
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id AND {ec_table}.ec_em_id = {db_table}.cm_em_id  
                 JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
                 WHERE cm_em_id = {cuenta.GetID()} AND cm_ec_id = {ec_id} AND cm_id = {id}";
 
@@ -186,7 +189,7 @@ namespace SistemaEMMG_Alpha
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cm_ec_id AND {ec_table}.ec_em_id = {db_table}.cm_em_id  
                 JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
                 WHERE cm_em_id = {entidadComercial.GetCuentaID()} AND cm_ec_id = {entidadComercial.GetID()} AND cm_id = {id}";
 

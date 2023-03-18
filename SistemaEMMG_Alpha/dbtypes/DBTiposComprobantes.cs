@@ -32,7 +32,7 @@ namespace SistemaEMMG_Alpha
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
 
         public static string GetDBTableName() => db_table;
-
+        string DBInterface.GetDBTableName() => GetDBTableName();
         public static bool TipoComprobanteExists(string tipoComprobanteNombre, List<DBTiposComprobantes> listaTiposComprobantes)
         {
             foreach (DBTiposComprobantes tipoComprobante in listaTiposComprobantes)

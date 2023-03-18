@@ -31,7 +31,7 @@ namespace SistemaEMMG_Alpha
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
 
         public static string GetDBTableName() => db_table;
-
+        string DBInterface.GetDBTableName() => GetDBTableName();
         public static bool TipoFormaPagoExists(string formaPagoNombre, List<DBFormasPago> listaFormasPago)
         {
             foreach (DBFormasPago formaPago in listaFormasPago)

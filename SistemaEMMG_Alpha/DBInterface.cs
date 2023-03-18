@@ -46,6 +46,7 @@ namespace SistemaEMMG_Alpha
     }
     public interface DBInterface
     {
+        string GetDBTableName();
         ///<summary>
         ///Get the ID of the element as it is stored in the Database
         ///</summary>

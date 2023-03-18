@@ -35,6 +35,7 @@ namespace SistemaEMMG_Alpha
         private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
 
         public static string GetDBTableName() => db_table;
+        string DBInterface.GetDBTableName() => GetDBTableName();
 
         public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
         {

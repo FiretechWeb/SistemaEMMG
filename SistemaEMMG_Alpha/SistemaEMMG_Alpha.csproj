@@ -105,6 +105,7 @@
     <Compile Include="DBFields.cs" />
     <Compile Include="DBInterface.cs" />
     <Compile Include="DBExtensions.cs" />
+    <Compile Include="dbtypes\DBComprobantePago.cs" />
     <Compile Include="dbtypes\DBComprobantes.cs" />
     <Compile Include="dbtypes\DBEmpresa.cs" />
     <Compile Include="dbtypes\DBEntidades.cs" />

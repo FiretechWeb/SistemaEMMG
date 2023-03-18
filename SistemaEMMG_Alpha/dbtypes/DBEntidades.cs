@@ -43,6 +43,7 @@ namespace SistemaEMMG_Alpha
 
 
         public static string GetDBTableName() => db_table;
+        string DBInterface.GetDBTableName() => GetDBTableName();
 
         public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, EntidadesComercialesData newData)
         {

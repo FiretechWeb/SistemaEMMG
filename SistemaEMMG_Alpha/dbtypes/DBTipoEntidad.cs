@@ -31,7 +31,7 @@ namespace SistemaEMMG_Alpha
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
         public static string GetDBTableName() => db_table;
-
+        string DBInterface.GetDBTableName() => GetDBTableName();
         public static bool TipoEntidadYaExiste(string tipoEntidadNombre, List<DBTipoEntidad> tiposEntidades)
         {
             foreach (DBTipoEntidad tipoEntidad in tiposEntidades)
