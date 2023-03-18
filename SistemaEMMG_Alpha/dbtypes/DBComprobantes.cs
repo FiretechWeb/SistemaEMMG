@@ -42,6 +42,7 @@ namespace SistemaEMMG_Alpha
         private DBEntidades _entidadComercial; //this can change actually...
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
+        private readonly List<DBComprobantePago> _db_pagos = new List<DBComprobantePago>();
 
         public static string GetDBTableName() => db_table;
         string DBInterface.GetDBTableName() => GetDBTableName();
@@ -523,6 +524,48 @@ namespace SistemaEMMG_Alpha
                 _entidadComercial.RemoveComprobante(this);
             }
             return deletedCorrectly;
+        }
+
+        public List<DBComprobantePago> GetAllPagos(MySqlConnection conn) //Get directly from database
+        {
+            List<DBComprobantePago> returnList = DBComprobantePago.GetAll(conn, this);
+            _db_pagos.Clear();
+            foreach (DBComprobantePago pago in returnList)
+            {
+                _db_pagos.Add(pago);
+            }
+            return returnList;
+        }
+        public List<DBComprobantePago> GetAllComprobantes() //Get CACHE
+        {
+            List<DBComprobantePago> returnList = new List<DBComprobantePago>();
+            foreach (DBComprobantePago pago in _db_pagos)
+            {
+                returnList.Add(pago);
+            }
+            return returnList;
+        }
+        public DBComprobantePago GetPagoByID(long cm_id)
+        {
+            return DBComprobantePago.GetByID(_db_pagos, this, cm_id);
+        }
+
+        public bool AddPago(DBComprobantePago newPago)
+        {
+            if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || newPago.GetComprobanteID() != GetID())
+            {
+                return false; //Cannot add an payament from another account, entity or receipt like this...
+            }
+            if (DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago))
+            {
+                return false;
+            }
+            _db_pagos.Add(newPago);
+            return true;
+        }
+        public void RemovePago(DBComprobantePago entRemove)
+        {
+            _db_pagos.Remove(entRemove);
         }
 
         public void ResetID()

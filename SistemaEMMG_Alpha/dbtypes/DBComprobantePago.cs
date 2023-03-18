@@ -7,7 +7,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 
-namespace SistemaEMMG_Alpha.dbtypes
+namespace SistemaEMMG_Alpha
 {
     public struct ComprobantePagoData
     {
@@ -288,6 +288,30 @@ namespace SistemaEMMG_Alpha.dbtypes
                 MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnEnt;
+        }
+
+
+        public static DBComprobantePago GetByID(List<DBComprobantePago> listaPagos, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
+        {
+            foreach (DBComprobantePago pago in listaPagos)
+            {
+                if (pago.GetID() == cp_id && pago.GetComprobanteID() == cp_cm_id && pago.GetEntidadComercialID() == cp_ec_id && pago.GetCuentaID() == cuenta.GetID())
+                {
+                    return pago;
+                }
+            }
+
+            return null;
+        }
+
+        public static DBComprobantePago GetByID(List<DBComprobantePago> listaPagos, DBEntidades entidadComercial, long cp_cm_id, long id)
+        {
+            return GetByID(listaPagos, entidadComercial.GetCuenta(), entidadComercial.GetID(), cp_cm_id, id);
+        }
+
+        public static DBComprobantePago GetByID(List<DBComprobantePago> listaPagos, DBComprobantes comprobante, long id)
+        {
+            return GetByID(listaPagos, comprobante.GetCuenta(), comprobante.GetEntidadComercialID(), comprobante.GetID(), id);
         }
 
         public static bool CheckIfExistsInList(List<DBComprobantePago> listaPagsComprobantes, DBComprobantePago ent)
