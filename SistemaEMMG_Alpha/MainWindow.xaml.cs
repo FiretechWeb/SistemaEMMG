@@ -35,6 +35,17 @@ namespace SistemaEMMG_Alpha
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
         public DBConnection dbCon = null;
         public DBFields dbData = null; // Aca está la papa
+        //winCMDetalles
+        private void guiSetComprobantesMainVisible()
+        {
+            winCMDetalles.Visibility = Visibility.Collapsed;
+            winCMMain.Visibility = Visibility.Visible;
+        }
+        private void guiSetComprobantesDetallesVisibile()
+        {
+            winCMMain.Visibility = Visibility.Collapsed;
+            winCMDetalles.Visibility = Visibility.Visible;
+        }
         private bool ConnectWithDatabase()
         {
             if (!(dbCon is null))
@@ -427,6 +438,7 @@ namespace SistemaEMMG_Alpha
                         break;
                     case TabItemsSelections.TI_COMPROBANTES:
                         Console.WriteLine("TI_COMPROBANTES");
+                        guiSetComprobantesMainVisible();
                         guiComprobantesRefresh(true);
                         break;
                 }
@@ -530,6 +542,10 @@ namespace SistemaEMMG_Alpha
             {
                 DataGrid senderDG = sender as DataGrid;
                 dynamic items = senderDG.SelectedItem;
+                if (senderDG.SelectedItem is null)
+                {
+                    return;
+                }
                 try
                 {
                     int cm_id = Convert.ToInt32(items.cm_id);
@@ -572,10 +588,10 @@ namespace SistemaEMMG_Alpha
                                         feFinal,
                                         fpFinal,
                                         txtCMNumeroFactura.Text,
-                                        Convert.ToDouble(txtCMGravado.Text),
-                                        Convert.ToDouble(txtCMIVA.Text),
-                                        Convert.ToDouble(txtCMNoGravado.Text),
-                                        Convert.ToDouble(txtCMPercepcion.Text),
+                                        Convert.ToDouble(txtCMGravado.Text.Replace(".", ",")),
+                                        Convert.ToDouble(txtCMIVA.Text.Replace(".", ",")),
+                                        Convert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")),
+                                        Convert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")),
                                         Convert.ToBoolean(chbxCMEsEmitido.IsChecked))
             );
             if (newComprobante.PushToDatabase(dbCon.Connection))
@@ -640,10 +656,10 @@ namespace SistemaEMMG_Alpha
             selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key);
             selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key);
             selectedComprobante.SetNumeroComprobante(txtCMNumeroFactura.Text);
-            selectedComprobante.SetGravado(Convert.ToDouble(txtCMGravado.Text));
-            selectedComprobante.SetIVA(Convert.ToDouble(txtCMIVA.Text));
-            selectedComprobante.SetNoGravado(Convert.ToDouble(txtCMNoGravado.Text));
-            selectedComprobante.SetPercepcion(Convert.ToDouble(txtCMPercepcion.Text));
+            selectedComprobante.SetGravado(Convert.ToDouble(txtCMGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetIVA(Convert.ToDouble(txtCMIVA.Text.Replace(".", ",")));
+            selectedComprobante.SetNoGravado(Convert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetPercepcion(Convert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")));
 
             if (cm_ec_id != selectedComprobante.GetEntidadComercialID()) //entidad comercial cambio, esto va a ser un pushtodatabase
             {
@@ -697,6 +713,16 @@ namespace SistemaEMMG_Alpha
             selectedComprobante.DeleteFromDatabase(dbCon.Connection);
             guiComprobantesRefresh();
 
+        }
+
+        private void btnCMVerDetalles_Click(object sender, RoutedEventArgs e)
+        {
+            guiSetComprobantesDetallesVisibile();
+        }
+
+        private void btnCMDAtras_Click(object sender, RoutedEventArgs e)
+        {
+            guiSetComprobantesMainVisible();
         }
     }
 }
