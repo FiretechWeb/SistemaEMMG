@@ -33,6 +33,9 @@ namespace SistemaEMMG_Alpha
     public class DBEntidades : DBInterface
     {
         private static readonly string db_table = "ent_comerciales";
+        ///<summary>
+        ///Business Account associated with this commercial entity.
+        ///</summary>
         private readonly DBEmpresa _cuentaEmpresa;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
@@ -58,13 +61,15 @@ namespace SistemaEMMG_Alpha
         public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
         public DBEntidades(DBEmpresa newCuenta, long te_id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, dni, email, tel, cel) { }
 
-
+        //GetDBTableName
         public static List<DBEntidades> GetAll(MySqlConnection conn, DBEmpresa empresa)
         {
             List<DBEntidades> returnList = new List<DBEntidades>();
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE ec_em_id = {empresa.GetID()}";
+                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 
@@ -74,7 +79,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     // _db_tipos_entidades.Add(new DBTipoEntidad(reader.GetInt64("te_id"), reader.GetString("te_nombre")));
-                   returnList.Add(new DBEntidades(empresa, reader.GetInt64Safe("ec_te_id"), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"))); //Waste of persformance but helps with making the code less propense to error.
+                   returnList.Add(new DBEntidades(empresa, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -85,18 +90,19 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static DBEntidades GetByID(MySqlConnection conn, DBEmpresa empresa, int id)
+        public static DBEntidades GetByID(MySqlConnection conn, DBEmpresa empresa, long id)
         {
             DBEntidades returnEntidad = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id}";
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id} JOIN ";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEntidad = new DBEntidades(empresa, reader.GetInt64Safe("ec_te_id"), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    returnEntidad = new DBEntidades(empresa, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
                 }
                 reader.Close();
             }
@@ -106,7 +112,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnEntidad;
         }
-        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBEmpresa empresa, int id)
+        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBEmpresa empresa, long id)
         {
             foreach (DBEntidades entidadComercial in listaEntidades)
             {
@@ -217,6 +223,8 @@ namespace SistemaEMMG_Alpha
         public long GetID() => _data.ec_id;
 
         public long GetCuentaID() => _cuentaEmpresa.GetID();
+
+        public DBEmpresa GetCuenta() => _cuentaEmpresa;
 
         public long GetCUIT() => _data.ec_cuit;
 

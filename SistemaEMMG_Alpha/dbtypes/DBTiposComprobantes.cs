@@ -145,7 +145,7 @@ namespace SistemaEMMG_Alpha
 
         public DBTiposComprobantes(string nombre) : this(-1, nombre) { }
 
-        public DBTiposComprobantes(MySqlConnection conn, int id)
+        public DBTiposComprobantes(MySqlConnection conn, long id)
         {
             try
             {

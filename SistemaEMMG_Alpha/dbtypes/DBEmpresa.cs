@@ -213,7 +213,7 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public DBEntidades GetEntidadByID(int ec_id)
+        public DBEntidades GetEntidadByID(long ec_id)
         {
             return DBEntidades.GetByID(_db_entidades_comerciales, this, ec_id);
         }
@@ -239,6 +239,14 @@ namespace SistemaEMMG_Alpha
             {
                 _data = value;
             }
+        }
+
+        ///<summary>
+        ///DO NOT USET! Warning this method will return null. It is not implemented yet!
+        ///</summary>
+        public DBEmpresa Clone()
+        {
+            return null;
         }
 
         public void SetRazonSocial(string name)

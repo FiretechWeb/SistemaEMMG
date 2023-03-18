@@ -383,9 +383,15 @@ namespace SistemaEMMG_Alpha
             nuevaEntidad.SetCelular(tbxCelEC.Text);
             nuevaEntidad.SetDNI(Convert.ToInt64(txbDNIEC.Text));
 
-            dbData.GetCurrentAccount().AddNewEntidad(nuevaEntidad);
-            nuevaEntidad.PushToDatabase(dbCon.Connection);
-            guiEntidadesRefresh();
+            if (dbData.GetCurrentAccount().AddNewEntidad(nuevaEntidad))
+            {
+                nuevaEntidad.PushToDatabase(dbCon.Connection);
+                guiEntidadesRefresh();
+            } else
+            {
+                MessageBox.Show("¡Ya existe una entidad comercial con la misma Razón Social y CUIT!");
+            }
+
 
         }
 

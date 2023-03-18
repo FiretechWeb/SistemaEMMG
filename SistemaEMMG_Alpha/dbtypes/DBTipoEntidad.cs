@@ -30,6 +30,7 @@ namespace SistemaEMMG_Alpha
         private static readonly string db_table = "tipos_entidades";
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
+        public static string GetDBTableName() => db_table;
 
         public static bool TipoEntidadYaExiste(string tipoEntidadNombre, List<DBTipoEntidad> tiposEntidades)
         {
@@ -139,7 +140,7 @@ namespace SistemaEMMG_Alpha
 
         public DBTipoEntidad(string nombre) : this(-1, nombre) { }
 
-        public DBTipoEntidad(MySqlConnection conn, int id)
+        public DBTipoEntidad(MySqlConnection conn, long id)
         {
             try
             {
