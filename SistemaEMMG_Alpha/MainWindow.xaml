@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaEMMG_Alpha"
         mc:Ignorable="d"
-        Title="Sistema Comprobantes (Alpha)" Height="450" Width="800" MinWidth="534" MinHeight="300" ResizeMode="CanResizeWithGrip">
+        Title="Sistema Comprobantes (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip">
     <Grid>
     <DockPanel Canvas.Left="0" Canvas.Top="0" Canvas.Right="0" Canvas.Bottom="0">
         <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="40" VerticalAlignment="Top">
@@ -33,7 +33,7 @@
                         <Grid Grid.Column="0" Grid.Row="0" Margin="10, 10, 10, 10">
                             <DockPanel>
                                 <Label FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0, 5, 0, 5" DockPanel.Dock="Top" VerticalAlignment="Top">Seleccionar Cuenta</Label>
-                                <ComboBox x:Name="cmbCuentasEmpresas" VerticalAlignment="Top"  Margin="0, 5, 0, 5" DockPanel.Dock="Top" SelectionChanged="cmbCuentasEmpresas_SelectionChanged">
+                                <ComboBox x:Name="cmbCuentasEmpresas" VerticalAlignment="Top" IsTextSearchEnabled="True"  Margin="0, 5, 0, 5" DockPanel.Dock="Top" SelectionChanged="cmbCuentasEmpresas_SelectionChanged">
                                 </ComboBox>
                                 <Grid VerticalAlignment="Top" DockPanel.Dock="Top">
                                     <Grid.RowDefinitions>
@@ -138,8 +138,181 @@
 
             </TabItem>
             <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition MinHeight="150"></RowDefinition>
+                            <RowDefinition MaxHeight="150"></RowDefinition>
+                            <RowDefinition MaxHeight="50"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <DataGrid IsReadOnly="True"  x:Name="dgComprobantes"  Margin="5" Padding="5"  Grid.Row="0" Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgComprobantes_SelectionChanged">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding cm_id}"  Header="cm_id" Visibility="Collapsed"></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding cm_ec_id}" Header="ec_id" Visibility="Collapsed"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Estado" Binding="{Binding emitido}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding fecha}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="CUIT" Binding="{Binding cuit}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Tipo"  Binding="{Binding tipo}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Numero" Binding="{Binding numero}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Razón Social" Binding="{Binding razon}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Gravado" Binding="{Binding gravado}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="IVA" Binding="{Binding iva}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="No Gravado" Binding="{Binding no_gravado}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Percepción" Binding="{Binding percepcion}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Fecha Pago" Binding="{Binding fecha_pago}"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <WrapPanel Grid.Row="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
 
-            </TabItem>
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">¿Es emitido?</Label>
+                                <CheckBox x:Name="chbxCMEsEmitido" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"></CheckBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Fecha</Label>
+                                <TextBox x:Name="txtCMFechaEmitido" Grid.Row="1" MinWidth="80"></TextBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">CUIT / Razón Social</Label>
+                                <ComboBox x:Name="cbxCMEntidadComercial" Grid.Row="1" MinWidth="60" IsTextSearchEnabled="True"></ComboBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Tipo de Comprobante</Label>
+                                <ComboBox x:Name="cbxCMTipoComprobante" Grid.Row="1" MinWidth="60"></ComboBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Número de Factura</Label>
+                                <TextBox x:Name="txtCMNumeroFactura" Grid.Row="1" MinWidth="60"></TextBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Gravado</Label>
+                                <TextBox x:Name="txtCMGravado" Grid.Row="1" MinWidth="60"></TextBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">IVA</Label>
+                                <TextBox x:Name="txtCMIVA" Grid.Row="1" MinWidth="60"></TextBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">No Gravado</Label>
+                                <TextBox x:Name="txtCMNoGravado" Grid.Row="1" MinWidth="60"></TextBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Percepción</Label>
+                                <TextBox x:Name="txtCMPercepcion" Grid.Row="1" MinWidth="60"></TextBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Fecha pago</Label>
+                                <TextBox x:Name="txtCMFechaPago" Grid.Row="1" MinWidth="80"></TextBox>
+                            </Grid>
+                        </WrapPanel>
+                        <Grid Grid.Row="2" Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="120"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition MinWidth="200"></ColumnDefinition>
+                                <ColumnDefinition Width="90"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Tipo de Filtro:</Label>
+                                <WrapPanel Grid.Row="1">
+                                    <ComboBox Grid.Row="1" MinWidth="100" SelectedIndex="2">
+                                        <ComboBoxItem>Estado</ComboBoxItem>
+                                        <ComboBoxItem>Fecha</ComboBoxItem>
+                                        <ComboBoxItem>CUIT</ComboBoxItem>
+                                        <ComboBoxItem>Razón Social</ComboBoxItem>
+                                        <ComboBoxItem>Tipo Comprobante</ComboBoxItem>
+                                        <ComboBoxItem>Número</ComboBoxItem>
+                                        <ComboBoxItem>Razón Social</ComboBoxItem>
+                                        <ComboBoxItem>Fecha Pago</ComboBoxItem>
+                                    </ComboBox>
+                                </WrapPanel>
+                            </Grid>
+                            <Grid Grid.Column="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <WrapPanel Grid.Row="0">
+                                    <Button x:Name="btnCMAgregar" Margin="5, 5, 5, 5" Click="btnCMAgregar_Click">Agregar</Button>
+                                    <Button x:Name="btnCMModificar" Margin="5, 5, 5, 5" Click="btnCMModificar_Click">Modificar</Button>
+                                    <Button x:Name="btnCMEliminar" Margin="5, 5, 5, 5" Click="btnCMEliminar_Click">Eliminar</Button>
+                                </WrapPanel>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </TabItem>
         </TabControl>
         <!-- End: Conenido -->
         </DockPanel>

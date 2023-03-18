@@ -217,6 +217,15 @@ namespace SistemaEMMG_Alpha
             return DBComprobantes.GetByID(_db_comprobantes, this, ec_id, cm_id);
         }
 
+        public DBComprobantes GetComprobanteByIndex(int index)
+        {
+            if (index < 0 || index >= _db_comprobantes.Count)
+            {
+                return null;
+            }
+            return _db_comprobantes[index];
+        }
+
         public DBComprobantes GetComprobanteByID(DBEntidades entidadComercial, long cm_id)
         {
             return entidadComercial.GetComprobanteByID(cm_id);
@@ -228,7 +237,7 @@ namespace SistemaEMMG_Alpha
             _db_entidades_comerciales.Clear();
             foreach (DBEntidades entidadComercial in returnList)
             {
-                _db_entidades_comerciales.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data)); //Do I really need to create duplicates instead of just passing the memory reference?
+                _db_entidades_comerciales.Add(entidadComercial);
             }
             return returnList;
         }
@@ -238,13 +247,11 @@ namespace SistemaEMMG_Alpha
 
             foreach (DBEntidades entidadComercial in _db_entidades_comerciales)
             {
-                returnList.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data));  //Do I really need to create duplicates instead of just passing the memory reference?
+                returnList.Add(entidadComercial);
             }
 
             return returnList;
         }
-
-        //_db_comprobantes
 
         public DBEntidades GetEntidadByID(long ec_id)
         {
@@ -268,6 +275,25 @@ namespace SistemaEMMG_Alpha
         {
             _db_entidades_comerciales.Remove(entRemove);
         }
+
+        public bool AddNewComprobante(DBComprobantes entAdd)
+        {
+            if (entAdd.GetCuentaID() != GetID())
+            {
+                return false; //Cannot add an entity from another account like this...
+            }
+            if (DBComprobantes.CheckIfExistsInList(_db_comprobantes, entAdd))
+            {
+                return false;
+            }
+            return true;
+        }
+       public void RemoveComprobante(DBComprobantes entRemove)
+        {
+             _db_comprobantes.Remove(entRemove);
+        }
+
+
 
         public EmpresasData Data
         {

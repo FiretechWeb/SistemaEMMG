@@ -79,7 +79,7 @@ namespace SistemaEMMG_Alpha
             List<DBTiposComprobantes> returnList = new List<DBTiposComprobantes>();
             foreach (DBTiposComprobantes tiposComprobantes in _db_tipos_comprobantes)
             {
-                returnList.Add(tiposComprobantes.Clone());
+                returnList.Add(tiposComprobantes);
             }
             return returnList;
         }
@@ -218,6 +218,7 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBTiposComprobantes: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
             return deletedCorrectly;
         }
 

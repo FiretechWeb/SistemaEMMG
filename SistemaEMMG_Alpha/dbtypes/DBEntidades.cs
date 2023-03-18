@@ -263,13 +263,18 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an receipt from another account or entity like this...
             }
+            if (DBComprobantes.CheckIfExistsInList(_db_comprobantes, newComprobante))
+            {
+                return false;
+            }
             _db_comprobantes.Add(newComprobante);
-
+            _cuentaEmpresa.AddNewComprobante(newComprobante);
             return true;
         }
         public void RemoveComprobante(DBComprobantes entRemove)
         {
             _db_comprobantes.Remove(entRemove);
+            _cuentaEmpresa.RemoveComprobante(entRemove);
         }
 
         public long GetID() => _data.ec_id;

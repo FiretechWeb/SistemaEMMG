@@ -50,6 +50,25 @@ namespace SistemaEMMG_Alpha
          * JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id
          * WHERE cm_em_id = 1;
          * */
+
+        public static bool RemoveFromDB(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long id)
+        {
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_table}  WHERE cm_em_id = {cuenta.GetID()} AND cm_ec_id = {ec_id} AND cm_id = {id}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                deletedCorrectly = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("<static> Error tratando de eliminar una fila de la base de datos en DBComprobantes: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return deletedCorrectly;
+        }
+
         public static List<DBComprobantes> GetAll(MySqlConnection conn, DBEmpresa cuenta)
         {
             List<DBComprobantes> returnList = new List<DBComprobantes>();
@@ -450,17 +469,20 @@ namespace SistemaEMMG_Alpha
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
                 //sql date format 2004-01-22 yyyy-mm-dd use DateTime.Now.ToString("yyyy-mm-dddd"). To convert it from string to DateTime use DateTime.ParseExact(string, "yyyy-mm-dddd", null)
-                string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-mm-dddd")}'" : "NULL";
-                string fechaPago = (_data.cm_fpago.HasValue) ? $"'{((DateTime)_data.cm_fpago).ToString("yyyy-mm-dddd")}'" : "NULL";
+                string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaPago = (_data.cm_fpago.HasValue) ? $"'{((DateTime)_data.cm_fpago).ToString("yyyy-MM-dd")}'" : "NULL";
+
+                Console.WriteLine(fechaEmitido);
                 //if exists already, just update
                 if (recordsCount > 0)
                 {
-                    query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido}, cm_fpago = {fechaPago}, cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado}, cm_iva = {_data.cm_iva}, cm_no_gravado={_data.cm_no_gravado}, cm_percepcion={_data.cm_percepcion}, cm_emitido ={Convert.ToInt32(_data.cm_emitido)}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
+                    query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido}, cm_fpago = {fechaPago}, cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado.ToString().Replace(",", ".")}, cm_iva = {_data.cm_iva.ToString().Replace(",", ".")}, cm_no_gravado={_data.cm_no_gravado.ToString().Replace(",", ".")}, cm_percepcion={_data.cm_percepcion.ToString().Replace(",", ".")}, cm_emitido ={Convert.ToInt32(_data.cm_emitido)}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
+                   //query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido}, cm_fpago = {fechaPago}, cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado} WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
 
                 }
                 else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO {db_table} (cm_em_id, cm_ec_id, cm_tc_id, cm_fecha, cm_fpago, cm_numero, cm_gravado, cm_iva, cm_no_gravado, cm_percepcion, cm_emitido) VALUES ({_entidadComercial.GetCuentaID()}, {_entidadComercial.GetID()}, {_tipoComprobante.GetID()}, {fechaEmitido}, {fechaPago}, '{_data.cm_numero}', {_data.cm_gravado}, {_data.cm_iva}, {_data.cm_no_gravado}, {_data.cm_percepcion}, {Convert.ToInt32(_data.cm_emitido)})";
+                    query = $"INSERT INTO {db_table} (cm_em_id, cm_ec_id, cm_tc_id, cm_fecha, cm_fpago, cm_numero, cm_gravado, cm_iva, cm_no_gravado, cm_percepcion, cm_emitido) VALUES ({_entidadComercial.GetCuentaID()}, {_entidadComercial.GetID()}, {_tipoComprobante.GetID()}, {fechaEmitido}, {fechaPago}, '{_data.cm_numero}', {_data.cm_gravado.ToString().Replace(",", ".")}, {_data.cm_iva.ToString().Replace(",", ".")}, {_data.cm_no_gravado.ToString().Replace(",", ".")}, {_data.cm_percepcion.ToString().Replace(",", ".")}, {Convert.ToInt32(_data.cm_emitido)})";
                 }
                 //if not, add
                 cmd = new MySqlCommand(query, conn);
@@ -500,6 +522,10 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
+        public void ResetID()
+        {
+            _data = new ComprobantesData(-1, _data.cm_fecha, _data.cm_fpago, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
+        }
         public long GetID() => _data.cm_id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
@@ -532,15 +558,18 @@ namespace SistemaEMMG_Alpha
         public bool IsEmitido() => _data.cm_emitido;
 
         public void SetEntidadComercial(DBEntidades newEntidadComercial) => _entidadComercial = newEntidadComercial;
-
         public void SetEntidadComercial(long ec_id) => _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
-
-        public void SetEntidadComercial(long ec_id, MySqlConnection conn) => DBEntidades.GetByID(conn, GetCuenta(), ec_id);
-
+        public void SetEntidadComercial(long ec_id, MySqlConnection conn) => _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
         public void SetTipoComprobante(DBTiposComprobantes newType) => _tipoComprobante = newType.Clone();
-
-        public void SetTipoComprobante(long tc_id) => DBTiposComprobantes.GetByID(tc_id);
-
-        public void SetTipoComprobante(long tc_id, MySqlConnection conn) => DBTiposComprobantes.GetByID(tc_id, conn);
+        public void SetTipoComprobante(long tc_id) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
+        public void SetTipoComprobante(long tc_id, MySqlConnection conn) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id, conn);
+        public void SetNumeroComprobante(string numeroCom) => _data.cm_numero = numeroCom;
+        public void SetFechaEmitido(DateTime? newFecha) => _data.cm_fecha = newFecha;
+        public void SetFechaPago(DateTime? newFechaPago) => _data.cm_fpago = newFechaPago;
+        public void SetGravado(double gravado) => _data.cm_gravado = gravado;
+        public void SetIVA(double IVA) => _data.cm_iva = IVA;
+        public void SetNoGravado(double no_gravado) => _data.cm_no_gravado = no_gravado;
+        public void SetPercepcion(double percepcion) => _data.cm_percepcion = percepcion;
+        public void SetEmitido(bool esEmitido) => _data.cm_emitido = esEmitido;
     }
 }

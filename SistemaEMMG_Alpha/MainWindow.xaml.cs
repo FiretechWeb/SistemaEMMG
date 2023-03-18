@@ -113,8 +113,94 @@ namespace SistemaEMMG_Alpha
             guiRefreshCuentaSeleccionadaLabel();
         }
 
+        private void guiComprobantesRefresh(bool refreshDataBase = false)
+        {
+            if (dbData.GetCurrentAccount() is null)
+            {
+                return; //No accounts available
+            }
+            if (refreshDataBase)
+            {
+                dbData.ReadEntidadesComercialesFromDB(dbCon.Connection); //Necessary for checkbox D:
+                dbData.ReadComprobantesFromDB(dbCon.Connection);
+            }
+            List<DBComprobantes> comprobantes = dbData.GetCurrentAccount().GetAllComprobantes();
+
+            dgComprobantes.Items.Clear();
+
+            foreach (DBComprobantes comprobante in comprobantes)
+            {
+
+                dgComprobantes.Items.Add(new
+                {
+                    cm_id = comprobante.GetID(),
+                    cm_ec_id = comprobante.GetEntidadComercialID(),
+                    emitido = comprobante.IsEmitido() ? "Emitido" : "Recibido",
+                    fecha = comprobante.GetFechaEmitido().HasValue ? ((DateTime)comprobante.GetFechaEmitido()).ToString("dd-MM-yyyy") : "Sin fecha",
+                    cuit = comprobante.GetEntidadComercial().GetCUIT(),
+                    tipo = comprobante.GetTipoComprobante().GetName(),
+                    numero = comprobante.GetNumeroComprobante(),
+                    razon = comprobante.GetEntidadComercial().GetRazonSocial(),
+                    gravado = comprobante.GetGravado(),
+                    iva = comprobante.GetIVA(),
+                    no_gravado = comprobante.GetNoGravado(),
+                    percepcion = comprobante.GetPercepcion(),
+                    fecha_pago = comprobante.GetFechaPago().HasValue ? ((DateTime)comprobante.GetFechaPago()).ToString("dd-MM-yyyy") : "Sin fecha" 
+                });
+            }
+
+            //dgComprobantes.ItemsSource = dataDisplay;
+
+            guiRefreshComprobantesForm(dbData.GetCurrentAccount().GetComprobanteByIndex(0));
+        }
+
+        private void guiRefreshComprobantesForm(DBComprobantes comprobanteSelected)
+        {
+            if (dbData.GetCurrentAccount() is null)
+            {
+                return; //No accounts available
+            }
+            List<DBEntidades> entidadesComercialesList = dbData.GetCurrentAccount().GetAllEntidadesComerciales();
+
+            cbxCMEntidadComercial.Items.Clear();
+            cbxCMEntidadComercial.SelectedValuePath = "Key";
+            cbxCMEntidadComercial.DisplayMemberPath = "Value";
+            foreach (DBEntidades entidadComercial in entidadesComercialesList)
+            {
+                cbxCMEntidadComercial.Items.Add(new KeyValuePair<long, string>(entidadComercial.GetID(), $"{entidadComercial.GetCUIT()}: {entidadComercial.GetRazonSocial()}"));
+            }
+            cbxCMTipoComprobante.Items.Clear();
+            cbxCMTipoComprobante.SelectedValuePath = "Key";
+            cbxCMTipoComprobante.DisplayMemberPath = "Value";
+            foreach (DBTiposComprobantes tipoComprobante in dbData.tipos_comprobantes)
+            {
+                cbxCMTipoComprobante.Items.Add(new KeyValuePair<long, string>(tipoComprobante.GetID(), tipoComprobante.GetName()));
+            }
+
+            if (comprobanteSelected is null)
+            {
+                return;
+            }
+            chbxCMEsEmitido.IsChecked = comprobanteSelected.IsEmitido();
+            txtCMFechaEmitido.Text = comprobanteSelected.GetFechaEmitido().HasValue ? ((DateTime)comprobanteSelected.GetFechaEmitido()).ToString("dd/MM/yyyy") : "";
+            cbxCMEntidadComercial.SelectedValue = comprobanteSelected.GetEntidadComercialID();
+            cbxCMTipoComprobante.SelectedValue = comprobanteSelected.GetTipoComprobante().GetID();
+            txtCMNumeroFactura.Text = comprobanteSelected.GetNumeroComprobante();
+            txtCMGravado.Text = Convert.ToString(comprobanteSelected.GetGravado());
+            txtCMIVA.Text = Convert.ToString(comprobanteSelected.GetIVA());
+            txtCMNoGravado.Text = Convert.ToString(comprobanteSelected.GetNoGravado());
+            txtCMPercepcion.Text = Convert.ToString(comprobanteSelected.GetPercepcion());
+            txtCMFechaPago.Text = comprobanteSelected.GetFechaPago().HasValue ? ((DateTime)comprobanteSelected.GetFechaPago()).ToString("dd/MM/yyyy") : "";
+
+        }
+
         private void guiEntidadesRefresh(bool refreshDataBase=false)
         {
+            if (dbData.GetCurrentAccount() is null)
+            {
+                return; //No accounts available
+            }
+
             if (refreshDataBase)
             {
                 dbData.ReadEntidadesComercialesFromDB(dbCon.Connection);
@@ -139,6 +225,11 @@ namespace SistemaEMMG_Alpha
 
         private void guiRefreshEntidadesForm()
         {
+            if (dbData.GetCurrentAccount() is null)
+            {
+                return; //No accounts available
+            }
+
             if (listEntidadesComerciales.SelectedItem is null)
             {
                 return;
@@ -336,6 +427,7 @@ namespace SistemaEMMG_Alpha
                         break;
                     case TabItemsSelections.TI_COMPROBANTES:
                         Console.WriteLine("TI_COMPROBANTES");
+                        guiComprobantesRefresh(true);
                         break;
                 }
             }
@@ -361,6 +453,11 @@ namespace SistemaEMMG_Alpha
             }
 
             DBEntidades selectedEntidad = dbData.GetCurrentAccount().GetEntidadByID((int)listECSelectedID);
+            if (selectedEntidad is null)
+            {
+                MessageBox.Show("Error al tratar de modificar esta entidad comercial. Valor devuelto: NULL");
+                return;
+            }
             selectedEntidad.SetRazonSocial(tbxRazonSocialEC.Text);
             selectedEntidad.SetCuit(Convert.ToInt64(txbCUITEC.Text));
             selectedEntidad.SetEmail(tbxEmailEC.Text);
@@ -425,6 +522,176 @@ namespace SistemaEMMG_Alpha
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void dgComprobantes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is DataGrid)
+            {
+                DataGrid senderDG = sender as DataGrid;
+                dynamic items = senderDG.SelectedItem;
+                try
+                {
+                    int cm_id = Convert.ToInt32(items.cm_id);
+                    int cm_ec_id = Convert.ToInt32(items.cm_ec_id);
+
+                    guiRefreshComprobantesForm(dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error with Dynamic...");
+                }
+            }
+        }
+
+        private void btnCMAgregar_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime fechaEmitido = new DateTime();
+            DateTime? feFinal = null;
+
+            if (DateTime.TryParse(txtCMFechaEmitido.Text, out fechaEmitido))
+            {
+                feFinal = fechaEmitido;
+            }
+
+            DateTime fechaPago = new DateTime();
+            DateTime? fpFinal = null;
+
+            if (DateTime.TryParse(txtCMFechaEmitido.Text, out fechaPago))
+            {
+                fpFinal = fechaPago;
+            }
+
+            DBComprobantes newComprobante = new DBComprobantes(
+                    dbData.GetCurrentAccount(),
+                    ((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key,
+                    ((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key,
+                    new ComprobantesData(-1,
+                                        feFinal,
+                                        fpFinal,
+                                        txtCMNumeroFactura.Text,
+                                        Convert.ToDouble(txtCMGravado.Text),
+                                        Convert.ToDouble(txtCMIVA.Text),
+                                        Convert.ToDouble(txtCMNoGravado.Text),
+                                        Convert.ToDouble(txtCMPercepcion.Text),
+                                        Convert.ToBoolean(chbxCMEsEmitido.IsChecked))
+            );
+            dbData.GetCurrentAccount().AddNewComprobante(newComprobante);
+            if (newComprobante.PushToDatabase(dbCon.Connection))
+            {
+                guiComprobantesRefresh();
+            }
+        }
+
+        private void btnCMModificar_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgComprobantes.SelectedItem is null)
+            {
+                return;
+            }
+            dynamic dynSelectedItem = dgComprobantes.SelectedItem;
+            int cm_id = -1;
+            int cm_ec_id = -1;
+            try
+            {
+                cm_id = Convert.ToInt32(dynSelectedItem.cm_id);
+                cm_ec_id = Convert.ToInt32(dynSelectedItem.cm_ec_id);
+            }
+            catch (Exception ex)
+            {
+                cm_id = -1;
+                cm_ec_id = -1;
+                Console.WriteLine("Error with Dynamic selected item...");
+            }
+
+            if (cm_id == -1 || cm_ec_id == -1)
+            {
+                MessageBox.Show($"Un error ha ocurrido al tratar de modificar este comprobante");
+                return;
+            }
+
+            DBComprobantes selectedComprobante = dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id);
+            if (selectedComprobante is null)
+            {
+                MessageBox.Show("Error al tratar de modificar este comprobante. Valor devuelto: NULL");
+                return;
+            }
+
+            DateTime fechaEmitido = new DateTime();
+            if (DateTime.TryParse(txtCMFechaEmitido.Text, out fechaEmitido)) {
+                selectedComprobante.SetFechaEmitido(fechaEmitido);
+            } else
+            {
+                selectedComprobante.SetFechaEmitido(null);
+            }
+
+            DateTime fechaPago = new DateTime();
+            if (DateTime.TryParse(txtCMFechaPago.Text, out fechaPago))
+            {
+                selectedComprobante.SetFechaPago(fechaPago);
+            }
+            else
+            {
+                selectedComprobante.SetFechaPago(null);
+            }
+            selectedComprobante.SetEmitido(Convert.ToBoolean(chbxCMEsEmitido.IsChecked));
+            selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key);
+            selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key);
+            selectedComprobante.SetNumeroComprobante(txtCMNumeroFactura.Text);
+            selectedComprobante.SetGravado(Convert.ToDouble(txtCMGravado.Text));
+            selectedComprobante.SetIVA(Convert.ToDouble(txtCMIVA.Text));
+            selectedComprobante.SetNoGravado(Convert.ToDouble(txtCMNoGravado.Text));
+            selectedComprobante.SetPercepcion(Convert.ToDouble(txtCMPercepcion.Text));
+
+            if (cm_ec_id != selectedComprobante.GetEntidadComercialID()) //entidad comercial cambio, esto va a ser un pushtodatabase
+            {
+                selectedComprobante.ResetID(); //Ensures INSERT INTO instead of, by mistake, trying to update other rows
+                if (selectedComprobante.PushToDatabase(dbCon.Connection))
+                {
+                    DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);
+                    selectedComprobante.GetEntidadComercial().AddNewComprobante(selectedComprobante);
+                }
+            }
+
+            guiComprobantesRefresh();
+        }
+
+        private void btnCMEliminar_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgComprobantes.SelectedItem is null)
+            {
+                return;
+            }
+            dynamic dynSelectedItem = dgComprobantes.SelectedItem;
+            int cm_id = -1;
+            int cm_ec_id = -1;
+            try
+            {
+                cm_id = Convert.ToInt32(dynSelectedItem.cm_id);
+                cm_ec_id = Convert.ToInt32(dynSelectedItem.cm_ec_id);
+            }
+            catch (Exception ex)
+            {
+                cm_id = -1;
+                cm_ec_id = -1;
+                Console.WriteLine("Error with Dynamic selected item...");
+            }
+
+            if (cm_id == -1 || cm_ec_id == -1)
+            {
+                MessageBox.Show("Un error ha ocurrido al tratar de modificar este comprobante.");
+                return;
+            }
+            DBComprobantes selectedComprobante = dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id);
+            if (selectedComprobante is null)
+            {
+                MessageBox.Show("Error al tratar de modificar este comprobante. Valor devuelto: NULL");
+                return;
+            }
+
+            selectedComprobante.DeleteFromDatabase(dbCon.Connection);
+            guiComprobantesRefresh();
+
         }
     }
 }

@@ -39,6 +39,7 @@ namespace SistemaEMMG_Alpha
         public long idCuentaSeleccionada = 0;
         public List<DBEmpresa> empresas;
         public List<DBTipoEntidad> tipos_entidades;
+        public List<DBTiposComprobantes> tipos_comprobantes;
 
         public void ReadTiposEntidadesFromDB(MySqlConnection conn)
         {
@@ -48,6 +49,16 @@ namespace SistemaEMMG_Alpha
             }
             tipos_entidades = DBTipoEntidad.UpdateAll(conn);
         }
+
+        public void ReadTiposComprobantesFromDB(MySqlConnection conn)
+        {
+            if (!(tipos_comprobantes is null))
+            {
+                tipos_comprobantes.Clear();
+            }
+            tipos_comprobantes = DBTiposComprobantes.UpdateAll(conn);
+        }
+
         public void ReadEmpresasFromDB(MySqlConnection conn)
         {
             if (!(empresas is null))
@@ -58,12 +69,22 @@ namespace SistemaEMMG_Alpha
         }
         public void ReadEntidadesComercialesFromDB(MySqlConnection conn)
         {
-            ReadTiposEntidadesFromDB(conn); //We need to make sure we have the tipos_entidades data first.
+            ReadTiposEntidadesFromDB(conn); //We need to make sure we have the tipos_entidades for the Checkbox and stuff...
             DBEmpresa empresaSeleccionada = GetCurrentAccount();
             empresaSeleccionada.GetAllEntidadesComerciales(conn);
         }
-
-        public DBEmpresa GetCurrentAccount() => empresas[GetCuentaIndexByID(idCuentaSeleccionada)];
+        public void ReadComprobantesFromDB(MySqlConnection conn)
+        {
+            ReadTiposComprobantesFromDB(conn);
+            DBEmpresa empresaSeleccionada = GetCurrentAccount();
+            empresaSeleccionada.GetAllComprobantes(conn);
+        }
+        public DBEmpresa GetCurrentAccount() {
+            int index = GetCuentaIndexByID(idCuentaSeleccionada);
+            if (index == -1)
+                return null;
+            return empresas[index];
+        }
 
         public int GetCuentaIndexByID(long cuentaID)
         {
