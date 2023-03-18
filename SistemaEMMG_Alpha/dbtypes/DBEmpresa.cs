@@ -286,6 +286,8 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
+
+            _db_comprobantes.Add(entAdd);
             return true;
         }
        public void RemoveComprobante(DBComprobantes entRemove)

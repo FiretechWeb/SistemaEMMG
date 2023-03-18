@@ -562,9 +562,11 @@ namespace SistemaEMMG_Alpha
                 fpFinal = fechaPago;
             }
 
+            long entidadComercial_id = ((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key;
+
             DBComprobantes newComprobante = new DBComprobantes(
                     dbData.GetCurrentAccount(),
-                    ((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key,
+                    entidadComercial_id,
                     ((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key,
                     new ComprobantesData(-1,
                                         feFinal,
@@ -576,9 +578,9 @@ namespace SistemaEMMG_Alpha
                                         Convert.ToDouble(txtCMPercepcion.Text),
                                         Convert.ToBoolean(chbxCMEsEmitido.IsChecked))
             );
-            dbData.GetCurrentAccount().AddNewComprobante(newComprobante);
             if (newComprobante.PushToDatabase(dbCon.Connection))
             {
+                dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
                 guiComprobantesRefresh();
             }
         }
@@ -651,6 +653,9 @@ namespace SistemaEMMG_Alpha
                     DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);
                     selectedComprobante.GetEntidadComercial().AddNewComprobante(selectedComprobante);
                 }
+            } else
+            {
+                selectedComprobante.PushToDatabase(dbCon.Connection);
             }
 
             guiComprobantesRefresh();
