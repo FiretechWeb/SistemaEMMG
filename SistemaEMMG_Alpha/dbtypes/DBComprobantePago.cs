@@ -34,7 +34,24 @@ namespace SistemaEMMG_Alpha.dbtypes
         public static string GetDBTableName() => db_table;
         string DBInterface.GetDBTableName() => GetDBTableName();
 
-        /*
+        public static bool RemoveFromDB(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long cm_id, long id)
+        {
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_table}  WHERE cp_em_id = {cuenta.GetID()} AND cp_ec_id = {ec_id} AND cp_cm_id = {cm_id} AND cp_id = {id}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                deletedCorrectly = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("<static> Error tratando de eliminar una fila de la base de datos en DBComprobantePago: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return deletedCorrectly;
+        }
+
         public static List<DBComprobantePago> GetAll(MySqlConnection conn, DBComprobantes comprobante)
         {
             List<DBComprobantePago> returnList = new List<DBComprobantePago>();
@@ -49,28 +66,242 @@ namespace SistemaEMMG_Alpha.dbtypes
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id 
+                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
                 JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {ec_table}.ec_te_id 
-                WHERE cm_em_id = {entidadComercial.GetCuentaID()} AND cm_ec_id = {entidadComercial.GetID()}";
+                WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetCuentaID()} AND cp_cm_id = {comprobante.GetID()}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    returnList.Add(new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    returnList.Add(new DBComprobantePago(comprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener todos los pagos de un comprobante. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnList;
         }
-        */
+
+        public static List<DBComprobantePago> GetAll(MySqlConnection conn, DBEntidades entidadComercial)
+        {
+            List<DBComprobantePago> returnList = new List<DBComprobantePago>();
+            try
+            {
+                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string ec_table = DBEntidades.GetDBTableName();
+                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string fp_table = DBFormasPago.GetDBTableName();
+                string cm_table = DBComprobantes.GetDBTableName();
+
+                string query = $@"SELECT * FROM {db_table} 
+                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
+                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
+                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                WHERE cp_em_id = {entidadComercial.GetCuentaID()} AND cp_ec_id = {entidadComercial.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
+                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+
+                    returnList.Add(new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los pagos de una cuenta comercial. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static List<DBComprobantePago> GetAll(MySqlConnection conn, DBEmpresa cuenta)
+        {
+            List<DBComprobantePago> returnList = new List<DBComprobantePago>();
+            try
+            {
+                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string ec_table = DBEntidades.GetDBTableName();
+                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string fp_table = DBFormasPago.GetDBTableName();
+                string cm_table = DBComprobantes.GetDBTableName();
+
+                string query = $@"SELECT * FROM {db_table} 
+                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
+                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
+                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                WHERE cp_em_id = {cuenta.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
+                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
+                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+
+                    returnList.Add(new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los pagos de una cuenta comercial. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static DBComprobantePago GetByID(MySqlConnection conn, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
+        {
+            DBComprobantePago returnEnt = null;
+            try
+            {
+                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string ec_table = DBEntidades.GetDBTableName();
+                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string fp_table = DBFormasPago.GetDBTableName();
+                string cm_table = DBComprobantes.GetDBTableName();
+
+                string query = $@"SELECT * FROM {db_table} 
+                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
+                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
+                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                WHERE cp_em_id = {cuenta.GetID()} AND cp_ec_id = {cp_ec_id} AND cp_cm_id = {cp_cm_id} AND cp_id = {cp_id}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
+                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
+                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+
+                    returnEnt = new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
+        public static DBComprobantePago GetByID(MySqlConnection conn, DBEntidades entidadComercial, long cp_cm_id, long cp_id)
+        {
+            DBComprobantePago returnEnt = null;
+            try
+            {
+                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string ec_table = DBEntidades.GetDBTableName();
+                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string fp_table = DBFormasPago.GetDBTableName();
+                string cm_table = DBComprobantes.GetDBTableName();
+
+                string query = $@"SELECT * FROM {db_table} 
+                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
+                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
+                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                WHERE cp_em_id = {entidadComercial.GetCuentaID()} AND cp_ec_id = {entidadComercial.GetID()} AND cp_cm_id = {cp_cm_id} AND cp_id = {cp_id}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
+                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+
+                    returnEnt = new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
+        public static DBComprobantePago GetByID(MySqlConnection conn, DBComprobantes comprobante, long cp_id)
+        {
+            DBComprobantePago returnEnt = null;
+            try
+            {
+                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
+                string te_table = DBTipoEntidad.GetDBTableName();
+                string ec_table = DBEntidades.GetDBTableName();
+                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string fp_table = DBFormasPago.GetDBTableName();
+                string cm_table = DBComprobantes.GetDBTableName();
+
+                string query = $@"SELECT * FROM {db_table} 
+                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
+                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
+                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
+                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
+                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetEntidadComercialID()} AND cp_cm_id = {comprobante.GetID()} AND cp_id = {cp_id}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    returnEnt = new DBComprobantePago(comprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
+        public static bool CheckIfExistsInList(List<DBComprobantePago> listaPagsComprobantes, DBComprobantePago ent)
+        {
+            foreach (DBComprobantePago pagoComprobante in listaPagsComprobantes)
+            {
+                if (pagoComprobante.GetCuentaID() == ent.GetCuentaID() && pagoComprobante.GetEntidadComercialID() == ent.GetEntidadComercialID() && pagoComprobante.GetComprobanteID() == ent.GetComprobanteID() && pagoComprobante.GetID() == ent.GetID())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public DBComprobantePago(DBComprobantes comprobante, DBFormasPago formaDePago, ComprobantePagoData newData)
         {
             _formaDePago = formaDePago;
@@ -182,6 +413,9 @@ namespace SistemaEMMG_Alpha.dbtypes
             return deletedCorrectly;
         }
 
+        public void ResetID() => _data = new ComprobantePagoData(-1, _data.cp_obs);
+        public long GetID() => _data.cp_id;
+
         public long GetCuentaID() => _comprobante.GetCuentaID();
         public DBEmpresa GetCuenta() => _comprobante.GetCuenta();
 
@@ -192,9 +426,6 @@ namespace SistemaEMMG_Alpha.dbtypes
         public long GetComprobanteID() => _comprobante.GetID();
 
         public DBComprobantes GetComprobante() => _comprobante;
-
-        public void ResetID() => _data = new ComprobantePagoData(-1, _data.cp_obs);
-        public long GetID() => _data.cp_id;
 
         public string GetObservacion() => _data.cp_obs;
     }
