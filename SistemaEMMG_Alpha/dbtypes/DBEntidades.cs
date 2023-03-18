@@ -32,6 +32,7 @@ namespace SistemaEMMG_Alpha
     }
     public class DBEntidades : DBInterface
     {
+        private static readonly string db_table = "ent_comerciales";
         private readonly DBEmpresa _cuentaEmpresa;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
@@ -63,7 +64,7 @@ namespace SistemaEMMG_Alpha
             List<DBEntidades> returnList = new List<DBEntidades>();
             try
             {
-                string query = $"SELECT * FROM ent_comerciales WHERE ec_em_id = {empresa.GetID()}";
+                string query = $"SELECT * FROM {db_table} WHERE ec_em_id = {empresa.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 
@@ -89,7 +90,7 @@ namespace SistemaEMMG_Alpha
             DBEntidades returnEntidad = null;
             try
             {
-                string query = $"SELECT * FROM ent_comerciales WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -161,19 +162,19 @@ namespace SistemaEMMG_Alpha
             try
             {
                 //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM ent_comerciales WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
                 var cmd = new MySqlCommand(query, conn);
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
                 //if exists already, just update
                 if (recordsCount > 0)
                 {
-                    query = $"UPDATE ent_comerciales SET ec_te_id = {_tipoEntidad.GetID()}, ec_cuit = {_data.ec_cuit}, ec_dni = {_data.ec_dni}, ec_rs = '{_data.ec_rs}', ec_email ='{_data.ec_email}', ec_telefono='{_data.ec_telefono}', ec_celular='{_data.ec_celular}' WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
+                    query = $"UPDATE {db_table} SET ec_te_id = {_tipoEntidad.GetID()}, ec_cuit = {_data.ec_cuit}, ec_dni = {_data.ec_dni}, ec_rs = '{_data.ec_rs}', ec_email ='{_data.ec_email}', ec_telefono='{_data.ec_telefono}', ec_celular='{_data.ec_celular}' WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
 
                 }
                 else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO ent_comerciales (ec_em_id, ec_te_id, ec_cuit, ec_dni, ec_rs, ec_email, ec_telefono, ec_celular) VALUES ({_cuentaEmpresa.GetID()}, {_tipoEntidad.GetID()}, {_data.ec_cuit}, {_data.ec_dni}, '{_data.ec_rs}', '{_data.ec_email}', '{_data.ec_telefono}', '{_data.ec_celular}')";
+                    query = $"INSERT INTO {db_table} (ec_em_id, ec_te_id, ec_cuit, ec_dni, ec_rs, ec_email, ec_telefono, ec_celular) VALUES ({_cuentaEmpresa.GetID()}, {_tipoEntidad.GetID()}, {_data.ec_cuit}, {_data.ec_dni}, '{_data.ec_rs}', '{_data.ec_email}', '{_data.ec_telefono}', '{_data.ec_celular}')";
                 }
                 //if not, add
                 cmd = new MySqlCommand(query, conn);
@@ -197,7 +198,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM ent_comerciales WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
+                string query = $"DELETE FROM {db_table} WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;

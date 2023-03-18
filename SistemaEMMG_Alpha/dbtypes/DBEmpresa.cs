@@ -31,6 +31,7 @@ namespace SistemaEMMG_Alpha
         /*************************
          * Global Static STUFFF *
          ************************/
+        private static readonly string db_table = "empresas";
         private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
 
            public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
@@ -38,7 +39,7 @@ namespace SistemaEMMG_Alpha
             List<DBEmpresa> returnList = new List<DBEmpresa>();
             try
             {
-                string query = $"SELECT * FROM empresas";
+                string query = $"SELECT * FROM {db_table}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -122,7 +123,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM empresas WHERE em_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE em_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                
@@ -144,18 +145,18 @@ namespace SistemaEMMG_Alpha
             try
             {
                 //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM empresas WHERE em_id = {_data.em_id}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE em_id = {_data.em_id}";
                 var cmd = new MySqlCommand(query, conn);
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
                 //if exists already, just update
                 if (recordsCount > 0)
                 {
-                    query = $"UPDATE empresas SET em_cuit = {_data.em_cuit}, em_rs = '{_data.em_rs}' WHERE em_id = {_data.em_id}";
+                    query = $"UPDATE {db_table} SET em_cuit = {_data.em_cuit}, em_rs = '{_data.em_rs}' WHERE em_id = {_data.em_id}";
 
                  } else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO empresas (em_cuit, em_rs) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
+                    query = $"INSERT INTO {db_table} (em_cuit, em_rs) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
                 }
                 //if not, add
                 cmd = new MySqlCommand(query, conn);
@@ -178,7 +179,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM empresas WHERE em_id = {_data.em_id}";
+                string query = $"DELETE FROM {db_table} WHERE em_id = {_data.em_id}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;

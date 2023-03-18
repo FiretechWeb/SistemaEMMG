@@ -27,6 +27,7 @@ namespace SistemaEMMG_Alpha
 
     public class DBTipoEntidad : DBInterface, IDBDataType<DBTipoEntidad>
     {
+        private static readonly string db_table = "tipos_entidades";
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
 
@@ -46,7 +47,7 @@ namespace SistemaEMMG_Alpha
             List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();
             try
             {
-                string query = $"SELECT * FROM tipos_entidades";
+                string query = $"SELECT * FROM {db_table}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -112,7 +113,7 @@ namespace SistemaEMMG_Alpha
             DBTipoEntidad returnTipoEntidad = null;
             try
             {
-                string query = $"SELECT * FROM tipos_entidades WHERE te_id = {te_id}";
+                string query = $"SELECT * FROM {db_table} WHERE te_id = {te_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -142,7 +143,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM tipos_entidades WHERE te_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE te_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -165,19 +166,19 @@ namespace SistemaEMMG_Alpha
             try
             {
                 //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM tipos_entidades WHERE te_id = {_data.te_id}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE te_id = {_data.te_id}";
                 var cmd = new MySqlCommand(query, conn);
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
                 //if exists already, just update
                 if (recordsCount > 0)
                 {
-                    query = $"UPDATE tipos_entidades SET te_nombre = '{_data.te_nombre}' WHERE te_id = {_data.te_id}";
+                    query = $"UPDATE {db_table} SET te_nombre = '{_data.te_nombre}' WHERE te_id = {_data.te_id}";
 
                 }
                 else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO tipos_entidades (te_nombre) VALUES ('{_data.te_nombre}')";
+                    query = $"INSERT INTO {db_table} (te_nombre) VALUES ('{_data.te_nombre}')";
                 }
                 //if not, add
                 cmd = new MySqlCommand(query, conn);
@@ -201,7 +202,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM tipos_entidades WHERE te_id = {_data.te_id}";
+                string query = $"DELETE FROM {db_table} WHERE te_id = {_data.te_id}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;

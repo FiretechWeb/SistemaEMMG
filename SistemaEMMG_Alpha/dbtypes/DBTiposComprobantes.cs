@@ -27,6 +27,7 @@ namespace SistemaEMMG_Alpha
 
     public class DBTiposComprobantes : DBInterface, IDBDataType<DBTiposComprobantes>
     {
+        private static readonly string db_table = "tipos_comprobantes";
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
 
@@ -51,7 +52,7 @@ namespace SistemaEMMG_Alpha
             List<DBTiposComprobantes> returnList = new List<DBTiposComprobantes>();
             try
             {
-                string query = $"SELECT * FROM tipos_comprobantes";
+                string query = $"SELECT * FROM {db_table}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -118,7 +119,7 @@ namespace SistemaEMMG_Alpha
             DBTiposComprobantes returnEnt = null;
             try
             {
-                string query = $"SELECT * FROM tipos_comprobantes WHERE tc_id = {tc_id}";
+                string query = $"SELECT * FROM {db_table} WHERE tc_id = {tc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -148,7 +149,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM tipos_comprobantes WHERE tc_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE tc_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -170,19 +171,19 @@ namespace SistemaEMMG_Alpha
             try
             {
                 //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM tipos_comprobantes WHERE tc_id = {_data.tc_id}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE tc_id = {_data.tc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
                 //if exists already, just update
                 if (recordsCount > 0)
                 {
-                    query = $"UPDATE tipos_comprobantes SET tc_nombre = '{_data.tc_nombre}' WHERE tc_id = {_data.tc_id}";
+                    query = $"UPDATE {db_table} SET tc_nombre = '{_data.tc_nombre}' WHERE tc_id = {_data.tc_id}";
 
                 }
                 else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO tipos_comprobantes (tc_nombre) VALUES ('{_data.tc_nombre}')";
+                    query = $"INSERT INTO {db_table} (tc_nombre) VALUES ('{_data.tc_nombre}')";
                 }
                 //if not, add
                 cmd = new MySqlCommand(query, conn);
@@ -206,7 +207,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM tipos_comprobantes WHERE tc_id = {_data.tc_id}";
+                string query = $"DELETE FROM {db_table} WHERE tc_id = {_data.tc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
