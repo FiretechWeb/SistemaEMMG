@@ -40,6 +40,7 @@ namespace SistemaEMMG_Alpha
         public List<DBEmpresa> empresas;
         public List<DBTipoEntidad> tipos_entidades;
         public List<DBTiposComprobantes> tipos_comprobantes;
+        public List<DBFormasPago> formas_pago;
 
         public void ReadTiposEntidadesFromDB(MySqlConnection conn)
         {
@@ -59,6 +60,15 @@ namespace SistemaEMMG_Alpha
             tipos_comprobantes = DBTiposComprobantes.UpdateAll(conn);
         }
 
+        public void ReadFormasDePago(MySqlConnection conn)
+        {
+            if (!(formas_pago is null))
+            {
+                formas_pago.Clear();
+            }
+            formas_pago = DBFormasPago.UpdateAll(conn);
+        }
+
         public void ReadEmpresasFromDB(MySqlConnection conn)
         {
             if (!(empresas is null))
@@ -76,6 +86,7 @@ namespace SistemaEMMG_Alpha
         public void ReadComprobantesFromDB(MySqlConnection conn)
         {
             ReadTiposComprobantesFromDB(conn);
+            ReadFormasDePago(conn);
             DBEmpresa empresaSeleccionada = GetCurrentAccount();
             empresaSeleccionada.GetAllComprobantes(conn);
         }

@@ -24,11 +24,13 @@ namespace SistemaEMMG_Alpha
             return $"ID: {fp_id} - Nombre: {fp_nombre}";
         }
     }
-    class DBFormasPago : DBInterface, IDBDataType<DBFormasPago>
+    public class DBFormasPago : DBInterface, IDBDataType<DBFormasPago>
     {
         private static readonly string db_table = "formas_pago";
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
+
+        public static string GetDBTableName() => db_table;
 
         public static bool TipoFormaPagoExists(string formaPagoNombre, List<DBFormasPago> listaFormasPago)
         {
@@ -76,7 +78,7 @@ namespace SistemaEMMG_Alpha
             List<DBFormasPago> returnList = new List<DBFormasPago>();
             foreach (DBFormasPago formaPago in _db_formas_pago)
             {
-                returnList.Add(formaPago.Clone());
+                returnList.Add(formaPago);
             }
             return returnList;
         }
@@ -134,8 +136,6 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
-
-
 
         public DBFormasPago(FormasPagoData newData)
         {
