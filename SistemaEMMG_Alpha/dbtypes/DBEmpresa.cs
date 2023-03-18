@@ -26,7 +26,7 @@ namespace SistemaEMMG_Alpha
             return $"ID: {em_id} - Nombre Empresa: {em_rs} - CUIT: {em_cuit}";
         }
     }
-    public class DBEmpresa : DBInterface
+    public class DBEmpresa : DBInterface, IDBDataType<DBEmpresa>
     {
         /*************************
          * Global Static STUFFF *
@@ -68,6 +68,24 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
+
+        /***************************
+         * START: IDBDataType Implementation contract
+         * *****************************/
+
+        List<DBEmpresa> IDBDataType<DBEmpresa>.UpdateAll(MySqlConnection conn)
+        {
+            return DBEmpresa.UpdateAll(conn);
+        }
+
+        List<DBEmpresa> IDBDataType<DBEmpresa>.GetAll()
+        {
+            return DBEmpresa.GetAll();
+        }
+
+        /***************************
+         * END: IDBDataType Implementation contract
+         * *****************************/
 
         public static bool EmpresaYaExiste(string str, long cuit, List<DBEmpresa> empresas)
         {

@@ -7,6 +7,11 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 namespace SistemaEMMG_Alpha
 {
+    public interface IDBDataType<T> where T : class
+    {
+        List<T> UpdateAll(MySqlConnection conn);
+        List<T> GetAll();
+    }
     public interface DBInterface
     {
         bool PushToDatabase(MySqlConnection conn);
