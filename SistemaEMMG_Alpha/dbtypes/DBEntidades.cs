@@ -96,7 +96,7 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string te_table = DBTipoEntidad.GetDBTableName();
-                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id} JOIN ";
+                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
