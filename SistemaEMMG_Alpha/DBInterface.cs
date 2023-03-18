@@ -24,6 +24,26 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         T Clone();
     }
+
+    public interface IDBComprobante<T>
+    {
+        long GetComprobanteID();
+
+        T GetComprobante();
+    }
+
+    public interface IDBEntidadComercial<T>
+    {
+       long GetEntidadComercialID();
+
+        T GetEntidadComercial();
+    }
+
+    public interface IDBCuenta<T>
+    {
+        long GetCuentaID();
+        T GetCuenta();
+    }
     public interface DBInterface
     {
         ///<summary>

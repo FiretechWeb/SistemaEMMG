@@ -33,7 +33,7 @@ namespace SistemaEMMG_Alpha
         public double cm_percepcion { get; set; }
         public bool cm_emitido { get; set; }
     }
-    public class DBComprobantes : DBInterface
+    public class DBComprobantes : DBInterface, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>
     {
         private static readonly string db_table = "comprobantes";
         ///<summary>

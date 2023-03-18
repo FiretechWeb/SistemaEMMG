@@ -30,7 +30,7 @@ namespace SistemaEMMG_Alpha
         public string ec_telefono { get; set; }
         public string ec_celular { get; set; }
     }
-    public class DBEntidades : DBInterface
+    public class DBEntidades : DBInterface, IDBCuenta<DBEmpresa>
     {
         private static readonly string db_table = "ent_comerciales";
         ///<summary>
