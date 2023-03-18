@@ -53,5 +53,50 @@ namespace SistemaEMMG_Alpha
         {
             return GetInt64Safe(reader, reader.GetOrdinal(indexName), defaultValue);
         }
+
+        public static DateTime? GetDateTimeSafe(this MySqlDataReader reader, int colIndex, DateTime? defaultValue)
+        {
+            if (!reader.IsDBNull(colIndex))
+                return reader.GetDateTime(colIndex);
+            else
+                return defaultValue;
+        }
+        public static DateTime? GetDateTimeSafe(this MySqlDataReader reader, int colIndex)
+        {
+            return GetDateTimeSafe(reader, colIndex, null);
+        }
+
+        public static DateTime? GetDateTimeSafe(this MySqlDataReader reader, string indexName)
+        {
+            return GetDateTimeSafe(reader, reader.GetOrdinal(indexName));
+        }
+
+        public static DateTime? GetDateTimeSafe(this MySqlDataReader reader, string indexName, DateTime? defaultValue)
+        {
+            return GetDateTimeSafe(reader, reader.GetOrdinal(indexName), defaultValue);
+        }
+
+
+        public static double GetDoubleSafe(this MySqlDataReader reader, int colIndex, double defaultValue)
+        {
+            if (!reader.IsDBNull(colIndex))
+                return reader.GetDouble(colIndex);
+            else
+                return defaultValue;
+        }
+        public static double GetDoubleSafe(this MySqlDataReader reader, int colIndex)
+        {
+            return GetDoubleSafe(reader, colIndex, 0.0);
+        }
+
+        public static double GetDoubleSafe(this MySqlDataReader reader, string indexName)
+        {
+            return GetDoubleSafe(reader, reader.GetOrdinal(indexName));
+        }
+
+        public static double GetDoubleSafe(this MySqlDataReader reader, string indexName, double defaultValue)
+        {
+            return GetDoubleSafe(reader, reader.GetOrdinal(indexName), defaultValue);
+        }
     }
 }

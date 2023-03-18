@@ -39,7 +39,10 @@ namespace SistemaEMMG_Alpha
         private readonly DBEmpresa _cuentaEmpresa;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
+        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
 
+
+        public static string GetDBTableName() => db_table;
 
         public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, EntidadesComercialesData newData)
         {
@@ -47,10 +50,6 @@ namespace SistemaEMMG_Alpha
             _cuentaEmpresa = newCuenta;
             _data = newData;
         }
-
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, - 1, cuit, rs, dni, email, tel, cel) { }
-
         public DBEntidades(DBEmpresa newCuenta, long te_id, EntidadesComercialesData newData)
         {
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
@@ -58,8 +57,22 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, EntidadesComercialesData newData)
+        {
+            _tipoEntidad = DBTipoEntidad.GetByID(te_id, conn);
+            _cuentaEmpresa = newCuenta;
+            _data = newData;
+        }
+
+        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, - 1, cuit, rs, dni, email, tel, cel) { }
+
         public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
         public DBEntidades(DBEmpresa newCuenta, long te_id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, dni, email, tel, cel) { }
+
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, dni, email, tel, cel) { }
+
 
         //GetDBTableName
         public static List<DBEntidades> GetAll(MySqlConnection conn, DBEmpresa empresa)
@@ -90,19 +103,19 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static DBEntidades GetByID(MySqlConnection conn, DBEmpresa empresa, long id)
+        public static DBEntidades GetByID(MySqlConnection conn, DBEmpresa cuenta, long id)
         {
             DBEntidades returnEntidad = null;
             try
             {
                 string te_table = DBTipoEntidad.GetDBTableName();
-                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()} AND ec_id = {id}";
+                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {cuenta.GetID()} AND ec_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEntidad = new DBEntidades(empresa, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    returnEntidad = new DBEntidades(cuenta, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
                 }
                 reader.Close();
             }
@@ -112,11 +125,11 @@ namespace SistemaEMMG_Alpha
             }
             return returnEntidad;
         }
-        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBEmpresa empresa, long id)
+        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBEmpresa cuenta, long id)
         {
             foreach (DBEntidades entidadComercial in listaEntidades)
             {
-                if (entidadComercial.GetID() == id && entidadComercial.GetCuentaID() == empresa.GetID())
+                if (entidadComercial.GetID() == id && entidadComercial.GetCuentaID() == cuenta.GetID())
                 {
                     return entidadComercial;
                 }
@@ -218,6 +231,45 @@ namespace SistemaEMMG_Alpha
                 _cuentaEmpresa.RemoveEntidad(this);
             }
             return deletedCorrectly;
+        }
+
+        public List<DBComprobantes> GetAllComprobantes(MySqlConnection conn) //Get directly from database
+        {
+            List<DBComprobantes> returnList = DBComprobantes.GetAll(conn, this);
+            _db_comprobantes.Clear();
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                _db_comprobantes.Add(comprobante);
+            }
+            return returnList;
+        }
+        public List<DBComprobantes> GetAllComprobantes() //Get CACHE
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                returnList.Add(comprobante); 
+            }
+            return returnList;
+        }
+        public DBComprobantes GetComprobanteByID(long cm_id)
+        {
+            return DBComprobantes.GetByID(_db_comprobantes, this, cm_id);
+        }
+
+        public bool AddNewComprobante(DBComprobantes newComprobante)
+        {
+            if (newComprobante.GetCuentaID() != GetCuentaID() || newComprobante.GetEntidadComercialID() != GetID())
+            {
+                return false; //Cannot add an receipt from another account or entity like this...
+            }
+            _db_comprobantes.Add(newComprobante);
+
+            return true;
+        }
+        public void RemoveComprobante(DBComprobantes entRemove)
+        {
+            _db_comprobantes.Remove(entRemove);
         }
 
         public long GetID() => _data.ec_id;

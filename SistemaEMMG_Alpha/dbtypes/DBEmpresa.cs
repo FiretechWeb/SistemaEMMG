@@ -34,7 +34,9 @@ namespace SistemaEMMG_Alpha
         private static readonly string db_table = "empresas";
         private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
 
-           public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
+        public static string GetDBTableName() => db_table;
+
+        public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
         {
             List<DBEmpresa> returnList = new List<DBEmpresa>();
             try
@@ -65,7 +67,7 @@ namespace SistemaEMMG_Alpha
             List<DBEmpresa> returnList = new List<DBEmpresa>();
             foreach (DBEmpresa empresa in _db_empresas)
             {
-                returnList.Add(new DBEmpresa(empresa.GetID(), empresa.GetCUIT(), empresa.GetRazonSocial()));
+                returnList.Add(empresa);
             }
             return returnList;
         }
@@ -107,7 +109,7 @@ namespace SistemaEMMG_Alpha
 
         private EmpresasData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
-
+        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
         public DBEmpresa(EmpresasData newData)
         {
             _data = newData;
@@ -191,13 +193,42 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
+        public List<DBComprobantes> GetAllComprobantes(MySqlConnection conn) //Get directly from database
+        {
+            List<DBComprobantes> returnList = DBComprobantes.GetAll(conn, this);
+            _db_comprobantes.Clear();
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                _db_comprobantes.Add(comprobante); 
+            }
+            return returnList;
+        }
+        public List<DBComprobantes> GetAllComprobantes() //Get CACHE
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                returnList.Add(comprobante); 
+            }
+            return returnList;
+        }
+        public DBComprobantes GetComprobanteByID(long ec_id, long cm_id)
+        {
+            return DBComprobantes.GetByID(_db_comprobantes, this, ec_id, cm_id);
+        }
+
+        public DBComprobantes GetComprobanteByID(DBEntidades entidadComercial, long cm_id)
+        {
+            return entidadComercial.GetComprobanteByID(cm_id);
+        }
+
         public List<DBEntidades> GetAllEntidadesComerciales(MySqlConnection conn) //Get directly from database
         {
             List<DBEntidades> returnList = DBEntidades.GetAll(conn, this);
             _db_entidades_comerciales.Clear();
             foreach (DBEntidades entidadComercial in returnList)
             {
-                _db_entidades_comerciales.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data));
+                _db_entidades_comerciales.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data)); //Do I really need to create duplicates instead of just passing the memory reference?
             }
             return returnList;
         }
@@ -207,11 +238,13 @@ namespace SistemaEMMG_Alpha
 
             foreach (DBEntidades entidadComercial in _db_entidades_comerciales)
             {
-                returnList.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data));
+                returnList.Add(new DBEntidades(this, entidadComercial.GetTipoEntidad(), entidadComercial.Data));  //Do I really need to create duplicates instead of just passing the memory reference?
             }
 
             return returnList;
         }
+
+        //_db_comprobantes
 
         public DBEntidades GetEntidadByID(long ec_id)
         {
@@ -220,6 +253,10 @@ namespace SistemaEMMG_Alpha
 
         public bool AddNewEntidad(DBEntidades newEntidadComercial)
         {
+            if (newEntidadComercial.GetCuentaID() != GetID())
+            {
+                return false; //Cannot add an entity from another account like this...
+            }
             if (DBEntidades.CheckIfExistsInList(_db_entidades_comerciales, newEntidadComercial, true))
             {
                 return false; //already exists, at least cuit and name-
