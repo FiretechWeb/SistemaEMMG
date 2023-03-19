@@ -70,13 +70,16 @@ namespace SistemaEMMG_Alpha
                 JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
                 JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
                 JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
-                WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetCuentaID()} AND cp_cm_id = {comprobante.GetID()}";
+                WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetEntidadComercialID()} AND cp_cm_id = {comprobante.GetID()}";
+
+                Console.WriteLine("Aca llego");
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
+                    Console.WriteLine("Leyendo data...");
                     DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
                     returnList.Add(new DBComprobantePago(comprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
                 }
@@ -451,6 +454,13 @@ namespace SistemaEMMG_Alpha
 
         public DBComprobantes GetComprobante() => _comprobante;
 
+        public DBFormasPago GetFormaDePago() => _formaDePago;
+
         public string GetObservacion() => _data.cp_obs;
+
+        public void SetFormaDePago(DBFormasPago newFormaDePago) => _formaDePago = newFormaDePago;
+
+        public void SetFormaDePago(long fp_id) => _formaDePago = DBFormasPago.GetByID(fp_id);
+        public void SetObservacion(string obs) => _data.cp_obs = obs;
     }
 }

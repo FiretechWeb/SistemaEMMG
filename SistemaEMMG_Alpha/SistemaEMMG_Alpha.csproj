@@ -102,6 +102,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DBConnection.cs" />
+    <Compile Include="DBConsultas.cs" />
     <Compile Include="DBFields.cs" />
     <Compile Include="DBInterface.cs" />
     <Compile Include="DBExtensions.cs" />

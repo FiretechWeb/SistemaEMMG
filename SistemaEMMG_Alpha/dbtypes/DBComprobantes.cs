@@ -526,6 +526,7 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
+
         public List<DBComprobantePago> GetAllPagos(MySqlConnection conn) //Get directly from database
         {
             List<DBComprobantePago> returnList = DBComprobantePago.GetAll(conn, this);
@@ -536,7 +537,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public List<DBComprobantePago> GetAllComprobantes() //Get CACHE
+        public List<DBComprobantePago> GetAllPagos() //Get CACHE
         {
             List<DBComprobantePago> returnList = new List<DBComprobantePago>();
             foreach (DBComprobantePago pago in _db_pagos)
@@ -545,9 +546,9 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBComprobantePago GetPagoByID(long cm_id)
+        public DBComprobantePago GetPagoByID(long cp_id)
         {
-            return DBComprobantePago.GetByID(_db_pagos, this, cm_id);
+            return DBComprobantePago.GetByID(_db_pagos, this, cp_id);
         }
 
         public bool AddPago(DBComprobantePago newPago)

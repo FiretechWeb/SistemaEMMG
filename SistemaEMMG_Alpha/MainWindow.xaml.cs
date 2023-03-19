@@ -16,6 +16,27 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Text.RegularExpressions;
 
+/*
+rdbCMDRecibido
+rdbCMDEmitido
+cbxCMDTipoComprobante
+txtCMDNumero
+lsbCMDEntidades
+txtCMDEntidadesFilter
+txtCMDFechaEmitido
+txtCMDGravado
+txtCMDIVA
+txtCMDNoGravado
+txtCMDPercepcion
+txtCMDFechaPago
+
+cbxCMTiposPagos
+txtCMPagoObservacion
+lbxCMPagos
+btnCMAgregarPago
+btnCMGuardarPago
+btnCMEliminarPago
+*/
 
 namespace SistemaEMMG_Alpha
 {
@@ -40,11 +61,15 @@ namespace SistemaEMMG_Alpha
         {
             winCMDetalles.Visibility = Visibility.Collapsed;
             winCMMain.Visibility = Visibility.Visible;
+
+            guiComprobantesRefresh(true);
         }
         private void guiSetComprobantesDetallesVisibile()
         {
             winCMMain.Visibility = Visibility.Collapsed;
             winCMDetalles.Visibility = Visibility.Visible;
+            
+            guiRefreshComprobantesDetalles();
         }
         private bool ConnectWithDatabase()
         {
@@ -97,6 +122,114 @@ namespace SistemaEMMG_Alpha
             guiCuentasRefresh();
         }
         
+        private void guiRefreshComprobantesDetalles(bool refreshDatabase=false)
+        {
+            cbxCMTiposPagos.Items.Clear();
+            if (dbData.GetCurrentAccount() is null)
+            {
+                return; //No accounts available
+            }
+            if (refreshDatabase)
+            {
+                dbData.ReadEntidadesComercialesFromDB(dbCon.Connection); //Necessary for checkbox D:
+                dbData.ReadComprobantesFromDB(dbCon.Connection);
+            }
+            cbxCMTiposPagos.SelectedValuePath = "Key";
+            cbxCMTiposPagos.DisplayMemberPath = "Value";
+            foreach (DBFormasPago formaPago in dbData.formas_pago)
+            {
+                cbxCMTiposPagos.Items.Add(new KeyValuePair<long, string>(formaPago.GetID(), formaPago.GetName()));
+            }
+            if (dbData.formas_pago.Count > 0)
+            {
+                cbxCMTiposPagos.SelectedIndex = 0;
+            }
+
+            cbxCMDTipoComprobante.Items.Clear();
+            cbxCMDTipoComprobante.SelectedValuePath = "Key";
+            cbxCMDTipoComprobante.DisplayMemberPath = "Value";
+            foreach (DBTiposComprobantes tipoComprobante in dbData.tipos_comprobantes)
+            {
+                cbxCMDTipoComprobante.Items.Add(new KeyValuePair<long, string>(tipoComprobante.GetID(), tipoComprobante.GetName()));
+            }
+
+            List<DBEntidades> entidadesComercialesList = dbData.GetCurrentAccount().GetAllEntidadesComerciales();
+
+            lsbCMDEntidades.Items.Clear();
+            lsbCMDEntidades.SelectedValuePath = "Key";
+            lsbCMDEntidades.DisplayMemberPath = "Value";
+
+            foreach(DBEntidades entidad in entidadesComercialesList)
+            {
+                lsbCMDEntidades.Items.Add(new KeyValuePair<long, string>(entidad.GetID(), $"{entidad.GetCUIT()}: {entidad.GetRazonSocial()}"));
+            }
+
+            lbxCMDEntidadSelected.Items.Clear();
+            lbxCMDEntidadSelected.SelectedValuePath = "Key";
+            lbxCMDEntidadSelected.DisplayMemberPath = "Value";
+
+            if (dbData.GetComprobanteSelected() is null)
+            {
+                lsbCMDEntidades.SelectedIndex = 0;
+                cbxCMDTipoComprobante.SelectedIndex = 0;
+            } else
+            {
+                guiRefreshComprobantesForms();
+            }
+            
+            guiRefreshComprobantesDetallesPagos(true);
+        }
+
+        /*
+txtCMDEntidadesFilter
+*/
+
+        private void guiRefreshComprobantesForms()
+        {
+            cbxCMDTipoComprobante.SelectedValue = dbData.GetComprobanteSelected().GetTipoComprobante().GetID();
+            lbxCMDEntidadSelected.Items.Clear();
+            lbxCMDEntidadSelected.SelectedValuePath = "Key";
+            lbxCMDEntidadSelected.DisplayMemberPath = "Value";
+            lbxCMDEntidadSelected.Items.Add(new KeyValuePair<long, string>(dbData.GetComprobanteSelected().GetEntidadComercialID(), $"{dbData.GetComprobanteSelected().GetEntidadComercial().GetRazonSocial()}: {dbData.GetComprobanteSelected().GetEntidadComercial().GetCUIT()}"));
+            txtCMDFechaEmitido.Text = dbData.GetComprobanteSelected().GetFechaEmitido().HasValue ? ((DateTime)dbData.GetComprobanteSelected().GetFechaEmitido()).ToString("dd/MM/yyyy") : "";
+            txtCMDFechaPago.Text = dbData.GetComprobanteSelected().GetFechaPago().HasValue ? ((DateTime)dbData.GetComprobanteSelected().GetFechaPago()).ToString("dd/MM/yyyy") : "";
+            rdbCMDRecibido.IsChecked = !dbData.GetComprobanteSelected().IsEmitido();
+            rdbCMDEmitido.IsChecked = dbData.GetComprobanteSelected().IsEmitido();
+            txtCMDNumero.Text = dbData.GetComprobanteSelected().GetNumeroComprobante();
+            txtCMDGravado.Text = Convert.ToString(dbData.GetComprobanteSelected().GetGravado());
+            txtCMDIVA.Text = Convert.ToString(dbData.GetComprobanteSelected().GetIVA());
+            txtCMDNoGravado.Text = Convert.ToString(dbData.GetComprobanteSelected().GetNoGravado());
+            txtCMDPercepcion.Text = Convert.ToString(dbData.GetComprobanteSelected().GetPercepcion());
+
+        }
+        private void guiRefreshComprobantesDetallesPagos(bool refreshDatabase = false)
+        {
+            lbxCMPagos.Items.Clear();
+            dbData.DeselectPago();
+            btnCMGuardarPago.IsEnabled = false;
+            btnCMEliminarPago.IsEnabled = false;
+            if (dbData.GetComprobanteSelected() is null)
+            {
+                return;
+            }
+
+            List<DBComprobantePago> pagos;
+            if (refreshDatabase)
+            {
+                pagos = dbData.GetComprobanteSelected().GetAllPagos(dbCon.Connection);
+            } else
+            {
+                pagos = dbData.GetComprobanteSelected().GetAllPagos();
+            }
+
+            lbxCMPagos.SelectedValuePath = "Key";
+            lbxCMPagos.DisplayMemberPath = "Value";
+            foreach (DBComprobantePago pago in pagos)
+            {
+                lbxCMPagos.Items.Add(new KeyValuePair<long, string>(pago.GetID(), pago.GetObservacion()));
+            }
+            lbxCMPagos.SelectedIndex = -1;
+        }
         private void guiCuentasRefresh(bool refreshDatabase=false)
         {
             if (refreshDatabase)
@@ -551,7 +684,8 @@ namespace SistemaEMMG_Alpha
                     int cm_id = Convert.ToInt32(items.cm_id);
                     int cm_ec_id = Convert.ToInt32(items.cm_ec_id);
 
-                    guiRefreshComprobantesForm(dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id));
+                    dbData.SetComprobanteSelected(dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id));
+                    guiRefreshComprobantesForm(dbData.GetComprobanteSelected());
                 }
                 catch (Exception ex)
                 {
@@ -597,38 +731,21 @@ namespace SistemaEMMG_Alpha
             if (newComprobante.PushToDatabase(dbCon.Connection))
             {
                 dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
+                dbData.SetComprobanteSelected(newComprobante);
                 guiComprobantesRefresh();
             }
         }
 
         private void btnCMModificar_Click(object sender, RoutedEventArgs e)
         {
-            if (dgComprobantes.SelectedItem is null)
+            if (dbData.GetComprobanteSelected() is null)
             {
                 return;
             }
-            dynamic dynSelectedItem = dgComprobantes.SelectedItem;
-            int cm_id = -1;
-            int cm_ec_id = -1;
-            try
-            {
-                cm_id = Convert.ToInt32(dynSelectedItem.cm_id);
-                cm_ec_id = Convert.ToInt32(dynSelectedItem.cm_ec_id);
-            }
-            catch (Exception ex)
-            {
-                cm_id = -1;
-                cm_ec_id = -1;
-                Console.WriteLine("Error with Dynamic selected item...");
-            }
+            long cm_ec_id = dbData.GetComprobanteSelected().GetEntidadComercialID();
+            long cm_id = dbData.GetComprobanteSelected().GetID();
 
-            if (cm_id == -1 || cm_ec_id == -1)
-            {
-                MessageBox.Show($"Un error ha ocurrido al tratar de modificar este comprobante");
-                return;
-            }
-
-            DBComprobantes selectedComprobante = dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id);
+            DBComprobantes selectedComprobante = dbData.GetComprobanteSelected();
             if (selectedComprobante is null)
             {
                 MessageBox.Show("Error al tratar de modificar este comprobante. Valor devuelto: NULL");
@@ -679,31 +796,11 @@ namespace SistemaEMMG_Alpha
 
         private void btnCMEliminar_Click(object sender, RoutedEventArgs e)
         {
-            if (dgComprobantes.SelectedItem is null)
+            if (dbData.GetComprobanteSelected() is null)
             {
                 return;
             }
-            dynamic dynSelectedItem = dgComprobantes.SelectedItem;
-            int cm_id = -1;
-            int cm_ec_id = -1;
-            try
-            {
-                cm_id = Convert.ToInt32(dynSelectedItem.cm_id);
-                cm_ec_id = Convert.ToInt32(dynSelectedItem.cm_ec_id);
-            }
-            catch (Exception ex)
-            {
-                cm_id = -1;
-                cm_ec_id = -1;
-                Console.WriteLine("Error with Dynamic selected item...");
-            }
-
-            if (cm_id == -1 || cm_ec_id == -1)
-            {
-                MessageBox.Show("Un error ha ocurrido al tratar de modificar este comprobante.");
-                return;
-            }
-            DBComprobantes selectedComprobante = dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id);
+            DBComprobantes selectedComprobante = dbData.GetComprobanteSelected();
             if (selectedComprobante is null)
             {
                 MessageBox.Show("Error al tratar de modificar este comprobante. Valor devuelto: NULL");
@@ -711,6 +808,7 @@ namespace SistemaEMMG_Alpha
             }
 
             selectedComprobante.DeleteFromDatabase(dbCon.Connection);
+            dbData.DeselectComprobante();
             guiComprobantesRefresh();
 
         }
@@ -723,6 +821,205 @@ namespace SistemaEMMG_Alpha
         private void btnCMDAtras_Click(object sender, RoutedEventArgs e)
         {
             guiSetComprobantesMainVisible();
+        }
+
+        private void lbxCMPagos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dbData.GetComprobanteSelected() is null)
+            {
+                MessageBox.Show("Contactar al programador: GetComprobanteSelected() es NULL en lbxCMPagos_SelectionChanged, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            ListBox lbxSender = sender as ListBox;
+            if (lbxSender.SelectedItem is null)
+            {
+                btnCMGuardarPago.IsEnabled = false;
+                btnCMEliminarPago.IsEnabled = false;
+                dbData.DeselectPago();
+                return;
+            }
+            dbData.SetPagoSelected(dbData.GetComprobanteSelected().GetPagoByID(((KeyValuePair<long, string>)lbxSender.SelectedItem).Key));
+
+            if (dbData.GetPagoSelected() is null)
+            {
+                btnCMGuardarPago.IsEnabled = false;
+                btnCMEliminarPago.IsEnabled = false;
+                return;
+            }
+            btnCMGuardarPago.IsEnabled = true;
+            btnCMEliminarPago.IsEnabled = true;
+            txtCMPagoObservacion.Text = dbData.GetPagoSelected().GetObservacion();
+            cbxCMTiposPagos.SelectedValue = dbData.GetPagoSelected().GetFormaDePago().GetID();
+        }
+
+        private void btnCMAgregarPago_Click(object sender, RoutedEventArgs e)
+        {
+            if (dbData.GetComprobanteSelected() is null)
+            {
+                MessageBox.Show("Contactar al programador: GetComprobanteSelected() es NULL en btnCMAgregarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, -1, txtCMPagoObservacion.Text);
+            if (newPago.PushToDatabase(dbCon.Connection))
+            {
+                dbData.GetComprobanteSelected().AddPago(newPago);
+                guiRefreshComprobantesDetallesPagos();
+            }
+        }
+
+        private void btnCMGuardarPago_Click(object sender, RoutedEventArgs e)
+        {
+            if ((dbData.GetComprobanteSelected() is null) || (dbData.GetPagoSelected() is null))
+            {
+                MessageBox.Show("Contactar al programador: GetComprobanteSelected() o GetPagoSelected()  es NULL en btnCMGuardarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (dbData.GetPagoSelected().GetEntidadComercialID() != dbData.GetComprobanteSelected().GetEntidadComercialID() || dbData.GetPagoSelected().GetComprobanteID() != dbData.GetComprobanteSelected().GetID())
+            {
+                MessageBox.Show("Contactar al programador: El pago seleccionado no pertenece al comprobante seleccionado en btnCMGuardarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DBComprobantePago pagoModificado = dbData.GetPagoSelected();
+            pagoModificado.SetFormaDePago(((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key);
+            pagoModificado.SetObservacion(txtCMPagoObservacion.Text);
+
+            if (pagoModificado.PushToDatabase(dbCon.Connection))
+            {
+                guiRefreshComprobantesDetallesPagos();
+            }
+
+        }
+
+        private void btnCMEliminarPago_Click(object sender, RoutedEventArgs e)
+        {
+            if ((dbData.GetComprobanteSelected() is null) || (dbData.GetPagoSelected() is null))
+            {
+                MessageBox.Show("Contactar al programador: GetComprobanteSelected() o GetPagoSelected()  es NULL en btnCMEliminarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (dbData.GetPagoSelected().GetEntidadComercialID() != dbData.GetComprobanteSelected().GetEntidadComercialID() || dbData.GetPagoSelected().GetComprobanteID() != dbData.GetComprobanteSelected().GetID())
+            {
+                MessageBox.Show("Contactar al programador: El pago seleccionado no pertenece al comprobante seleccionado en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            DBComprobantePago pagoEliminar = dbData.GetPagoSelected();
+
+            if (pagoEliminar.DeleteFromDatabase(dbCon.Connection))
+            {
+                dbData.GetComprobanteSelected().RemovePago(pagoEliminar);
+            }
+            guiRefreshComprobantesDetallesPagos();
+        }
+
+        private void lsbCMDEntidades_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox lbxSender = sender as ListBox;
+            if (lbxSender.SelectedItem is null)
+            {
+                return;
+            }
+            lbxCMDEntidadSelected.Items.Clear();
+            lbxCMDEntidadSelected.SelectedValuePath = "Key";
+            lbxCMDEntidadSelected.DisplayMemberPath = "Value";
+            lbxCMDEntidadSelected.Items.Add((KeyValuePair<long, string>)lsbCMDEntidades.SelectedItem);
+            lbxCMDEntidadSelected.SelectedIndex = 0;
+        }
+
+        private void btnCMDBuscarEntidad_Click(object sender, RoutedEventArgs e)
+        {
+            List<DBEntidades> entidadesComercialesList = DBConsultas.DBEntidadesWith(dbCon.Connection, dbData.GetCurrentAccount(), txtCMDEntidadesFilter.Text);
+
+            lsbCMDEntidades.Items.Clear();
+            lsbCMDEntidades.SelectedValuePath = "Key";
+            lsbCMDEntidades.DisplayMemberPath = "Value";
+
+            foreach (DBEntidades entidad in entidadesComercialesList)
+            {
+                lsbCMDEntidades.Items.Add(new KeyValuePair<long, string>(entidad.GetID(), $"{entidad.GetCUIT()}: {entidad.GetRazonSocial()}"));
+            }
+        }
+
+        private void btnCMDGuardarEntidad_Click(object sender, RoutedEventArgs e)
+        {
+            if (dbData.GetComprobanteSelected() is null)
+            {
+                return;
+            }
+
+            if (lbxCMDEntidadSelected.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMDGuardarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (cbxCMDTipoComprobante.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMDGuardarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            long cm_ec_id = dbData.GetComprobanteSelected().GetEntidadComercialID();
+            long cm_id = dbData.GetComprobanteSelected().GetID();
+
+            DBComprobantes selectedComprobante = dbData.GetComprobanteSelected();
+            if (selectedComprobante is null)
+            {
+                MessageBox.Show("Error al tratar de modificar este comprobante. Valor devuelto: NULL");
+                return;
+            }
+
+            DateTime fechaEmitido = new DateTime();
+            if (DateTime.TryParse(txtCMDFechaEmitido.Text, out fechaEmitido))
+            {
+                selectedComprobante.SetFechaEmitido(fechaEmitido);
+            }
+            else
+            {
+                selectedComprobante.SetFechaEmitido(null);
+            }
+
+            DateTime fechaPago = new DateTime();
+            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
+            {
+                selectedComprobante.SetFechaPago(fechaPago);
+            }
+            else
+            {
+                selectedComprobante.SetFechaPago(null);
+            }
+            selectedComprobante.SetEmitido(Convert.ToBoolean(rdbCMDEmitido.IsChecked));
+            selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key);
+            selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key);
+            selectedComprobante.SetNumeroComprobante(txtCMDNumero.Text);
+            selectedComprobante.SetGravado(Convert.ToDouble(txtCMDGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetIVA(Convert.ToDouble(txtCMDIVA.Text.Replace(".", ",")));
+            selectedComprobante.SetNoGravado(Convert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetPercepcion(Convert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")));
+
+            bool dataUpdateDBSuccess = false;
+
+            if (cm_ec_id != selectedComprobante.GetEntidadComercialID()) //entidad comercial cambio, esto va a ser un pushtodatabase
+            {
+                selectedComprobante.ResetID(); //Ensures INSERT INTO instead of, by mistake, trying to update other rows
+                if (selectedComprobante.PushToDatabase(dbCon.Connection))
+                {
+                    dataUpdateDBSuccess = true;
+                    DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);
+                    selectedComprobante.GetEntidadComercial().AddNewComprobante(selectedComprobante);
+                }
+            }
+            else
+            {
+                dataUpdateDBSuccess = selectedComprobante.PushToDatabase(dbCon.Connection);
+            }
+
+            if (dataUpdateDBSuccess)
+            {
+                MessageBox.Show("Información agregada a la base de datos correctamente!");
+            }
+
+
         }
     }
 }
