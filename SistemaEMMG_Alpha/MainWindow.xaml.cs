@@ -892,7 +892,7 @@ namespace SistemaEMMG_Alpha
                 }
             }
 
-            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, -1, txtCMPagoObservacion.Text);
+            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, txtCMPagoObservacion.Text);
             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true)
             {
                 if (newPago.PushToDatabase(dbCon.Connection))

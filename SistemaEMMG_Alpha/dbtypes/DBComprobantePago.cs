@@ -323,6 +323,10 @@ namespace SistemaEMMG_Alpha
         public DBComprobantePago(DBComprobantes comprobante, long id, DBFormasPago formaDePago, ComprobantePagoData newData)
         {
             _id = id;
+            if (formaDePago is null)
+            {
+                throw new Exception("Error here");
+            }
             _formaDePago = formaDePago;
             _comprobante = comprobante;
             _data = newData;
@@ -332,6 +336,10 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
+            if (_formaDePago is null)
+            {
+                throw new Exception("Error here");
+            }
             _comprobante = comprobante;
             _data = newData;
         }
@@ -339,6 +347,10 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
+            if (_formaDePago is null)
+            {
+                throw new Exception("Error here");
+            }
             _comprobante = cuenta.GetComprobanteByID(ec_id, cm_id);
             _data = newData;
         }
@@ -347,6 +359,10 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id, conn);
+            if (_formaDePago is null)
+            {
+                throw new Exception("Error here");
+            }
             _comprobante = DBComprobantes.GetByID(conn, cuenta, ec_id, cm_id);
             _data = newData;
         }
