@@ -472,7 +472,7 @@ namespace SistemaEMMG_Alpha
             return existsInDB;
         }
 
-        public void ResetID() => _data = new ComprobantePagoData(-1, _data.cp_obs);
+        public void ResetID(long newId = -1) => _data = new ComprobantePagoData(newId, _data.cp_obs);
         public long GetID() => _data.cp_id;
 
         public long GetCuentaID() => _comprobante.GetCuentaID();

@@ -104,7 +104,75 @@ namespace SistemaEMMG_Alpha
             return sucessfulConnected;
         }
 
-         private void SoftwareMain()
+        private DBComprobantes GenerateNewComprobanteFromDetallesForm()
+        {
+            DateTime fechaEmitido = new DateTime();
+            DateTime? feFinal = null;
+
+            if (DateTime.TryParse(txtCMDFechaEmitido.Text, out fechaEmitido))
+            {
+                feFinal = fechaEmitido;
+            }
+
+            DateTime fechaPago = new DateTime();
+            DateTime? fpFinal = null;
+
+            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
+            {
+                fpFinal = fechaPago;
+            }
+
+            long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
+
+             return new DBComprobantes(
+                    dbData.GetCurrentAccount(),
+                    entidadComercial_id,
+                    ((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key,
+                    new ComprobantesData(-1,
+                                        feFinal,
+                                        fpFinal,
+                                        txtCMDNumero.Text,
+                                        SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")),
+                                        SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")),
+                                        SafeConvert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")),
+                                        SafeConvert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")),
+                                        SafeConvert.ToBoolean(rdbCMDEmitido.IsChecked))
+            );
+        }
+
+        private void UpdateSelectedComprobanteFromDetallesForm()
+        {
+            DateTime fechaEmitido = new DateTime();
+            DateTime? feFinal = null;
+
+            if (DateTime.TryParse(txtCMDFechaEmitido.Text, out fechaEmitido))
+            {
+                feFinal = fechaEmitido;
+            }
+
+            DateTime fechaPago = new DateTime();
+            DateTime? fpFinal = null;
+
+            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
+            {
+                fpFinal = fechaPago;
+            }
+
+            long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
+
+            dbData.GetComprobanteSelected().SetFechaEmitido(feFinal);
+            dbData.GetComprobanteSelected().SetFechaPago(fpFinal);
+            dbData.GetComprobanteSelected().SetGravado(SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")));
+            dbData.GetComprobanteSelected().SetIVA(SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")));
+            dbData.GetComprobanteSelected().SetNoGravado(SafeConvert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")));
+            dbData.GetComprobanteSelected().SetNumeroComprobante(txtCMDNumero.Text);
+            dbData.GetComprobanteSelected().SetPercepcion(SafeConvert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")));
+            dbData.GetComprobanteSelected().SetEmitido(SafeConvert.ToBoolean(rdbCMDEmitido.IsChecked));
+            dbData.GetComprobanteSelected().SetEntidadComercial(entidadComercial_id);
+            dbData.GetComprobanteSelected().SetTipoComprobante(((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key);
+        }
+
+        private void SoftwareMain()
         {
             //Here everything that happens after database is correctly loaded
             Console.WriteLine("Able to connect Database!");
@@ -164,14 +232,18 @@ namespace SistemaEMMG_Alpha
                 lsbCMDEntidades.Items.Add(new KeyValuePair<long, string>(entidad.GetID(), $"{entidad.GetCUIT()}: {entidad.GetRazonSocial()}"));
             }
 
-            lbxCMDEntidadSelected.Items.Clear();
-            lbxCMDEntidadSelected.SelectedValuePath = "Key";
-            lbxCMDEntidadSelected.DisplayMemberPath = "Value";
-
             if (dbData.GetComprobanteSelected() is null)
             {
                 lsbCMDEntidades.SelectedIndex = 0;
                 cbxCMDTipoComprobante.SelectedIndex = 0;
+                lbxCMDEntidadSelected.Items.Clear();
+                lbxCMDEntidadSelected.SelectedValuePath = "Key";
+                lbxCMDEntidadSelected.DisplayMemberPath = "Value";
+                if (entidadesComercialesList.Count > 0)
+                {
+                    lbxCMDEntidadSelected.Items.Add(new KeyValuePair<long, string>(entidadesComercialesList[0].GetID(), $"{entidadesComercialesList[0].GetCUIT()}: {entidadesComercialesList[0].GetRazonSocial()}"));
+                }
+                lbxCMDEntidadSelected.SelectedIndex = 0;
             } else
             {
                 guiRefreshComprobantesForms();
@@ -190,16 +262,17 @@ txtCMDEntidadesFilter
             lbxCMDEntidadSelected.Items.Clear();
             lbxCMDEntidadSelected.SelectedValuePath = "Key";
             lbxCMDEntidadSelected.DisplayMemberPath = "Value";
-            lbxCMDEntidadSelected.Items.Add(new KeyValuePair<long, string>(dbData.GetComprobanteSelected().GetEntidadComercialID(), $"{dbData.GetComprobanteSelected().GetEntidadComercial().GetRazonSocial()}: {dbData.GetComprobanteSelected().GetEntidadComercial().GetCUIT()}"));
+            lbxCMDEntidadSelected.Items.Add(new KeyValuePair<long, string>(dbData.GetComprobanteSelected().GetEntidadComercialID(), $"{dbData.GetComprobanteSelected().GetEntidadComercial().GetCUIT()}: {dbData.GetComprobanteSelected().GetEntidadComercial().GetRazonSocial()}"));
+            lbxCMDEntidadSelected.SelectedIndex = 0;
             txtCMDFechaEmitido.Text = dbData.GetComprobanteSelected().GetFechaEmitido().HasValue ? ((DateTime)dbData.GetComprobanteSelected().GetFechaEmitido()).ToString("dd/MM/yyyy") : "";
             txtCMDFechaPago.Text = dbData.GetComprobanteSelected().GetFechaPago().HasValue ? ((DateTime)dbData.GetComprobanteSelected().GetFechaPago()).ToString("dd/MM/yyyy") : "";
             rdbCMDRecibido.IsChecked = !dbData.GetComprobanteSelected().IsEmitido();
             rdbCMDEmitido.IsChecked = dbData.GetComprobanteSelected().IsEmitido();
             txtCMDNumero.Text = dbData.GetComprobanteSelected().GetNumeroComprobante();
-            txtCMDGravado.Text = Convert.ToString(dbData.GetComprobanteSelected().GetGravado());
-            txtCMDIVA.Text = Convert.ToString(dbData.GetComprobanteSelected().GetIVA());
-            txtCMDNoGravado.Text = Convert.ToString(dbData.GetComprobanteSelected().GetNoGravado());
-            txtCMDPercepcion.Text = Convert.ToString(dbData.GetComprobanteSelected().GetPercepcion());
+            txtCMDGravado.Text = SafeConvert.ToString(dbData.GetComprobanteSelected().GetGravado());
+            txtCMDIVA.Text = SafeConvert.ToString(dbData.GetComprobanteSelected().GetIVA());
+            txtCMDNoGravado.Text = SafeConvert.ToString(dbData.GetComprobanteSelected().GetNoGravado());
+            txtCMDPercepcion.Text = SafeConvert.ToString(dbData.GetComprobanteSelected().GetPercepcion());
 
         }
         private void guiRefreshComprobantesDetallesPagos(bool refreshDatabase = false)
@@ -330,10 +403,10 @@ txtCMDEntidadesFilter
             cbxCMEntidadComercial.SelectedValue = comprobanteSelected.GetEntidadComercialID();
             cbxCMTipoComprobante.SelectedValue = comprobanteSelected.GetTipoComprobante().GetID();
             txtCMNumeroFactura.Text = comprobanteSelected.GetNumeroComprobante();
-            txtCMGravado.Text = Convert.ToString(comprobanteSelected.GetGravado());
-            txtCMIVA.Text = Convert.ToString(comprobanteSelected.GetIVA());
-            txtCMNoGravado.Text = Convert.ToString(comprobanteSelected.GetNoGravado());
-            txtCMPercepcion.Text = Convert.ToString(comprobanteSelected.GetPercepcion());
+            txtCMGravado.Text = SafeConvert.ToString(comprobanteSelected.GetGravado());
+            txtCMIVA.Text = SafeConvert.ToString(comprobanteSelected.GetIVA());
+            txtCMNoGravado.Text = SafeConvert.ToString(comprobanteSelected.GetNoGravado());
+            txtCMPercepcion.Text = SafeConvert.ToString(comprobanteSelected.GetPercepcion());
             txtCMFechaPago.Text = comprobanteSelected.GetFechaPago().HasValue ? ((DateTime)comprobanteSelected.GetFechaPago()).ToString("dd/MM/yyyy") : "";
 
         }
@@ -480,7 +553,7 @@ txtCMDEntidadesFilter
             {
                 return;
             }
-            dbData.AgregarNuevaCuentaDeEmpresa(txbNuevaCuentaNombre.Text.Trim(), Convert.ToInt64(txbNuevaCuentaCUIT.Text.Trim()), dbCon.Connection);
+            dbData.AgregarNuevaCuentaDeEmpresa(txbNuevaCuentaNombre.Text.Trim(), SafeConvert.ToInt64(txbNuevaCuentaCUIT.Text.Trim()), dbCon.Connection);
             txbNuevaCuentaNombre.Text = "";
             txbNuevaCuentaCUIT.Text = "";
             guiCuentasRefresh();
@@ -604,11 +677,11 @@ txtCMDEntidadesFilter
                 return;
             }
             selectedEntidad.SetRazonSocial(tbxRazonSocialEC.Text);
-            selectedEntidad.SetCuit(Convert.ToInt64(txbCUITEC.Text));
+            selectedEntidad.SetCuit(SafeConvert.ToInt64(txbCUITEC.Text));
             selectedEntidad.SetEmail(tbxEmailEC.Text);
             selectedEntidad.SetTelefono(tbxTelEC.Text);
             selectedEntidad.SetCelular(tbxCelEC.Text);
-            selectedEntidad.SetDNI(Convert.ToInt64(txbDNIEC.Text));
+            selectedEntidad.SetDNI(SafeConvert.ToInt64(txbDNIEC.Text));
             selectedEntidad.TipoEntidad = DBTipoEntidad.GetByID(((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key);
 
             selectedEntidad.PushToDatabase(dbCon.Connection);
@@ -619,11 +692,11 @@ txtCMDEntidadesFilter
         private void btnAgregarEC_Click(object sender, RoutedEventArgs e)
         {
             //AddNewEntidad
-            DBEntidades nuevaEntidad = new DBEntidades(dbData.GetCurrentAccount(), ((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key, Convert.ToInt64(txbCUITEC.Text), tbxRazonSocialEC.Text);
+            DBEntidades nuevaEntidad = new DBEntidades(dbData.GetCurrentAccount(), ((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key, SafeConvert.ToInt64(txbCUITEC.Text), tbxRazonSocialEC.Text);
             nuevaEntidad.SetEmail(tbxEmailEC.Text);
             nuevaEntidad.SetTelefono(tbxTelEC.Text);
             nuevaEntidad.SetCelular(tbxCelEC.Text);
-            nuevaEntidad.SetDNI(Convert.ToInt64(txbDNIEC.Text));
+            nuevaEntidad.SetDNI(SafeConvert.ToInt64(txbDNIEC.Text));
 
             if (dbData.GetCurrentAccount().AddNewEntidad(nuevaEntidad))
             {
@@ -674,6 +747,7 @@ txtCMDEntidadesFilter
             if (e.Source is DataGrid)
             {
                 DataGrid senderDG = sender as DataGrid;
+                //Todo: dynamic it's a terrible idea, find a way to make this work without that at all.
                 dynamic items = senderDG.SelectedItem;
                 if (senderDG.SelectedItem is null)
                 {
@@ -681,8 +755,8 @@ txtCMDEntidadesFilter
                 }
                 try
                 {
-                    int cm_id = Convert.ToInt32(items.cm_id);
-                    int cm_ec_id = Convert.ToInt32(items.cm_ec_id);
+                    int cm_id = Convert.ToInt32(items.cm_id); //IMPORTANT NOTE: dynamic values does not work at all with the self-made SafeConvert static class!!
+                    int cm_ec_id = Convert.ToInt32(items.cm_ec_id); //IMPORTANT NOTE: dynamic values does not work at all with the self-made SafeConvert static class!!
 
                     dbData.SetComprobanteSelected(dbData.GetCurrentAccount().GetComprobanteByID(cm_ec_id, cm_id));
                     guiRefreshComprobantesForm(dbData.GetComprobanteSelected());
@@ -722,11 +796,11 @@ txtCMDEntidadesFilter
                                         feFinal,
                                         fpFinal,
                                         txtCMNumeroFactura.Text,
-                                        Convert.ToDouble(txtCMGravado.Text.Replace(".", ",")),
-                                        Convert.ToDouble(txtCMIVA.Text.Replace(".", ",")),
-                                        Convert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")),
-                                        Convert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")),
-                                        Convert.ToBoolean(chbxCMEsEmitido.IsChecked))
+                                        SafeConvert.ToDouble(txtCMGravado.Text.Replace(".", ",")),
+                                        SafeConvert.ToDouble(txtCMIVA.Text.Replace(".", ",")),
+                                        SafeConvert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")),
+                                        SafeConvert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")),
+                                        SafeConvert.ToBoolean(chbxCMEsEmitido.IsChecked))
             );
             if (newComprobante.PushToDatabase(dbCon.Connection))
             {
@@ -769,14 +843,14 @@ txtCMDEntidadesFilter
             {
                 selectedComprobante.SetFechaPago(null);
             }
-            selectedComprobante.SetEmitido(Convert.ToBoolean(chbxCMEsEmitido.IsChecked));
+            selectedComprobante.SetEmitido(SafeConvert.ToBoolean(chbxCMEsEmitido.IsChecked));
             selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key);
             selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key);
             selectedComprobante.SetNumeroComprobante(txtCMNumeroFactura.Text);
-            selectedComprobante.SetGravado(Convert.ToDouble(txtCMGravado.Text.Replace(".", ",")));
-            selectedComprobante.SetIVA(Convert.ToDouble(txtCMIVA.Text.Replace(".", ",")));
-            selectedComprobante.SetNoGravado(Convert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")));
-            selectedComprobante.SetPercepcion(Convert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")));
+            selectedComprobante.SetGravado(SafeConvert.ToDouble(txtCMGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetIVA(SafeConvert.ToDouble(txtCMIVA.Text.Replace(".", ",")));
+            selectedComprobante.SetNoGravado(SafeConvert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetPercepcion(SafeConvert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")));
 
             if (cm_ec_id != selectedComprobante.GetEntidadComercialID()) //entidad comercial cambio, esto va a ser un pushtodatabase
             {
@@ -854,22 +928,55 @@ txtCMDEntidadesFilter
 
         private void btnCMAgregarPago_Click(object sender, RoutedEventArgs e)
         {
-            if (dbData.GetComprobanteSelected() is null)
+            if (lbxCMDEntidadSelected.SelectedItem is null)
             {
-                MessageBox.Show("Contactar al programador: GetComprobanteSelected() es NULL en btnCMAgregarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMAgregarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, -1, txtCMPagoObservacion.Text);
-            if (newPago.PushToDatabase(dbCon.Connection))
+            if (cbxCMDTipoComprobante.SelectedItem is null)
             {
-                dbData.GetComprobanteSelected().AddPago(newPago);
+                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMAgregarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            if (dbData.GetComprobanteSelected() is null) //If there is no comprobante selected, then let's try to create a temporary one to work with...
+            {
+                dbData.SetComprobanteSelected(GenerateNewComprobanteFromDetallesForm());
+                if (dbData.GetComprobanteSelected() is null)
+                {
+                    MessageBox.Show("Contactar al programador: GetComprobanteSelected() es NULL en btnCMAgregarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, -1, txtCMPagoObservacion.Text);
+            if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true)
+            {
+                if (newPago.PushToDatabase(dbCon.Connection))
+                {
+                    dbData.GetComprobanteSelected().AddPago(newPago);
+                    guiRefreshComprobantesDetallesPagos();
+                }
+            } else //Add locally...
+            {
+                dbData.GetComprobanteSelected().AddPagoLocally(newPago);
                 guiRefreshComprobantesDetallesPagos();
             }
         }
 
         private void btnCMGuardarPago_Click(object sender, RoutedEventArgs e)
         {
+            if (lbxCMDEntidadSelected.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMGuardarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (cbxCMDTipoComprobante.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMGuardarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
             if ((dbData.GetComprobanteSelected() is null) || (dbData.GetPagoSelected() is null))
             {
                 MessageBox.Show("Contactar al programador: GetComprobanteSelected() o GetPagoSelected()  es NULL en btnCMGuardarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -885,15 +992,26 @@ txtCMDEntidadesFilter
             pagoModificado.SetFormaDePago(((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key);
             pagoModificado.SetObservacion(txtCMPagoObservacion.Text);
 
-            if (pagoModificado.PushToDatabase(dbCon.Connection))
-            {
+             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true || pagoModificado.PushToDatabase(dbCon.Connection))
+             {
                 guiRefreshComprobantesDetallesPagos();
-            }
+             }
 
         }
 
         private void btnCMEliminarPago_Click(object sender, RoutedEventArgs e)
         {
+            if (lbxCMDEntidadSelected.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (cbxCMDTipoComprobante.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
             if ((dbData.GetComprobanteSelected() is null) || (dbData.GetPagoSelected() is null))
             {
                 MessageBox.Show("Contactar al programador: GetComprobanteSelected() o GetPagoSelected()  es NULL en btnCMEliminarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -906,7 +1024,7 @@ txtCMDEntidadesFilter
             }
             DBComprobantePago pagoEliminar = dbData.GetPagoSelected();
 
-            if (pagoEliminar.DeleteFromDatabase(dbCon.Connection))
+            if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true || pagoEliminar.DeleteFromDatabase(dbCon.Connection))
             {
                 dbData.GetComprobanteSelected().RemovePago(pagoEliminar);
             }
@@ -990,14 +1108,14 @@ txtCMDEntidadesFilter
             {
                 selectedComprobante.SetFechaPago(null);
             }
-            selectedComprobante.SetEmitido(Convert.ToBoolean(rdbCMDEmitido.IsChecked));
+            selectedComprobante.SetEmitido(SafeConvert.ToBoolean(rdbCMDEmitido.IsChecked));
             selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key);
             selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key);
             selectedComprobante.SetNumeroComprobante(txtCMDNumero.Text);
-            selectedComprobante.SetGravado(Convert.ToDouble(txtCMDGravado.Text.Replace(".", ",")));
-            selectedComprobante.SetIVA(Convert.ToDouble(txtCMDIVA.Text.Replace(".", ",")));
-            selectedComprobante.SetNoGravado(Convert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")));
-            selectedComprobante.SetPercepcion(Convert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")));
+            selectedComprobante.SetGravado(SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetIVA(SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")));
+            selectedComprobante.SetNoGravado(SafeConvert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")));
+            selectedComprobante.SetPercepcion(SafeConvert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")));
 
             bool dataUpdateDBSuccess = false;
 
@@ -1020,8 +1138,6 @@ txtCMDEntidadesFilter
             {
                 MessageBox.Show("¡Información agregada a la base de datos correctamente!");
             }
-
-
         }
 
         private void btnCMDInsertarEntidad_Click(object sender, RoutedEventArgs e)
@@ -1037,42 +1153,33 @@ txtCMDEntidadesFilter
                 MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMDInsertarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
-            DateTime fechaEmitido = new DateTime();
-            DateTime? feFinal = null;
-
-            if (DateTime.TryParse(txtCMDFechaEmitido.Text, out fechaEmitido))
-            {
-                feFinal = fechaEmitido;
-            }
-
-            DateTime fechaPago = new DateTime();
-            DateTime? fpFinal = null;
-
-            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
-            {
-                fpFinal = fechaPago;
-            }
-
             long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
 
-            DBComprobantes newComprobante = new DBComprobantes(
-                    dbData.GetCurrentAccount(),
-                    entidadComercial_id,
-                    ((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key,
-                    new ComprobantesData(-1,
-                                        feFinal,
-                                        fpFinal,
-                                        txtCMDNumero.Text,
-                                        Convert.ToDouble(txtCMDGravado.Text.Replace(".", ",")),
-                                        Convert.ToDouble(txtCMDIVA.Text.Replace(".", ",")),
-                                        Convert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")),
-                                        Convert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")),
-                                        Convert.ToBoolean(rdbCMDEmitido.IsChecked))
-            );
+            DBComprobantes newComprobante;
+            if (!(dbData.GetComprobanteSelected() is null) && dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false)
+            {
+                UpdateSelectedComprobanteFromDetallesForm();
+                newComprobante = dbData.GetComprobanteSelected();
+            } else {
+                newComprobante = GenerateNewComprobanteFromDetallesForm();
+            }
             if (newComprobante.PushToDatabase(dbCon.Connection))
             {
                 dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
                 dbData.SetComprobanteSelected(newComprobante);
+
+                //Now let's add the "pagos" to the database...
+
+                List<DBComprobantePago> listaPagosToAdd = dbData.GetComprobanteSelected().GetAllPagos();
+
+                foreach (DBComprobantePago pago in listaPagosToAdd)
+                {
+                    Console.WriteLine("Agregando pago...");
+                    if (pago.PushToDatabase(dbCon.Connection))
+                    {
+                        Console.WriteLine("Pago agregado...");
+                    }
+                }
                 guiComprobantesRefresh();
 
                 MessageBox.Show("¡Información agregada a la base de datos correctamente!");

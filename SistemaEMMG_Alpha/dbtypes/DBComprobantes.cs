@@ -595,14 +595,41 @@ namespace SistemaEMMG_Alpha
             _db_pagos.Add(newPago);
             return true;
         }
+        private long GetLocalPagoAvailableID()
+        {
+            long availableID = -1;
+            foreach (DBComprobantePago pago in _db_pagos)
+            {
+                if (pago.GetID() <= availableID)
+                {
+                    availableID = pago.GetID() - 1;
+                }
+            }
+            return availableID;
+        }
+        public bool AddPagoLocally(DBComprobantePago newPago) //used to handle local data that is not stored at the DB yet...
+        {
+            if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || newPago.GetComprobanteID() != GetID())
+            {
+                Console.WriteLine("cannot add new pago...");
+                return false; //Cannot add an payament from another account, entity or receipt like this...
+            }
+            if (DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago))
+            {
+                newPago.ResetID(GetLocalPagoAvailableID());
+            }
+            _db_pagos.Add(newPago);
+            return true;
+        }
+
         public void RemovePago(DBComprobantePago entRemove)
         {
             _db_pagos.Remove(entRemove);
         }
 
-        public void ResetID()
+        public void ResetID(long newId = -1)
         {
-            _data = new ComprobantesData(-1, _data.cm_fecha, _data.cm_fpago, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
+            _data = new ComprobantesData(newId, _data.cm_fecha, _data.cm_fpago, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
         }
         public long GetID() => _data.cm_id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
