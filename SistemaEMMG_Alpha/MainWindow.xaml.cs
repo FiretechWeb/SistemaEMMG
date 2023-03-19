@@ -945,6 +945,7 @@ txtCMDEntidadesFilter
         {
             if (dbData.GetComprobanteSelected() is null)
             {
+                MessageBox.Show("Contactar al programador: has tratado de actualizar un comprobante que no existe en la base de datos en btnCMDGuardarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -959,15 +960,16 @@ txtCMDEntidadesFilter
                 MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMDGuardarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
-            long cm_ec_id = dbData.GetComprobanteSelected().GetEntidadComercialID();
-            long cm_id = dbData.GetComprobanteSelected().GetID();
-
             DBComprobantes selectedComprobante = dbData.GetComprobanteSelected();
             if (selectedComprobante is null)
             {
                 MessageBox.Show("Error al tratar de modificar este comprobante. Valor devuelto: NULL");
                 return;
             }
+
+            long cm_ec_id = dbData.GetComprobanteSelected().GetEntidadComercialID();
+            long cm_id = dbData.GetComprobanteSelected().GetID();
+
 
             DateTime fechaEmitido = new DateTime();
             if (DateTime.TryParse(txtCMDFechaEmitido.Text, out fechaEmitido))
@@ -1016,9 +1018,65 @@ txtCMDEntidadesFilter
 
             if (dataUpdateDBSuccess)
             {
-                MessageBox.Show("Información agregada a la base de datos correctamente!");
+                MessageBox.Show("¡Información agregada a la base de datos correctamente!");
             }
 
+
+        }
+
+        private void btnCMDInsertarEntidad_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbxCMDEntidadSelected.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en bbtnCMDInsertarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (cbxCMDTipoComprobante.SelectedItem is null)
+            {
+                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMDInsertarEntidad_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            DateTime fechaEmitido = new DateTime();
+            DateTime? feFinal = null;
+
+            if (DateTime.TryParse(txtCMDFechaEmitido.Text, out fechaEmitido))
+            {
+                feFinal = fechaEmitido;
+            }
+
+            DateTime fechaPago = new DateTime();
+            DateTime? fpFinal = null;
+
+            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
+            {
+                fpFinal = fechaPago;
+            }
+
+            long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
+
+            DBComprobantes newComprobante = new DBComprobantes(
+                    dbData.GetCurrentAccount(),
+                    entidadComercial_id,
+                    ((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key,
+                    new ComprobantesData(-1,
+                                        feFinal,
+                                        fpFinal,
+                                        txtCMDNumero.Text,
+                                        Convert.ToDouble(txtCMDGravado.Text.Replace(".", ",")),
+                                        Convert.ToDouble(txtCMDIVA.Text.Replace(".", ",")),
+                                        Convert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")),
+                                        Convert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")),
+                                        Convert.ToBoolean(rdbCMDEmitido.IsChecked))
+            );
+            if (newComprobante.PushToDatabase(dbCon.Connection))
+            {
+                dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
+                dbData.SetComprobanteSelected(newComprobante);
+                guiComprobantesRefresh();
+
+                MessageBox.Show("¡Información agregada a la base de datos correctamente!");
+            }
 
         }
     }

@@ -46,7 +46,14 @@ namespace SistemaEMMG_Alpha
     }
     public interface DBInterface
     {
+        ///<summary>
+        ///Returns the name of the table where this element is stored at the Database.
+        ///</summary>
         string GetDBTableName();
+        ///<summary>
+        ///Check if element exists in the database or not. If it returns null, it means there was an error connecting with the DB.
+        ///</summary>
+        bool? ExistsInDatabase(MySqlConnection conn);
         ///<summary>
         ///Get the ID of the element as it is stored in the Database
         ///</summary>

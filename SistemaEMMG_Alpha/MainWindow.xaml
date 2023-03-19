@@ -497,7 +497,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Button x:Name="btnCMDAtras" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Click="btnCMDAtras_Click">Atras</Button>
                                 <Button x:Name="btnCMDGuardarEntidad" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Click="btnCMDGuardarEntidad_Click">Guardar</Button>
-                                <Button x:Name="btnCMDInsertarEntidad" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">Insertar</Button>
+                                <Button x:Name="btnCMDInsertarEntidad" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Click="btnCMDInsertarEntidad_Click">Insertar</Button>
                             </Grid>
                         </Grid>
                     </Grid>
