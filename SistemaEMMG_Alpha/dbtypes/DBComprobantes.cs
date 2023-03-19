@@ -119,7 +119,7 @@ namespace SistemaEMMG_Alpha
                             reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
                             reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
                             reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))))); //Waste of persformance but helps with making the code less propense to error.
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))))); 
                 }
                 reader.Close();
             }
@@ -214,7 +214,7 @@ namespace SistemaEMMG_Alpha
                             reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
                             reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
                             reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))); //Waste of persformance but helps with making the code less propense to error.
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))));
                 }
                 reader.Close();
             }

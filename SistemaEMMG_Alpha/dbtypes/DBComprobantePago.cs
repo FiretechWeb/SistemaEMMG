@@ -24,14 +24,15 @@ namespace SistemaEMMG_Alpha
             return $"Observación: {cp_obs}";
         }
     }
+    //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBComprobantePago y ComprobantePagoData
     public class DBComprobantePago : DBBaseClass, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
     {
-        public static readonly string db_table = "comprobantes_pagos";
-        public static readonly string NameOf_cp_em_id = "cp_em_id";
-        public static readonly string NameOf_cp_ec_id = "cp_ec_id";
-        public static readonly string NameOf_cp_cm_id = "cp_cm_id";
-        public static readonly string NameOf_id = "cp_id";
-        public static readonly string NameOf_cp_fp_id = "cp_fp_id";
+        public const string db_table = "comprobantes_pagos";
+        public const string NameOf_cp_em_id = "cp_em_id";
+        public const string NameOf_cp_ec_id = "cp_ec_id";
+        public const string NameOf_cp_cm_id = "cp_cm_id";
+        public const string NameOf_id = "cp_id";
+        public const string NameOf_cp_fp_id = "cp_fp_id";
         private long _id;
         private ComprobantePagoData _data;
         private DBComprobantes _comprobante;
