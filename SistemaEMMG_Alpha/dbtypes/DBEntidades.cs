@@ -36,10 +36,10 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
         ///</summary>
-        public static readonly string db_table = "ent_comerciales";
-        public static readonly string NameOf_ec_te_id = "ec_te_id";
-        public static readonly string NameOf_ec_em_id = "ec_em_id";
-        public static readonly string NameOf_id = "ec_id";
+        public const string db_table = "ent_comerciales";
+        public const string NameOf_ec_te_id = "ec_te_id";
+        public const string NameOf_ec_em_id = "ec_em_id";
+        public const string NameOf_id = "ec_id";
         ///<summary>
         ///Business Account associated with this commercial entity.
         ///</summary>

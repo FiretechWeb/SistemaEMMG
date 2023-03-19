@@ -32,8 +32,8 @@ namespace SistemaEMMG_Alpha
         /*************************
          * Global Static STUFFF *
          ************************/
-        public static readonly string db_table = "empresas";
-        public static readonly string NameOf_id = "em_id";
+        public const string db_table = "empresas";
+        public const string NameOf_id = "em_id";
         private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
 
         public static List<DBEmpresa> UpdateAll(MySqlConnection conn)

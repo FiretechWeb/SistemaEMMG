@@ -29,8 +29,8 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
         ///</summary>
-        public static readonly string db_table = "formas_pago";
-        public static readonly string NameOf_id = "fp_id";
+        public const string db_table = "formas_pago";
+        public const string NameOf_id = "fp_id";
         private long _id;
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();

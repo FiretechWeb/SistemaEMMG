@@ -30,8 +30,8 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
         ///</summary>
-        public static readonly string db_table = "tipos_entidades";
-        public static readonly string NameOf_id = "te_id";
+        public const string db_table = "tipos_entidades";
+        public const string NameOf_id = "te_id";
         private long _id;
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();

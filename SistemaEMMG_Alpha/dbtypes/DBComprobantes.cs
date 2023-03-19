@@ -44,11 +44,11 @@ namespace SistemaEMMG_Alpha
     }
     public class DBComprobantes : DBBaseClass, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>
     {
-        public static readonly string db_table = "comprobantes";
-        public static readonly string NameOf_cm_em_id = "cm_em_id";
-        public static readonly string NameOf_cm_ec_id = "cm_ec_id";
-        public static readonly string NameOf_cm_tc_id = "cm_tc_id";
-        public static readonly string NameOf_id = "cm_id";
+        public const string db_table = "comprobantes";
+        public const string NameOf_cm_em_id = "cm_em_id";
+        public const string NameOf_cm_ec_id = "cm_ec_id";
+        public const string NameOf_cm_tc_id = "cm_tc_id";
+        public const string NameOf_id = "cm_id";
         ///<summary>
         ///Commercial entity associated with this business receipt.
         ///</summary>
@@ -97,11 +97,29 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidad = new DBEntidades(cuenta, reader.GetInt64Safe("ec_id"), newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe(DBTipoEntidad.NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    DBEntidades newEntidad = new DBEntidades(cuenta,
+                        reader.GetInt64Safe(DBEntidades.NameOf_id),
+                        newTipoEntidadComercial,
+                        new EntidadesComercialesData(
+                            reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
+                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
+                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
+                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
+                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)));
 
-                    returnList.Add(new DBComprobantes(newEntidad, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantes(newEntidad,
+                        reader.GetInt64Safe(NameOf_id),
+                        newTipoComprobante,
+                        new ComprobantesData(
+                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
+                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }

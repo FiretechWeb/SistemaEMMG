@@ -30,8 +30,8 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
         ///</summary>
-        public static readonly string db_table = "tipos_comprobantes";
-        public static readonly string NameOf_id = "tc_id";
+        public const string db_table = "tipos_comprobantes";
+        public const string NameOf_id = "tc_id";
         private long _id;
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
@@ -253,7 +253,6 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-
         public TiposComprobantesData Data
         {
             get => _data;
@@ -262,7 +261,6 @@ namespace SistemaEMMG_Alpha
                 _data = value;
             }
         }
-
         protected override void ChangeID(long id) => _id = id;
 
         public override long GetID() => _id;
