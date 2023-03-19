@@ -17,6 +17,8 @@ namespace SistemaEMMG_Alpha
         }
         public string cp_obs { get; set; }
 
+        public static readonly string NameOf_cp_obs = nameof(cp_obs);
+
         public override string ToString()
         {
             return $"Observación: {cp_obs}";
@@ -25,6 +27,11 @@ namespace SistemaEMMG_Alpha
     public class DBComprobantePago : DBBaseClass, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
     {
         public static readonly string db_table = "comprobantes_pagos";
+        public static readonly string NameOf_cp_em_id = "cp_em_id";
+        public static readonly string NameOf_cp_ec_id = "cp_ec_id";
+        public static readonly string NameOf_cp_cm_id = "cp_cm_id";
+        public static readonly string NameOf_id = "cp_id";
+        public static readonly string NameOf_cp_fp_id = "cp_fp_id";
         private long _id;
         private ComprobantePagoData _data;
         private DBComprobantes _comprobante;
@@ -410,7 +417,6 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $"UPDATE {db_table} SET cp_fp_id = {_formaDePago.GetID()}, cp_obs = '{_data.cp_obs}' WHERE cp_em_id = {GetCuentaID()} AND cp_ec_id = {GetEntidadComercialID()} AND cp_cm_id = {GetComprobanteID()} AND cp_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
                 {
@@ -432,7 +438,6 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $"INSERT INTO {db_table} (cp_em_id, cp_ec_id, cp_cm_id, cp_fp_id, cp_obs) VALUES ({GetCuentaID()}, {GetEntidadComercialID()}, {GetComprobanteID()}, {_formaDePago.GetID()}, '{_data.cp_obs}')";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
@@ -471,16 +476,7 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $"SELECT COUNT(*) FROM {db_table} WHERE cp_em_id = {GetCuentaID()} AND cp_ec_id = {GetEntidadComercialID()} AND cp_cm_id = {GetComprobanteID()} AND cp_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
-
-                if (recordsCount > 0)
-                {
-                    existsInDB = true;
-                }
-                else
-                {
-                    existsInDB = false;
-                }
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
             catch (Exception ex)
             {

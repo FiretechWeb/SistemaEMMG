@@ -17,6 +17,8 @@ namespace SistemaEMMG_Alpha
         }
         public string fp_nombre { get; set; }
 
+        public static readonly string NameOf_fp_nombre = nameof(fp_nombre);
+
         public override string ToString()
         {
             return $"Nombre: {fp_nombre}";
@@ -24,7 +26,11 @@ namespace SistemaEMMG_Alpha
     }
     public class DBFormasPago : DBBaseClass, IDBDataType<DBFormasPago>
     {
+        ///<summary>
+        ///Contains the name of the table where this element is stored at the Database.
+        ///</summary>
         public static readonly string db_table = "formas_pago";
+        public static readonly string NameOf_id = "fp_id";
         private long _id;
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
@@ -58,8 +64,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_formas_pago.Add(new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre")));
-                    returnList.Add(new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"))); //Waste of performance but helps with making the code less propense to error.
+                    _db_formas_pago.Add(new DBFormasPago(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre)));
+                    returnList.Add(new DBFormasPago(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre))); //Waste of performance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -117,13 +123,13 @@ namespace SistemaEMMG_Alpha
             DBFormasPago returnEnt = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE fp_id = {fp_id}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {fp_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEnt = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
+                    returnEnt = new DBFormasPago(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
                 }
                 reader.Close();
             }
@@ -148,13 +154,13 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE fp_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new FormasPagoData(reader.GetStringSafe("fp_nombre"));
+                    _data = new FormasPagoData(reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
                 }
                 reader.Close();
             }
@@ -189,9 +195,8 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET fp_nombre = '{_data.fp_nombre}' WHERE fp_id = {GetID()}";
+                string query = $"UPDATE {db_table} SET {FormasPagoData.NameOf_fp_nombre} = '{_data.fp_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
                 {
@@ -211,9 +216,8 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} (fp_nombre) VALUES ('{_data.fp_nombre}')";
+                string query = $"INSERT INTO {db_table} ({FormasPagoData.NameOf_fp_nombre}) VALUES ('{_data.fp_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
@@ -229,7 +233,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE fp_id = {GetID()}";
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -246,20 +250,10 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE fp_id = {GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
 
-                //if exists already, just update
-                if (recordsCount > 0)
-                {
-                    existsInDB = true;
-                }
-                else
-                {
-                    existsInDB = false;
-                }
             }
             catch (Exception ex)
             {

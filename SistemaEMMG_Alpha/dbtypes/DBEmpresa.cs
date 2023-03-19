@@ -19,6 +19,9 @@ namespace SistemaEMMG_Alpha
         public long em_cuit { get; set; }
         public string em_rs { get; set; }
 
+        public static readonly string NameOf_em_cuit = nameof(em_cuit);
+        public static readonly string NameOf_em_rs = nameof(em_rs);
+
         public override string ToString()
         {
             return $"Nombre Empresa: {em_rs} - CUIT: {em_cuit}";
@@ -30,8 +33,8 @@ namespace SistemaEMMG_Alpha
          * Global Static STUFFF *
          ************************/
         public static readonly string db_table = "empresas";
+        public static readonly string NameOf_id = "em_id";
         private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
-
 
         public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
         {
@@ -46,8 +49,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBEmpresa(reader.GetInt64Safe("em_id"), reader.GetInt64Safe("em_cuit"), reader.GetStringSafe("em_rs")));
-                    _db_empresas.Add(new DBEmpresa(reader.GetInt64Safe("em_id"), reader.GetInt64Safe("em_cuit"), reader.GetStringSafe("em_rs")));
+                    returnList.Add(new DBEmpresa(reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs)));
+                    _db_empresas.Add(new DBEmpresa(reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs)));
                 }
 
                 reader.Close();
@@ -124,14 +127,14 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE em_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new EmpresasData(reader.GetInt64Safe("em_cuit"), reader.GetStringSafe("em_rs"));
+                    _data = new EmpresasData(reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs));
                 }
 
                 reader.Close();
@@ -157,9 +160,8 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET em_cuit = {_data.em_cuit}, em_rs = '{_data.em_rs}' WHERE em_id = {GetID()}";
+                string query = $"UPDATE {db_table} SET {EmpresasData.NameOf_em_cuit} = {_data.em_cuit}, {EmpresasData.NameOf_em_rs} = '{_data.em_rs}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
                 {
@@ -179,9 +181,8 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} (em_cuit, em_rs) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
+                string query = $"INSERT INTO {db_table} ({EmpresasData.NameOf_em_cuit}, {EmpresasData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
@@ -197,7 +198,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE em_id = {GetID()}";
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -214,19 +215,9 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE em_id = {GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
-
-                //if exists already, just update
-                if (recordsCount > 0)
-                {
-                    existsInDB = true;
-                } else
-                {
-                    existsInDB = false;
-                }
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             } catch (Exception ex)
             {
                 MessageBox.Show("Error en el método DBEmpresa::ExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);

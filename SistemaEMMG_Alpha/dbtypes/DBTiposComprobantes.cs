@@ -17,6 +17,8 @@ namespace SistemaEMMG_Alpha
         }
         public string tc_nombre { get; set; }
 
+        public static readonly string NameOf_tc_nombre = nameof(tc_nombre);
+
         public override string ToString()
         {
             return $"Nombre: {tc_nombre}";
@@ -29,6 +31,7 @@ namespace SistemaEMMG_Alpha
         ///Contains the name of the table where this element is stored at the Database.
         ///</summary>
         public static readonly string db_table = "tipos_comprobantes";
+        public static readonly string NameOf_id = "tc_id";
         private long _id;
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
@@ -62,8 +65,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_tipos_comprobantes.Add(new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre")));
-                    returnList.Add(new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"))); //Waste of performance but helps with making the code less propense to error.
+                    _db_tipos_comprobantes.Add(new DBTiposComprobantes(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre)));
+                    returnList.Add(new DBTiposComprobantes(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre))); //Waste of performance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -121,13 +124,13 @@ namespace SistemaEMMG_Alpha
             DBTiposComprobantes returnEnt = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE tc_id = {tc_id}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {tc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEnt = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
+                    returnEnt = new DBTiposComprobantes(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
                 }
                 reader.Close();
             }
@@ -152,13 +155,13 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE tc_id = {id}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new TiposComprobantesData(reader.GetStringSafe("tc_nombre"));
+                    _data = new TiposComprobantesData(reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
                 }
                 reader.Close();
             }
@@ -185,9 +188,8 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET tc_nombre = '{_data.tc_nombre}' WHERE tc_id = {GetID()}";
+                string query = $"UPDATE {db_table} SET {TiposComprobantesData.NameOf_tc_nombre} = '{_data.tc_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
                 {
@@ -207,9 +209,8 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} (tc_nombre) VALUES ('{_data.tc_nombre}')";
+                string query = $"INSERT INTO {db_table} ({TiposComprobantesData.NameOf_tc_nombre}) VALUES ('{_data.tc_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
-                cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
@@ -225,7 +226,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE tc_id = {GetID()}";
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
             }
@@ -241,18 +242,9 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE tc_id = {GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
-
-                if (recordsCount > 0)
-                {
-                    existsInDB = true;
-                }
-                else
-                {
-                    existsInDB = false;
-                }
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
             catch (Exception ex)
             {
