@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaEMMG_Alpha"
         mc:Ignorable="d"
-        Title="Sistema Comprobantes (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip">
+        Title="Sistema Compra-Venta (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip">
     <Grid>
     <DockPanel Canvas.Left="0" Canvas.Top="0" Canvas.Right="0" Canvas.Bottom="0">
         <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="40" VerticalAlignment="Top">
             <Image Width="25" Margin="5, 0, 5, 0" DockPanel.Dock="Left"  HorizontalAlignment="Left" Source=".\graphics\logo.png" />
-            <Label DockPanel.Dock="Left" Foreground="White" FontFamily="Verdana" VerticalAlignment="Center" FontWeight="Black">Sistema Comprobantes</Label>
+            <Label DockPanel.Dock="Left" Foreground="White" FontFamily="Verdana" VerticalAlignment="Center" FontWeight="Black">Sistema Compra-venta</Label>
             <Label DockPanel.Dock="Right" Margin="5, 0, 5, 2" HorizontalAlignment="Right" Foreground="#33435a" FontFamily="Verdana" VerticalAlignment="Bottom" FontWeight="Black">Stradex()</Label>
         </DockPanel>
         <DockPanel Background="Black"  Height="26" DockPanel.Dock="Top" VerticalAlignment="Top" >
@@ -109,16 +109,14 @@
                                     <ComboBox x:Name="cmbTipoEC" Margin="5, 5, 5, 5" Grid.Row="0" Grid.Column="1" Height="25" VerticalAlignment="Center"></ComboBox>
                                     <Label Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Margin="5, 5, 5, 5">CUIT:</Label>
                                     <TextBox x:Name="txbCUITEC"  Margin="5, 5, 5, 5" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MaxLength="32" PreviewTextInput="txbCUITEC_PreviewTextInput"></TextBox>
-                                    <Label Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Margin="5, 5, 5, 5">DNI:</Label>
-                                    <TextBox x:Name="txbDNIEC"  Margin="5, 5, 5, 5" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" MaxLength="32" PreviewTextInput="txbDNIEC_PreviewTextInput"></TextBox>
-                                    <Label Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Margin="5, 5, 5, 5">Razón Social:</Label>
-                                    <TextBox x:Name="tbxRazonSocialEC"  Margin="5, 5, 5, 5" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
-                                    <Label Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" Margin="5, 5, 5, 5">Email:</Label>
-                                    <TextBox x:Name="tbxEmailEC"  Margin="5, 5, 5, 5" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
-                                    <Label Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" Margin="5, 5, 5, 5">Teléfono:</Label>
-                                    <TextBox x:Name="tbxTelEC"  Margin="5, 5, 5, 5" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
-                                    <Label Grid.Column="0" Grid.Row="6" VerticalAlignment="Center" Margin="5, 5, 5, 5">Celular:</Label>
-                                    <TextBox x:Name="tbxCelEC"  Margin="5, 5, 5, 5" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Margin="5, 5, 5, 5">Razón Social:</Label>
+                                    <TextBox x:Name="tbxRazonSocialEC"  Margin="5, 5, 5, 5" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Margin="5, 5, 5, 5">Email:</Label>
+                                    <TextBox x:Name="tbxEmailEC"  Margin="5, 5, 5, 5" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" Margin="5, 5, 5, 5">Teléfono:</Label>
+                                    <TextBox x:Name="tbxTelEC"  Margin="5, 5, 5, 5" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
+                                    <Label Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" Margin="5, 5, 5, 5">Celular:</Label>
+                                    <TextBox x:Name="tbxCelEC"  Margin="5, 5, 5, 5" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" MaxLength="32"></TextBox>
                                 </Grid>
                                 <Grid Grid.Row="1" Grid.Column="0">
                                     <Grid.ColumnDefinitions>
@@ -159,7 +157,6 @@
                                     <DataGridTextColumn Header="IVA" Binding="{Binding iva}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="No Gravado" Binding="{Binding no_gravado}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Percepción" Binding="{Binding percepcion}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Fecha Pago" Binding="{Binding fecha_pago}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <WrapPanel Grid.Row="1">
@@ -262,17 +259,6 @@
                                     <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Percepción</Label>
                                     <TextBox x:Name="txtCMPercepcion" Grid.Row="1" MinWidth="60"></TextBox>
                                 </Grid>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
-
-                                    <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1"></Border>
-                                    <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1"></Border>
-                                    <Label Grid.Row="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Fecha pago</Label>
-                                    <TextBox x:Name="txtCMFechaPago" Grid.Row="1" MinWidth="80"></TextBox>
-                                </Grid>
                                 <Button x:Name="btnCMVerDetalles" Margin="5, 5, 5, 5" MaxWidth="150" VerticalAlignment="Center" FontSize="15" HorizontalAlignment="Center" Click="btnCMVerDetalles_Click">Detalles</Button>
 
                             </WrapPanel>
@@ -299,7 +285,6 @@
                                             <ComboBoxItem>Tipo Comprobante</ComboBoxItem>
                                             <ComboBoxItem>Número</ComboBoxItem>
                                             <ComboBoxItem>Razón Social</ComboBoxItem>
-                                            <ComboBoxItem>Fecha Pago</ComboBoxItem>
                                         </ComboBox>
                                     </WrapPanel>
                                 </Grid>
@@ -443,14 +428,6 @@
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
                                         <TextBox x:Name="txtCMDPercepcion" Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                                    </Grid>
-                                    <Grid Grid.Row="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Fecha pago:</Label>
-                                        <TextBox x:Name="txtCMDFechaPago" Grid.Column="1" VerticalAlignment="Center"></TextBox>
                                     </Grid>
                                     <Grid Grid.Row="5">
                                         <Grid.ColumnDefinitions>

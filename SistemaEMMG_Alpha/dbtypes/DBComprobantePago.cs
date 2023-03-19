@@ -119,7 +119,7 @@ namespace SistemaEMMG_Alpha
                 {
                     DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
 
                     returnList.Add(new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
                 }
@@ -158,10 +158,10 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
                     DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
 
                     returnList.Add(new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
                 }
@@ -200,10 +200,10 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
                     DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
 
                     returnEnt = new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
                 }
@@ -243,7 +243,7 @@ namespace SistemaEMMG_Alpha
                 {
                     DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
 
                     returnEnt = new DBComprobantePago(newComprobante, newFormaDePago, new ComprobantePagoData(reader.GetInt64Safe("cp_id"), reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
                 }
@@ -398,8 +398,6 @@ namespace SistemaEMMG_Alpha
                 if (existsInDB == true)
                 {
                     query = $"UPDATE {db_table} SET cp_fp_id = {_formaDePago.GetID()}, cp_obs = '{_data.cp_obs}' WHERE cp_em_id = {GetCuentaID()} AND cp_ec_id = {GetEntidadComercialID()} AND cp_cm_id = {GetComprobanteID()} AND cp_id = {_data.cp_id}";
-                    //query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido}, cm_fpago = {fechaPago}, cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado} WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
-
                 }
                 else //if does not exists, insert into
                 {

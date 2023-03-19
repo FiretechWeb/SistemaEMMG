@@ -11,11 +11,10 @@ namespace SistemaEMMG_Alpha
 {
     public struct EntidadesComercialesData
     {
-        public EntidadesComercialesData(long id, long cuit, long dni, string rs, string email, string tel, string cel)
+        public EntidadesComercialesData(long id, long cuit, string rs, string email, string tel, string cel)
         {
             ec_id = id;
             ec_cuit = cuit;
-            ec_dni = dni;
             ec_rs = rs;
             ec_email = email;
             ec_telefono = tel;
@@ -24,7 +23,6 @@ namespace SistemaEMMG_Alpha
         //Class handles ec_em_id y ec_te_id since it is better to hold references to those dataTypes instead of values
         public long ec_id { get; }
         public long ec_cuit { get; set; }
-        public long ec_dni { get; set; }
         public string ec_rs { get; set; }
         public string ec_email { get; set; }
         public string ec_telefono { get; set; }
@@ -65,14 +63,14 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, - 1, cuit, rs, dni, email, tel, cel) { }
+        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, new EntidadesComercialesData(id, cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, long te_id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, dni, email, tel, cel) { }
+        public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, new EntidadesComercialesData(id, cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, new EntidadesComercialesData(id, cuit, dni, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, long dni = -1, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, dni, email, tel, cel) { }
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, new EntidadesComercialesData(id, cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, email, tel, cel) { }
 
 
         //GetDBTableName
@@ -93,7 +91,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     // _db_tipos_entidades.Add(new DBTipoEntidad(reader.GetInt64("te_id"), reader.GetString("te_nombre")));
-                   returnList.Add(new DBEntidades(empresa, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"))); //Waste of persformance but helps with making the code less propense to error.
+                   returnList.Add(new DBEntidades(empresa, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -116,7 +114,7 @@ namespace SistemaEMMG_Alpha
 
                 if (reader.Read())
                 {
-                    returnEntidad = new DBEntidades(cuenta, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
+                    returnEntidad = new DBEntidades(cuenta, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
                 }
                 reader.Close();
             }
@@ -192,12 +190,12 @@ namespace SistemaEMMG_Alpha
                 //if exists already, just update
                 if (existsInDB == true)
                 {
-                    query = $"UPDATE {db_table} SET ec_te_id = {_tipoEntidad.GetID()}, ec_cuit = {_data.ec_cuit}, ec_dni = {_data.ec_dni}, ec_rs = '{_data.ec_rs}', ec_email ='{_data.ec_email}', ec_telefono='{_data.ec_telefono}', ec_celular='{_data.ec_celular}' WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
+                    query = $"UPDATE {db_table} SET ec_te_id = {_tipoEntidad.GetID()}, ec_cuit = {_data.ec_cuit}, ec_rs = '{_data.ec_rs}', ec_email ='{_data.ec_email}', ec_telefono='{_data.ec_telefono}', ec_celular='{_data.ec_celular}' WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
 
                 }
                 else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO {db_table} (ec_em_id, ec_te_id, ec_cuit, ec_dni, ec_rs, ec_email, ec_telefono, ec_celular) VALUES ({_cuentaEmpresa.GetID()}, {_tipoEntidad.GetID()}, {_data.ec_cuit}, {_data.ec_dni}, '{_data.ec_rs}', '{_data.ec_email}', '{_data.ec_telefono}', '{_data.ec_celular}')";
+                    query = $"INSERT INTO {db_table} (ec_em_id, ec_te_id, ec_cuit, ec_rs, ec_email, ec_telefono, ec_celular) VALUES ({_cuentaEmpresa.GetID()}, {_tipoEntidad.GetID()}, {_data.ec_cuit}, '{_data.ec_rs}', '{_data.ec_email}', '{_data.ec_telefono}', '{_data.ec_celular}')";
                 }
                 //if not, add
                 var cmd = new MySqlCommand(query, conn);
@@ -205,7 +203,7 @@ namespace SistemaEMMG_Alpha
                 cmd.ExecuteNonQuery();
                 if (existsInDB == false) //Recently inserted into the DB, so we need to update the ID generated by the DataBase
                 {
-                    _data = new EntidadesComercialesData(cmd.LastInsertedId, _data.ec_cuit, _data.ec_dni, _data.ec_rs, _data.ec_email, _data.ec_telefono, _data.ec_celular);
+                    _data = new EntidadesComercialesData(cmd.LastInsertedId, _data.ec_cuit,  _data.ec_rs, _data.ec_email, _data.ec_telefono, _data.ec_celular);
                 }
                 wasAbleToPush = true;
             }
@@ -318,7 +316,6 @@ namespace SistemaEMMG_Alpha
 
         public long GetCUIT() => _data.ec_cuit;
 
-        public long GetDNI() => _data.ec_dni;
         public string GetRazonSocial() => _data.ec_rs;
 
         public string GetEmail() => _data.ec_email;
@@ -338,8 +335,6 @@ namespace SistemaEMMG_Alpha
         public void SetTelefono(string tel) => _data.ec_telefono = tel;
 
         public void SetCelular(string cel) => _data.ec_celular = cel;
-
-        public void SetDNI(long dni) => _data.ec_dni = dni;
 
         public void SetTipoEntidad(DBTipoEntidad newType) => _tipoEntidad = newType.Clone();
 

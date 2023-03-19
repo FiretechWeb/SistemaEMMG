@@ -11,11 +11,10 @@ namespace SistemaEMMG_Alpha
 {
     public struct ComprobantesData
     {
-        public ComprobantesData(long id, DateTime? fecha, DateTime? pago, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido)
+        public ComprobantesData(long id, DateTime? fecha, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido)
         {
             cm_id = id;
             cm_fecha = fecha;
-            cm_fpago = pago;
             cm_numero = numero;
             cm_gravado = gravado;
             cm_iva = iva;
@@ -25,7 +24,6 @@ namespace SistemaEMMG_Alpha
         }
         public long cm_id { get; set; }
         public DateTime? cm_fecha { get; set; } //sql date format 2004-01-22 yyyy-mm-dd use DateTime.Now.ToString("yyyy-mm-dddd"). To convert it from string to DateTime use DateTime.ParseExact(string, "yyyy-mm-dddd", null)
-        public DateTime? cm_fpago { get; set; }
         public string cm_numero { get; set; }
         public double cm_gravado { get; set; }
         public double cm_iva { get; set; }
@@ -96,9 +94,9 @@ namespace SistemaEMMG_Alpha
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
                     DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidad = new DBEntidades(cuenta, newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
+                    DBEntidades newEntidad = new DBEntidades(cuenta, newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
 
-                    returnList.Add(new DBComprobantes(newEntidad, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantes(newEntidad, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -131,7 +129,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    returnList.Add(new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -165,9 +163,9 @@ namespace SistemaEMMG_Alpha
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
                     DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidad = new DBEntidades(cuenta, newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetInt64Safe("ec_dni"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
+                    DBEntidades newEntidad = new DBEntidades(cuenta, newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
 
-                    returnEnt = new DBComprobantes(newEntidad, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    returnEnt = new DBComprobantes(newEntidad, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -200,7 +198,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    returnEnt = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetDateTimeSafe("cm_fpago"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    returnEnt = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -300,12 +298,11 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado=0.0,
-            double percepcion=0.0,
-            DateTime? pago=null
+            double percepcion=0.0
         ) : this(
             entidadComercial,
             newTipo,
-            new ComprobantesData(id, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         ) { }
 
         public DBComprobantes(
@@ -317,12 +314,11 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             entidadComercial,
             newTipo,
-            new ComprobantesData(-1, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
 
@@ -336,12 +332,11 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             entidadComercial,
             tc_id,
-            new ComprobantesData(id, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -353,12 +348,11 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             entidadComercial,
             tc_id,
-            new ComprobantesData(-1, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -372,13 +366,12 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             cuentaSeleccioanda,
             ec_id,
             newTipo,
-            new ComprobantesData(id, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -391,13 +384,12 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             cuentaSeleccioanda,
             ec_id,
             newTipo,
-            new ComprobantesData(-1, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -412,14 +404,13 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             cuentaSeleccioanda,
             conn,
             ec_id,
             newTipo,
-            new ComprobantesData(id, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -433,14 +424,13 @@ namespace SistemaEMMG_Alpha
             double gravado,
             double iva,
             double no_gravado = 0.0,
-            double percepcion = 0.0,
-            DateTime? pago = null
+            double percepcion = 0.0
         ) : this(
             cuentaSeleccioanda,
             conn,
             ec_id,
             newTipo,
-            new ComprobantesData(-1, fecha, pago, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
 
@@ -477,19 +467,16 @@ namespace SistemaEMMG_Alpha
 
                 //sql date format 2004-01-22 yyyy-mm-dd use DateTime.Now.ToString("yyyy-mm-dddd"). To convert it from string to DateTime use DateTime.ParseExact(string, "yyyy-mm-dddd", null)
                 string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaPago = (_data.cm_fpago.HasValue) ? $"'{((DateTime)_data.cm_fpago).ToString("yyyy-MM-dd")}'" : "NULL";
 
                 Console.WriteLine(fechaEmitido);
                 //if exists already, just update
                 if (existsInDB == true)
                 {
-                    query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido}, cm_fpago = {fechaPago}, cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado.ToString().Replace(",", ".")}, cm_iva = {_data.cm_iva.ToString().Replace(",", ".")}, cm_no_gravado={_data.cm_no_gravado.ToString().Replace(",", ".")}, cm_percepcion={_data.cm_percepcion.ToString().Replace(",", ".")}, cm_emitido ={Convert.ToInt32(_data.cm_emitido)}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
-                   //query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido}, cm_fpago = {fechaPago}, cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado} WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
-
+                    query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido},  cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado.ToString().Replace(",", ".")}, cm_iva = {_data.cm_iva.ToString().Replace(",", ".")}, cm_no_gravado={_data.cm_no_gravado.ToString().Replace(",", ".")}, cm_percepcion={_data.cm_percepcion.ToString().Replace(",", ".")}, cm_emitido ={Convert.ToInt32(_data.cm_emitido)}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
                 }
                 else //if does not exists, insert into
                 {
-                    query = $"INSERT INTO {db_table} (cm_em_id, cm_ec_id, cm_tc_id, cm_fecha, cm_fpago, cm_numero, cm_gravado, cm_iva, cm_no_gravado, cm_percepcion, cm_emitido) VALUES ({_entidadComercial.GetCuentaID()}, {_entidadComercial.GetID()}, {_tipoComprobante.GetID()}, {fechaEmitido}, {fechaPago}, '{_data.cm_numero}', {_data.cm_gravado.ToString().Replace(",", ".")}, {_data.cm_iva.ToString().Replace(",", ".")}, {_data.cm_no_gravado.ToString().Replace(",", ".")}, {_data.cm_percepcion.ToString().Replace(",", ".")}, {Convert.ToInt32(_data.cm_emitido)})";
+                    query = $"INSERT INTO {db_table} (cm_em_id, cm_ec_id, cm_tc_id, cm_fecha, cm_numero, cm_gravado, cm_iva, cm_no_gravado, cm_percepcion, cm_emitido) VALUES ({_entidadComercial.GetCuentaID()}, {_entidadComercial.GetID()}, {_tipoComprobante.GetID()}, {fechaEmitido}, '{_data.cm_numero}', {_data.cm_gravado.ToString().Replace(",", ".")}, {_data.cm_iva.ToString().Replace(",", ".")}, {_data.cm_no_gravado.ToString().Replace(",", ".")}, {_data.cm_percepcion.ToString().Replace(",", ".")}, {Convert.ToInt32(_data.cm_emitido)})";
                 }
 
                 //if not, add
@@ -498,7 +485,7 @@ namespace SistemaEMMG_Alpha
                 cmd.ExecuteNonQuery();
                 if (existsInDB == false) //Recently inserted into the DB, so we need to update the ID generated by the DataBase
                 {
-                    _data = new ComprobantesData(cmd.LastInsertedId, _data.cm_fecha, _data.cm_fpago, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
+                    _data = new ComprobantesData(cmd.LastInsertedId, _data.cm_fecha, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
                 }
                 wasAbleToPush = true;
             }
@@ -629,7 +616,7 @@ namespace SistemaEMMG_Alpha
 
         public void ResetID(long newId = -1)
         {
-            _data = new ComprobantesData(newId, _data.cm_fecha, _data.cm_fpago, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
+            _data = new ComprobantesData(newId, _data.cm_fecha,  _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
         }
         public long GetID() => _data.cm_id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
@@ -650,8 +637,6 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Returns the DateTime date when this business receipt was payed.
         ///</summary>
-        public DateTime? GetFechaPago() => _data.cm_fpago;
-
         public double GetGravado() => _data.cm_gravado;
         public double GetIVA() => _data.cm_iva;
         public double GetNoGravado() => _data.cm_no_gravado;
@@ -670,7 +655,6 @@ namespace SistemaEMMG_Alpha
         public void SetTipoComprobante(long tc_id, MySqlConnection conn) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id, conn);
         public void SetNumeroComprobante(string numeroCom) => _data.cm_numero = numeroCom;
         public void SetFechaEmitido(DateTime? newFecha) => _data.cm_fecha = newFecha;
-        public void SetFechaPago(DateTime? newFechaPago) => _data.cm_fpago = newFechaPago;
         public void SetGravado(double gravado) => _data.cm_gravado = gravado;
         public void SetIVA(double IVA) => _data.cm_iva = IVA;
         public void SetNoGravado(double no_gravado) => _data.cm_no_gravado = no_gravado;

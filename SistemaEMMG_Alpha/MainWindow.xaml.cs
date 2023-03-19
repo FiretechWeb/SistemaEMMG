@@ -28,7 +28,6 @@ txtCMDGravado
 txtCMDIVA
 txtCMDNoGravado
 txtCMDPercepcion
-txtCMDFechaPago
 
 cbxCMTiposPagos
 txtCMPagoObservacion
@@ -114,14 +113,6 @@ namespace SistemaEMMG_Alpha
                 feFinal = fechaEmitido;
             }
 
-            DateTime fechaPago = new DateTime();
-            DateTime? fpFinal = null;
-
-            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
-            {
-                fpFinal = fechaPago;
-            }
-
             long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
 
              return new DBComprobantes(
@@ -130,7 +121,6 @@ namespace SistemaEMMG_Alpha
                     ((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key,
                     new ComprobantesData(-1,
                                         feFinal,
-                                        fpFinal,
                                         txtCMDNumero.Text,
                                         SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")),
@@ -150,18 +140,9 @@ namespace SistemaEMMG_Alpha
                 feFinal = fechaEmitido;
             }
 
-            DateTime fechaPago = new DateTime();
-            DateTime? fpFinal = null;
-
-            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
-            {
-                fpFinal = fechaPago;
-            }
-
             long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
 
             dbData.GetComprobanteSelected().SetFechaEmitido(feFinal);
-            dbData.GetComprobanteSelected().SetFechaPago(fpFinal);
             dbData.GetComprobanteSelected().SetGravado(SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")));
             dbData.GetComprobanteSelected().SetIVA(SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")));
             dbData.GetComprobanteSelected().SetNoGravado(SafeConvert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")));
@@ -265,7 +246,6 @@ txtCMDEntidadesFilter
             lbxCMDEntidadSelected.Items.Add(new KeyValuePair<long, string>(dbData.GetComprobanteSelected().GetEntidadComercialID(), $"{dbData.GetComprobanteSelected().GetEntidadComercial().GetCUIT()}: {dbData.GetComprobanteSelected().GetEntidadComercial().GetRazonSocial()}"));
             lbxCMDEntidadSelected.SelectedIndex = 0;
             txtCMDFechaEmitido.Text = dbData.GetComprobanteSelected().GetFechaEmitido().HasValue ? ((DateTime)dbData.GetComprobanteSelected().GetFechaEmitido()).ToString("dd/MM/yyyy") : "";
-            txtCMDFechaPago.Text = dbData.GetComprobanteSelected().GetFechaPago().HasValue ? ((DateTime)dbData.GetComprobanteSelected().GetFechaPago()).ToString("dd/MM/yyyy") : "";
             rdbCMDRecibido.IsChecked = !dbData.GetComprobanteSelected().IsEmitido();
             rdbCMDEmitido.IsChecked = dbData.GetComprobanteSelected().IsEmitido();
             txtCMDNumero.Text = dbData.GetComprobanteSelected().GetNumeroComprobante();
@@ -361,8 +341,7 @@ txtCMDEntidadesFilter
                     gravado = comprobante.GetGravado(),
                     iva = comprobante.GetIVA(),
                     no_gravado = comprobante.GetNoGravado(),
-                    percepcion = comprobante.GetPercepcion(),
-                    fecha_pago = comprobante.GetFechaPago().HasValue ? ((DateTime)comprobante.GetFechaPago()).ToString("dd-MM-yyyy") : "Sin fecha" 
+                    percepcion = comprobante.GetPercepcion()
                 });
             }
 
@@ -407,7 +386,6 @@ txtCMDEntidadesFilter
             txtCMIVA.Text = SafeConvert.ToString(comprobanteSelected.GetIVA());
             txtCMNoGravado.Text = SafeConvert.ToString(comprobanteSelected.GetNoGravado());
             txtCMPercepcion.Text = SafeConvert.ToString(comprobanteSelected.GetPercepcion());
-            txtCMFechaPago.Text = comprobanteSelected.GetFechaPago().HasValue ? ((DateTime)comprobanteSelected.GetFechaPago()).ToString("dd/MM/yyyy") : "";
 
         }
 
@@ -468,7 +446,6 @@ txtCMDEntidadesFilter
             }
 
             txbCUITEC.Text = selectedEntidad.GetCUIT().ToString();
-            txbDNIEC.Text = selectedEntidad.GetDNI().ToString();
             tbxRazonSocialEC.Text = selectedEntidad.GetRazonSocial();
             tbxEmailEC.Text = selectedEntidad.GetEmail();
             tbxTelEC.Text = selectedEntidad.GetTelefono();
@@ -681,7 +658,6 @@ txtCMDEntidadesFilter
             selectedEntidad.SetEmail(tbxEmailEC.Text);
             selectedEntidad.SetTelefono(tbxTelEC.Text);
             selectedEntidad.SetCelular(tbxCelEC.Text);
-            selectedEntidad.SetDNI(SafeConvert.ToInt64(txbDNIEC.Text));
             selectedEntidad.TipoEntidad = DBTipoEntidad.GetByID(((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key);
 
             selectedEntidad.PushToDatabase(dbCon.Connection);
@@ -696,7 +672,6 @@ txtCMDEntidadesFilter
             nuevaEntidad.SetEmail(tbxEmailEC.Text);
             nuevaEntidad.SetTelefono(tbxTelEC.Text);
             nuevaEntidad.SetCelular(tbxCelEC.Text);
-            nuevaEntidad.SetDNI(SafeConvert.ToInt64(txbDNIEC.Text));
 
             if (dbData.GetCurrentAccount().AddNewEntidad(nuevaEntidad))
             {
@@ -731,12 +706,6 @@ txtCMDEntidadesFilter
         }
 
         private void txbCUITEC_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
-        private void txbDNIEC_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
@@ -778,14 +747,6 @@ txtCMDEntidadesFilter
                 feFinal = fechaEmitido;
             }
 
-            DateTime fechaPago = new DateTime();
-            DateTime? fpFinal = null;
-
-            if (DateTime.TryParse(txtCMFechaEmitido.Text, out fechaPago))
-            {
-                fpFinal = fechaPago;
-            }
-
             long entidadComercial_id = ((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key;
 
             DBComprobantes newComprobante = new DBComprobantes(
@@ -794,7 +755,6 @@ txtCMDEntidadesFilter
                     ((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key,
                     new ComprobantesData(-1,
                                         feFinal,
-                                        fpFinal,
                                         txtCMNumeroFactura.Text,
                                         SafeConvert.ToDouble(txtCMGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMIVA.Text.Replace(".", ",")),
@@ -834,15 +794,6 @@ txtCMDEntidadesFilter
                 selectedComprobante.SetFechaEmitido(null);
             }
 
-            DateTime fechaPago = new DateTime();
-            if (DateTime.TryParse(txtCMFechaPago.Text, out fechaPago))
-            {
-                selectedComprobante.SetFechaPago(fechaPago);
-            }
-            else
-            {
-                selectedComprobante.SetFechaPago(null);
-            }
             selectedComprobante.SetEmitido(SafeConvert.ToBoolean(chbxCMEsEmitido.IsChecked));
             selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)cbxCMEntidadComercial.SelectedItem).Key);
             selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key);
@@ -1099,15 +1050,6 @@ txtCMDEntidadesFilter
                 selectedComprobante.SetFechaEmitido(null);
             }
 
-            DateTime fechaPago = new DateTime();
-            if (DateTime.TryParse(txtCMDFechaPago.Text, out fechaPago))
-            {
-                selectedComprobante.SetFechaPago(fechaPago);
-            }
-            else
-            {
-                selectedComprobante.SetFechaPago(null);
-            }
             selectedComprobante.SetEmitido(SafeConvert.ToBoolean(rdbCMDEmitido.IsChecked));
             selectedComprobante.SetEntidadComercial(((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key);
             selectedComprobante.SetTipoComprobante(((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key);
