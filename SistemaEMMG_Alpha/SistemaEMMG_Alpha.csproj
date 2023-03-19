@@ -93,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="dbtypes\DBBancos.cs" />
     <Compile Include="SafeConvert.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -105,7 +106,7 @@
     <Compile Include="DBConnection.cs" />
     <Compile Include="DBConsultas.cs" />
     <Compile Include="DBFields.cs" />
-    <Compile Include="DBInterface.cs" />
+    <Compile Include="DBBaseClass.cs" />
     <Compile Include="DBExtensions.cs" />
     <Compile Include="dbtypes\DBComprobantePago.cs" />
     <Compile Include="dbtypes\DBComprobantes.cs" />

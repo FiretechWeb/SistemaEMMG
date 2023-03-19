@@ -42,6 +42,17 @@ namespace SistemaEMMG_Alpha
             return true;
         }
 
+        public void Reconnect()
+        {
+            if (!(Connection is null) && Connection.State.ToString().ToLower() == "open")
+            {
+                Connection.Close();
+            }
+            string connstring = $"Server={Server}; database={DatabaseName}; UID={UserName}; password={Password}";
+            Connection = new MySqlConnection(connstring);
+            Connection.Open();
+        }
+
         public void Close()
         {
             Connection.Close();

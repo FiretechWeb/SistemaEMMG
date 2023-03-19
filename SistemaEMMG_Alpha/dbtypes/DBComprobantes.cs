@@ -11,9 +11,8 @@ namespace SistemaEMMG_Alpha
 {
     public struct ComprobantesData
     {
-        public ComprobantesData(long id, DateTime? fecha, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido)
+        public ComprobantesData(DateTime? fecha, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido)
         {
-            cm_id = id;
             cm_fecha = fecha;
             cm_numero = numero;
             cm_gravado = gravado;
@@ -22,36 +21,31 @@ namespace SistemaEMMG_Alpha
             cm_percepcion = percepcion;
             cm_emitido = emitido;
         }
-        public long cm_id { get; set; }
-        public DateTime? cm_fecha { get; set; } //sql date format 2004-01-22 yyyy-mm-dd use DateTime.Now.ToString("yyyy-mm-dddd"). To convert it from string to DateTime use DateTime.ParseExact(string, "yyyy-mm-dddd", null)
+        public DateTime? cm_fecha { get; set; }
         public string cm_numero { get; set; }
         public double cm_gravado { get; set; }
         public double cm_iva { get; set; }
         public double cm_no_gravado { get; set; }
         public double cm_percepcion { get; set; }
         public bool cm_emitido { get; set; }
+
+        public override string ToString()
+        {
+            return $"Fecha: {cm_fecha} - Número: {cm_numero} - Gravado: {cm_gravado} - IVA: {cm_iva} - No Gravado: {cm_no_gravado} - Percepción: {cm_percepcion} - Emitido: {cm_emitido}";
+        }
     }
-    public class DBComprobantes : DBInterface, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>
+    public class DBComprobantes : DBBaseClass, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>
     {
-        private static readonly string db_table = "comprobantes";
+        public static readonly string db_table = "comprobantes";
         ///<summary>
         ///Commercial entity associated with this business receipt.
         ///</summary>
-        private DBEntidades _entidadComercial; //this can change actually...
+        private DBEntidades _entidadComercial; //this can change actually... (Maybe the DB's design it's flawed... it is what it is LOL)
+        private long _id;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
         private readonly List<DBComprobantePago> _db_pagos = new List<DBComprobantePago>();
 
-        public static string GetDBTableName() => db_table;
-        string DBInterface.GetDBTableName() => GetDBTableName();
-
-        /*
-         * SELECT * FROM comprobantes
-         * JOIN tipos_comprobantes ON tipos_comprobantes.tc_id = comprobantes.cm_tc_id
-         * JOIN ent_comerciales ON ent_comerciales.ec_id = comprobantes.cm_ec_id
-         * JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id
-         * WHERE cm_em_id = 1;
-         * */
 
         public static bool RemoveFromDB(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long id)
         {
@@ -76,10 +70,9 @@ namespace SistemaEMMG_Alpha
             List<DBComprobantes> returnList = new List<DBComprobantes>();
             try
             {
-                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
-                string te_table = DBTipoEntidad.GetDBTableName();
-                string ec_table = DBEntidades.GetDBTableName();
-                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string te_table = DBTipoEntidad.db_table;
+                string ec_table = DBEntidades.db_table;
+                string tc_table = DBTiposComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id
@@ -94,9 +87,9 @@ namespace SistemaEMMG_Alpha
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
                     DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidad = new DBEntidades(cuenta, newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
+                    DBEntidades newEntidad = new DBEntidades(cuenta, reader.GetInt64Safe("ec_id"), newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
 
-                    returnList.Add(new DBComprobantes(newEntidad, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantes(newEntidad, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -112,10 +105,9 @@ namespace SistemaEMMG_Alpha
             List<DBComprobantes> returnList = new List<DBComprobantes>();
             try
             {
-                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
-                string te_table = DBTipoEntidad.GetDBTableName();
-                string ec_table = DBEntidades.GetDBTableName();
-                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string te_table = DBTipoEntidad.db_table;
+                string ec_table = DBEntidades.db_table;
+                string tc_table = DBTiposComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
@@ -129,7 +121,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    returnList.Add(new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantes(entidadComercial, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido"))))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -145,10 +137,9 @@ namespace SistemaEMMG_Alpha
             DBComprobantes returnEnt = null;
             try
             {
-                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
-                string te_table = DBTipoEntidad.GetDBTableName();
-                string ec_table = DBEntidades.GetDBTableName();
-                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string te_table = DBTipoEntidad.db_table;
+                string ec_table = DBEntidades.db_table;
+                string tc_table = DBTiposComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
@@ -163,9 +154,9 @@ namespace SistemaEMMG_Alpha
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
                     DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidad = new DBEntidades(cuenta, newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
+                    DBEntidades newEntidad = new DBEntidades(cuenta, reader.GetInt64Safe("ec_id"), newTipoEntidadComercial, new EntidadesComercialesData(reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular")));
 
-                    returnEnt = new DBComprobantes(newEntidad, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    returnEnt = new DBComprobantes(newEntidad, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -181,10 +172,9 @@ namespace SistemaEMMG_Alpha
             DBComprobantes returnEnt = null;
             try
             {
-                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
-                string te_table = DBTipoEntidad.GetDBTableName();
-                string ec_table = DBEntidades.GetDBTableName();
-                string tc_table = DBTiposComprobantes.GetDBTableName();
+                string te_table = DBTipoEntidad.db_table;
+                string ec_table = DBEntidades.db_table;
+                string tc_table = DBTiposComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
                 JOIN {tc_table} ON {tc_table}.tc_id = {db_table}.cm_tc_id 
@@ -198,7 +188,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    returnEnt = new DBComprobantes(entidadComercial, newTipoComprobante, new ComprobantesData(reader.GetInt64Safe("cm_id"), reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    returnEnt = new DBComprobantes(entidadComercial, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -247,42 +237,48 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBComprobantes(DBEntidades entidadComercial, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, ComprobantesData newData)
         {
+            _id = id;
             _entidadComercial = entidadComercial;
             _tipoComprobante = newTipo.Clone(); //is this a good idea at all, to clone?
             _data = newData;
         }
 
-        public DBComprobantes(DBEntidades entidadComercial, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, ComprobantesData newData)
         {
+            _id = id;
             _entidadComercial = entidadComercial;
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
         }
 
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBEmpresa cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
         {
+            _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = newTipo.Clone();
             _data = newData;
         }
 
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, long ec_id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBEmpresa cuentaSeleccioanda, long id, long ec_id, long tc_id, ComprobantesData newData)
         {
+            _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
         }
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, MySqlConnection conn, long ec_id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBEmpresa cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, ComprobantesData newData)
         {
+            _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
         }
 
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, MySqlConnection conn, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBEmpresa cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
         {
+            _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = newTipo.Clone();
             _data = newData;
@@ -301,8 +297,9 @@ namespace SistemaEMMG_Alpha
             double percepcion=0.0
         ) : this(
             entidadComercial,
+            id,
             newTipo,
-            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         ) { }
 
         public DBComprobantes(
@@ -317,8 +314,9 @@ namespace SistemaEMMG_Alpha
             double percepcion = 0.0
         ) : this(
             entidadComercial,
+            -1,
             newTipo,
-            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
 
@@ -335,8 +333,9 @@ namespace SistemaEMMG_Alpha
             double percepcion = 0.0
         ) : this(
             entidadComercial,
+            id,
             tc_id,
-            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -351,8 +350,9 @@ namespace SistemaEMMG_Alpha
             double percepcion = 0.0
         ) : this(
             entidadComercial,
+            -1,
             tc_id,
-            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -369,9 +369,10 @@ namespace SistemaEMMG_Alpha
             double percepcion = 0.0
         ) : this(
             cuentaSeleccioanda,
+            id,
             ec_id,
             newTipo,
-            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -387,9 +388,10 @@ namespace SistemaEMMG_Alpha
             double percepcion = 0.0
         ) : this(
             cuentaSeleccioanda,
+            -1,
             ec_id,
             newTipo,
-            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -408,9 +410,10 @@ namespace SistemaEMMG_Alpha
         ) : this(
             cuentaSeleccioanda,
             conn,
+            id,
             ec_id,
             newTipo,
-            new ComprobantesData(id, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
         public DBComprobantes(
@@ -428,9 +431,10 @@ namespace SistemaEMMG_Alpha
         ) : this(
             cuentaSeleccioanda,
             conn,
+            -1,
             ec_id,
             newTipo,
-            new ComprobantesData(-1, fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
 
@@ -452,57 +456,65 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public bool PushToDatabase(MySqlConnection conn)
+        public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool wasAbleToPush = false;
             bool? existsInDB = ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
             }
+
+            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+        public override bool UpdateToDatabase(MySqlConnection conn)
+        {
+            bool wasAbleToUpdate = false;
             try
             {
-                //First check if the record already exists in the DB
-                string query;
-
-                //sql date format 2004-01-22 yyyy-mm-dd use DateTime.Now.ToString("yyyy-mm-dddd"). To convert it from string to DateTime use DateTime.ParseExact(string, "yyyy-mm-dddd", null)
                 string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-
-                Console.WriteLine(fechaEmitido);
-                //if exists already, just update
-                if (existsInDB == true)
-                {
-                    query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido},  cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado.ToString().Replace(",", ".")}, cm_iva = {_data.cm_iva.ToString().Replace(",", ".")}, cm_no_gravado={_data.cm_no_gravado.ToString().Replace(",", ".")}, cm_percepcion={_data.cm_percepcion.ToString().Replace(",", ".")}, cm_emitido ={Convert.ToInt32(_data.cm_emitido)}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
-                }
-                else //if does not exists, insert into
-                {
-                    query = $"INSERT INTO {db_table} (cm_em_id, cm_ec_id, cm_tc_id, cm_fecha, cm_numero, cm_gravado, cm_iva, cm_no_gravado, cm_percepcion, cm_emitido) VALUES ({_entidadComercial.GetCuentaID()}, {_entidadComercial.GetID()}, {_tipoComprobante.GetID()}, {fechaEmitido}, '{_data.cm_numero}', {_data.cm_gravado.ToString().Replace(",", ".")}, {_data.cm_iva.ToString().Replace(",", ".")}, {_data.cm_no_gravado.ToString().Replace(",", ".")}, {_data.cm_percepcion.ToString().Replace(",", ".")}, {Convert.ToInt32(_data.cm_emitido)})";
-                }
-
-                //if not, add
+                string query = $"UPDATE {db_table} SET cm_tc_id = {_tipoComprobante.GetID()}, cm_fecha = {fechaEmitido},  cm_numero = '{_data.cm_numero}', cm_gravado={_data.cm_gravado.ToString().Replace(",", ".")}, cm_iva = {_data.cm_iva.ToString().Replace(",", ".")}, cm_no_gravado={_data.cm_no_gravado.ToString().Replace(",", ".")}, cm_percepcion={_data.cm_percepcion.ToString().Replace(",", ".")}, cm_emitido ={Convert.ToInt32(_data.cm_emitido)}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                if (existsInDB == false) //Recently inserted into the DB, so we need to update the ID generated by the DataBase
+                wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToUpdate)
                 {
-                    _data = new ComprobantesData(cmd.LastInsertedId, _data.cm_fecha, _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
+                    ChangeID(cmd.LastInsertedId);
                 }
-                wasAbleToPush = true;
             }
             catch (Exception ex)
             {
-                wasAbleToPush = false;
-                MessageBox.Show("Error tratando de actualizar los datos de la base de datos en DBComprobantes: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                wasAbleToUpdate = false;
+                MessageBox.Show("Error en DBComprobantes::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            return wasAbleToPush;
+            return wasAbleToUpdate;
         }
 
-        public bool DeleteFromDatabase(MySqlConnection conn)
+        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        {
+            bool wasAbleToInsert = false;
+            try
+            {
+                string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
+                string query = $"INSERT INTO {db_table} (cm_em_id, cm_ec_id, cm_tc_id, cm_fecha, cm_numero, cm_gravado, cm_iva, cm_no_gravado, cm_percepcion, cm_emitido) VALUES ({_entidadComercial.GetCuentaID()}, {_entidadComercial.GetID()}, {_tipoComprobante.GetID()}, {fechaEmitido}, '{_data.cm_numero}', {_data.cm_gravado.ToString().Replace(",", ".")}, {_data.cm_iva.ToString().Replace(",", ".")}, {_data.cm_no_gravado.ToString().Replace(",", ".")}, {_data.cm_percepcion.ToString().Replace(",", ".")}, {Convert.ToInt32(_data.cm_emitido)})";
+                var cmd = new MySqlCommand(query, conn);
+                cmd = new MySqlCommand(query, conn);
+                wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                wasAbleToInsert = false;
+                MessageBox.Show("Error DBComprobantes::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToInsert;
+        }
+
+        public override bool DeleteFromDatabase(MySqlConnection conn)
         {
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
+                string query = $"DELETE FROM {db_table}  WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -517,13 +529,13 @@ namespace SistemaEMMG_Alpha
             }
             return deletedCorrectly;
         }
-        public bool? ExistsInDatabase(MySqlConnection conn)
+        public override bool? ExistsInDatabase(MySqlConnection conn)
         {
             bool? existsInDB = null;
             try
             {
                 //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {_data.cm_id}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE cm_em_id = {_entidadComercial.GetCuentaID()} AND cm_ec_id = {_entidadComercial.GetID()} AND cm_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
@@ -603,7 +615,7 @@ namespace SistemaEMMG_Alpha
             }
             if (DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago))
             {
-                newPago.ResetID(GetLocalPagoAvailableID());
+                return false;
             }
             _db_pagos.Add(newPago);
             return true;
@@ -614,11 +626,8 @@ namespace SistemaEMMG_Alpha
             _db_pagos.Remove(entRemove);
         }
 
-        public void ResetID(long newId = -1)
-        {
-            _data = new ComprobantesData(newId, _data.cm_fecha,  _data.cm_numero, _data.cm_gravado, _data.cm_iva, _data.cm_no_gravado, _data.cm_percepcion, _data.cm_emitido);
-        }
-        public long GetID() => _data.cm_id;
+        protected override void ChangeID(long id) => _id = id;
+        public override long GetID() => _id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
         ///<summary>

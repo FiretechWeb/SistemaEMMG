@@ -11,9 +11,8 @@ namespace SistemaEMMG_Alpha
 {
     public struct EntidadesComercialesData
     {
-        public EntidadesComercialesData(long id, long cuit, string rs, string email, string tel, string cel)
+        public EntidadesComercialesData(long cuit, string rs, string email, string tel, string cel)
         {
-            ec_id = id;
             ec_cuit = cuit;
             ec_rs = rs;
             ec_email = email;
@@ -21,76 +20,68 @@ namespace SistemaEMMG_Alpha
             ec_celular = cel;
         }
         //Class handles ec_em_id y ec_te_id since it is better to hold references to those dataTypes instead of values
-        public long ec_id { get; }
         public long ec_cuit { get; set; }
         public string ec_rs { get; set; }
         public string ec_email { get; set; }
         public string ec_telefono { get; set; }
         public string ec_celular { get; set; }
     }
-    public class DBEntidades : DBInterface, IDBCuenta<DBEmpresa>
+    public class DBEntidades : DBBaseClass, IDBCuenta<DBEmpresa>
     {
-        private static readonly string db_table = "ent_comerciales";
+        public static readonly string db_table = "ent_comerciales";
         ///<summary>
         ///Business Account associated with this commercial entity.
         ///</summary>
         private readonly DBEmpresa _cuentaEmpresa;
+        private long _id;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
 
-
-        public static string GetDBTableName() => db_table;
-        string DBInterface.GetDBTableName() => GetDBTableName();
-
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, EntidadesComercialesData newData)
+        public DBEntidades(DBEmpresa newCuenta, long id, DBTipoEntidad newTipo, EntidadesComercialesData newData)
         {
-            _tipoEntidad = newTipo.Clone(); //Maybe this is not welcomed
+            _id = id;
+            _tipoEntidad = newTipo;
             _cuentaEmpresa = newCuenta;
             _data = newData;
         }
-        public DBEntidades(DBEmpresa newCuenta, long te_id, EntidadesComercialesData newData)
+        public DBEntidades(DBEmpresa newCuenta, long id, long te_id, EntidadesComercialesData newData)
         {
+            _id = id;
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
             _cuentaEmpresa = newCuenta;
             _data = newData;
         }
 
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, EntidadesComercialesData newData)
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long id, long te_id, EntidadesComercialesData newData)
         {
+            _id = id;
             _tipoEntidad = DBTipoEntidad.GetByID(te_id, conn);
             _cuentaEmpresa = newCuenta;
             _data = newData;
         }
 
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, new EntidadesComercialesData(id, cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, newTipo, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
         public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, new EntidadesComercialesData(id, cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
         public DBEntidades(DBEmpresa newCuenta, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, new EntidadesComercialesData(id, cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
         public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, email, tel, cel) { }
 
 
-        //GetDBTableName
         public static List<DBEntidades> GetAll(MySqlConnection conn, DBEmpresa empresa)
         {
             List<DBEntidades> returnList = new List<DBEntidades>();
             try
             {
-                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
-                string te_table = DBTipoEntidad.GetDBTableName();
-                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()}";
+                string query = $"SELECT * FROM {db_table} JOIN {DBTipoEntidad.db_table} ON {DBTipoEntidad.db_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {empresa.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 
-
-                //_db_tipos_entidades.Clear();
-                
                 while (reader.Read())
                 {
-                    // _db_tipos_entidades.Add(new DBTipoEntidad(reader.GetInt64("te_id"), reader.GetString("te_nombre")));
                    returnList.Add(new DBEntidades(empresa, new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre")), reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
@@ -107,8 +98,7 @@ namespace SistemaEMMG_Alpha
             DBEntidades returnEntidad = null;
             try
             {
-                string te_table = DBTipoEntidad.GetDBTableName();
-                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {cuenta.GetID()} AND ec_id = {id}";
+                string query = $"SELECT * FROM {db_table} JOIN {DBTipoEntidad.db_table} ON {DBTipoEntidad.db_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {cuenta.GetID()} AND ec_id = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -173,54 +163,63 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-
-        public bool PushToDatabase(MySqlConnection conn)
+        public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool wasAbleToPush = false;
             bool? existsInDB = ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
             }
+
+            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+        public override bool UpdateToDatabase(MySqlConnection conn)
+        {
+            bool wasAbleToUpdate = false;
             try
             {
-                //First check if the record already exists in the DB
-                string query;
-
-                //if exists already, just update
-                if (existsInDB == true)
-                {
-                    query = $"UPDATE {db_table} SET ec_te_id = {_tipoEntidad.GetID()}, ec_cuit = {_data.ec_cuit}, ec_rs = '{_data.ec_rs}', ec_email ='{_data.ec_email}', ec_telefono='{_data.ec_telefono}', ec_celular='{_data.ec_celular}' WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
-
-                }
-                else //if does not exists, insert into
-                {
-                    query = $"INSERT INTO {db_table} (ec_em_id, ec_te_id, ec_cuit, ec_rs, ec_email, ec_telefono, ec_celular) VALUES ({_cuentaEmpresa.GetID()}, {_tipoEntidad.GetID()}, {_data.ec_cuit}, '{_data.ec_rs}', '{_data.ec_email}', '{_data.ec_telefono}', '{_data.ec_celular}')";
-                }
-                //if not, add
+                string query = $"UPDATE {db_table} SET ec_te_id = {_tipoEntidad.GetID()}, ec_cuit = {_data.ec_cuit}, ec_rs = '{_data.ec_rs}', ec_email ='{_data.ec_email}', ec_telefono='{_data.ec_telefono}', ec_celular='{_data.ec_celular}' WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                if (existsInDB == false) //Recently inserted into the DB, so we need to update the ID generated by the DataBase
+                wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToUpdate)
                 {
-                    _data = new EntidadesComercialesData(cmd.LastInsertedId, _data.ec_cuit,  _data.ec_rs, _data.ec_email, _data.ec_telefono, _data.ec_celular);
+                    ChangeID(cmd.LastInsertedId);
                 }
-                wasAbleToPush = true;
             }
             catch (Exception ex)
             {
-                wasAbleToPush = false;
-                MessageBox.Show("Error tratando de actualizar los datos de la base de datos en DBEntidades: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                wasAbleToUpdate = false;
+                MessageBox.Show("Error en DBEntidades::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            return wasAbleToPush;
+            return wasAbleToUpdate;
         }
 
-        public bool DeleteFromDatabase(MySqlConnection conn)
+        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        {
+            bool wasAbleToInsert = false;
+            try
+            {
+                string query = $"INSERT INTO {db_table} (ec_em_id, ec_te_id, ec_cuit, ec_rs, ec_email, ec_telefono, ec_celular) VALUES ({_cuentaEmpresa.GetID()}, {_tipoEntidad.GetID()}, {_data.ec_cuit}, '{_data.ec_rs}', '{_data.ec_email}', '{_data.ec_telefono}', '{_data.ec_celular}')";
+                var cmd = new MySqlCommand(query, conn);
+                cmd = new MySqlCommand(query, conn);
+                wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                wasAbleToInsert = false;
+                MessageBox.Show("Error DBEntidades::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToInsert;
+        }
+
+        public override bool DeleteFromDatabase(MySqlConnection conn)
         {
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
+                string query = $"DELETE FROM {db_table} WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -236,13 +235,13 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
-        public bool? ExistsInDatabase(MySqlConnection conn)
+        public override bool? ExistsInDatabase(MySqlConnection conn)
         {
             bool? existsInDB = null;
             try
             {
                 //First check if the record already exists in the DB
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {_data.ec_id}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE ec_em_id = {_cuentaEmpresa.GetID()} AND ec_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 int recordsCount = int.Parse(cmd.ExecuteScalar().ToString());
 
@@ -308,7 +307,8 @@ namespace SistemaEMMG_Alpha
             _cuentaEmpresa.RemoveComprobante(entRemove);
         }
 
-        public long GetID() => _data.ec_id;
+        protected override void ChangeID(long id) => _id = id;
+        public override long GetID() => _id;
 
         public long GetCuentaID() => _cuentaEmpresa.GetID();
 

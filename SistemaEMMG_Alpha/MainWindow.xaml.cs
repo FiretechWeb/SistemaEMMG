@@ -117,10 +117,10 @@ namespace SistemaEMMG_Alpha
 
              return new DBComprobantes(
                     dbData.GetCurrentAccount(),
+                    -1,
                     entidadComercial_id,
                     ((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key,
-                    new ComprobantesData(-1,
-                                        feFinal,
+                    new ComprobantesData(feFinal,
                                         txtCMDNumero.Text,
                                         SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")),
@@ -155,7 +155,6 @@ namespace SistemaEMMG_Alpha
 
         private void SoftwareMain()
         {
-            //Here everything that happens after database is correctly loaded
             Console.WriteLine("Able to connect Database!");
 
             //Intialize accounts
@@ -232,10 +231,6 @@ namespace SistemaEMMG_Alpha
             
             guiRefreshComprobantesDetallesPagos(true);
         }
-
-        /*
-txtCMDEntidadesFilter
-*/
 
         private void guiRefreshComprobantesForms()
         {
@@ -344,8 +339,6 @@ txtCMDEntidadesFilter
                     percepcion = comprobante.GetPercepcion()
                 });
             }
-
-            //dgComprobantes.ItemsSource = dataDisplay;
 
             guiRefreshComprobantesForm(dbData.GetCurrentAccount().GetComprobanteByIndex(0));
         }
@@ -751,10 +744,10 @@ txtCMDEntidadesFilter
 
             DBComprobantes newComprobante = new DBComprobantes(
                     dbData.GetCurrentAccount(),
+                    -1,
                     entidadComercial_id,
                     ((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key,
-                    new ComprobantesData(-1,
-                                        feFinal,
+                    new ComprobantesData(feFinal,
                                         txtCMNumeroFactura.Text,
                                         SafeConvert.ToDouble(txtCMGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMIVA.Text.Replace(".", ",")),
@@ -803,10 +796,9 @@ txtCMDEntidadesFilter
             selectedComprobante.SetNoGravado(SafeConvert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")));
             selectedComprobante.SetPercepcion(SafeConvert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")));
 
-            if (cm_ec_id != selectedComprobante.GetEntidadComercialID()) //entidad comercial cambio, esto va a ser un pushtodatabase
+            if (cm_ec_id != selectedComprobante.GetEntidadComercialID())
             {
-                selectedComprobante.ResetID(); //Ensures INSERT INTO instead of, by mistake, trying to update other rows
-                if (selectedComprobante.PushToDatabase(dbCon.Connection))
+                if (selectedComprobante.InsertIntoToDatabase(dbCon.Connection))
                 {
                     DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);
                     selectedComprobante.GetEntidadComercial().AddNewComprobante(selectedComprobante);
@@ -1063,8 +1055,7 @@ txtCMDEntidadesFilter
 
             if (cm_ec_id != selectedComprobante.GetEntidadComercialID()) //entidad comercial cambio, esto va a ser un pushtodatabase
             {
-                selectedComprobante.ResetID(); //Ensures INSERT INTO instead of, by mistake, trying to update other rows
-                if (selectedComprobante.PushToDatabase(dbCon.Connection))
+                if (selectedComprobante.InsertIntoToDatabase(dbCon.Connection))
                 {
                     dataUpdateDBSuccess = true;
                     DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);

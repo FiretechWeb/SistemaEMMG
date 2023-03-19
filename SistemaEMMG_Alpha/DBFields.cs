@@ -9,17 +9,6 @@ using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
-    public struct BancosData
-    {
-        public BancosData (long id, string nom)
-        {
-            bc_id = id;
-            bc_nombre = nom;
-        }
-        public long bc_id { get; set; }
-        public string bc_nombre { get; set; }
-    }
-
     public class DBFields
     {
         private DBFields()
