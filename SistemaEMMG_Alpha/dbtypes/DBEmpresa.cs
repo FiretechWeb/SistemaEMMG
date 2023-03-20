@@ -123,6 +123,7 @@ namespace SistemaEMMG_Alpha
         }
         public DBEmpresa(long cuit, string rs) : this(-1, cuit, rs) { }
 
+        public DBEmpresa(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs)) { }
         public DBEmpresa(MySqlConnection conn, int id)
         {
             try

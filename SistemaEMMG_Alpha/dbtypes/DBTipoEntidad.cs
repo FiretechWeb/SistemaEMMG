@@ -166,7 +166,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructo de DBTipoEntidad, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-
+        public DBTipoEntidad(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), TiposEntidadesData.NameOf_te_nombre) { }
         public override bool PushToDatabase(MySqlConnection conn)
         {
             bool? existsInDB = ExistsInDatabase(conn);

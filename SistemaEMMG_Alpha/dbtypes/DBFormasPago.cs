@@ -169,7 +169,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructor de DBFormasPago. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-
+        public DBFormasPago(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre)) { }
         public FormasPagoData Data
         {
             get => _data;

@@ -81,6 +81,16 @@ namespace SistemaEMMG_Alpha
         public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
         public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, email, tel, cel) { }
 
+        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, MySqlDataReader reader) : this(
+            newCuenta,
+            newTipo,
+            reader.GetInt64Safe(NameOf_id),
+            reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
+            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
+            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
+            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
+            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)
+        ) {}
 
         public static List<DBEntidades> GetAll(MySqlConnection conn, DBEmpresa cuenta)
         {

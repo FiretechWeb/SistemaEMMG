@@ -7,6 +7,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 
+
 namespace SistemaEMMG_Alpha
 {
     public struct TiposComprobantesData
@@ -170,7 +171,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructor de DBTiposComprobantes. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-
+        public DBTiposComprobantes(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre)) { }
 
         public override bool PushToDatabase(MySqlConnection conn)
         {

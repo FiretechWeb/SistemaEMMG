@@ -449,7 +449,13 @@ namespace SistemaEMMG_Alpha
         public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long fp_id, string obs) : this(cuenta, ec_id, cm_id, -1, fp_id, new ComprobantePagoData(obs)) { }
         public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, string obs) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new ComprobantePagoData(obs)) { }
         public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, string obs) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, new ComprobantePagoData(obs)) { }
-
+        public DBComprobantePago(DBComprobantes comprobante, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
+            comprobante,
+            reader.GetInt64Safe(NameOf_id),
+            newFormaPago,
+            new ComprobantePagoData(
+                reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs)
+            )) { }
         public ComprobantePagoData Data
         {
             get => _data;

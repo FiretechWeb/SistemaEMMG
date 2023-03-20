@@ -507,6 +507,18 @@ namespace SistemaEMMG_Alpha
             new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido)
         )
         { }
+        public DBComprobantes(DBEntidades entidadComercial, DBTiposComprobantes newTipo, MySqlDataReader reader) : this (
+            entidadComercial,
+            reader.GetInt64Safe(NameOf_id),
+            newTipo,
+             new ComprobantesData(
+                reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
+                reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
+                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
+                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
+                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
+                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
+                Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))) { }
 
         public ComprobantesData Data
         {
