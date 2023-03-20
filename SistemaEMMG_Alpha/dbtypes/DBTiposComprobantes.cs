@@ -72,8 +72,9 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_tipos_comprobantes.Add(new DBTiposComprobantes(reader));
-                    returnList.Add(new DBTiposComprobantes(reader));
+                    DBTiposComprobantes tipoComprobante = new DBTiposComprobantes(reader);
+                    _db_tipos_comprobantes.Add(tipoComprobante);
+                    returnList.Add(tipoComprobante);
                 }
                 reader.Close();
             }
@@ -97,13 +98,13 @@ namespace SistemaEMMG_Alpha
         }
         List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAll() => GetAll();
 
-        public static DBTiposComprobantes GetByID(long tc_id, bool clone = true)
+        public static DBTiposComprobantes GetByID(long tc_id)
         {
             foreach (DBTiposComprobantes tipoComprobante in _db_tipos_comprobantes)
             {
                 if (tipoComprobante.GetID() == tc_id)
                 {
-                    return clone ? tipoComprobante.Clone() : tipoComprobante;
+                    return tipoComprobante;
                 }
             }
             return null;
@@ -298,7 +299,7 @@ namespace SistemaEMMG_Alpha
 
         public string GetName() => _data.tc_nombre;
 
-        public DBTiposComprobantes Clone()
+        public DBTiposComprobantes Clone() //not ideal maybe with the new system.
         {
             return new DBTiposComprobantes(_id, _data.tc_nombre);
         }
