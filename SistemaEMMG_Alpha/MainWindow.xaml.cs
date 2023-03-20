@@ -34,7 +34,7 @@ namespace SistemaEMMG_Alpha
         };
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
         public DBConnection dbCon = null;
-        public DBMain dbData = null; // Aca está la papa
+        public DBOldMain dbData = null; // Aca está la papa
         //winCMDetalles
         private void guiSetComprobantesMainVisible()
         {
@@ -138,7 +138,7 @@ namespace SistemaEMMG_Alpha
             Console.WriteLine("Able to connect Database!");
 
             //Intialize accounts
-            dbData = DBMain.Instance();
+            dbData = DBOldMain.Instance();
             dbData.ReadCuentasFromDB(dbCon.Connection);
             if (dbData.cuentas.Count > 0)
             {

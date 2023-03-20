@@ -3,28 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 
+/********************
+* To remove after I am done with DBMain, or to change it into something like DBInterface or something like that..
+**********************/
+
 namespace SistemaEMMG_Alpha
 {
-    public class DBMain
+    public class DBOldMain
     {
-        private DBMain()
+        private DBOldMain()
         {
 
         }
 
-        public static DBMain Instance()
+        public static DBOldMain Instance()
         {
             if (_instance == null)
             {
-                _instance = new DBMain();
+                _instance = new DBOldMain();
             }
             return _instance;
         }
-        private static DBMain _instance = null;
+        private static DBOldMain _instance = null;
         public long idCuentaSeleccionada = 0;
 
         public List<DBCuenta> cuentas;
@@ -81,7 +84,8 @@ namespace SistemaEMMG_Alpha
             ReadFormasDePago(conn);
             GetCurrentAccount().GetAllComprobantes(conn);
         }
-        public DBCuenta GetCurrentAccount() {
+        public DBCuenta GetCurrentAccount()
+        {
             int index = GetCuentaIndexByID(idCuentaSeleccionada);
             if (index == -1)
                 return null;
@@ -90,7 +94,7 @@ namespace SistemaEMMG_Alpha
 
         public int GetCuentaIndexByID(long cuentaID)
         {
-            for (int i=0; i < cuentas.Count; i++)
+            for (int i = 0; i < cuentas.Count; i++)
             {
                 if (cuentas[i].GetID() == cuentaID)
                 {
