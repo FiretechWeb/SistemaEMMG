@@ -31,7 +31,7 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_ec_telefono = nameof(ec_telefono);
         public static readonly string NameOf_ec_celular = nameof(ec_celular);
     }
-    public class DBEntidades : DBBaseClass, IDBase<DBEntidades>, IDBCuenta<DBEmpresa>
+    public class DBEntidades : DBBaseClass, IDBase<DBEntidades>, IDBCuenta<DBCuenta>
     {
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
@@ -43,7 +43,7 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Business Account associated with this commercial entity.
         ///</summary>
-        private readonly DBEmpresa _cuentaEmpresa;
+        private readonly DBCuenta _cuenta;
         private long _id;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
@@ -55,39 +55,39 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBEntidades>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public DBEntidades(DBEmpresa newCuenta, long id, DBTipoEntidad newTipo, EntidadesComercialesData newData)
+        public DBEntidades(DBCuenta newCuenta, long id, DBTipoEntidad newTipo, EntidadesComercialesData newData)
         {
             _id = id;
             _tipoEntidad = newTipo;
-            _cuentaEmpresa = newCuenta;
+            _cuenta = newCuenta;
             _data = newData;
         }
-        public DBEntidades(DBEmpresa newCuenta, long id, long te_id, EntidadesComercialesData newData)
+        public DBEntidades(DBCuenta newCuenta, long id, long te_id, EntidadesComercialesData newData)
         {
             _id = id;
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
-            _cuentaEmpresa = newCuenta;
+            _cuenta = newCuenta;
             _data = newData;
         }
 
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long id, long te_id, EntidadesComercialesData newData)
+        public DBEntidades(DBCuenta newCuenta, MySqlConnection conn, long id, long te_id, EntidadesComercialesData newData)
         {
             _id = id;
             _tipoEntidad = DBTipoEntidad.GetByID(te_id, conn);
-            _cuentaEmpresa = newCuenta;
+            _cuenta = newCuenta;
             _data = newData;
         }
 
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, newTipo, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, -1, cuit, rs, email, tel, cel) { }
+        public DBEntidades(DBCuenta newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, newTipo, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBCuenta newCuenta, DBTipoEntidad newTipo, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, newTipo, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, email, tel, cel) { }
+        public DBEntidades(DBCuenta newCuenta, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBCuenta newCuenta, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, te_id, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
-        public DBEntidades(DBEmpresa newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, email, tel, cel) { }
+        public DBEntidades(DBCuenta newCuenta, MySqlConnection conn, long te_id, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, id, te_id, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
+        public DBEntidades(DBCuenta newCuenta, MySqlConnection conn, long te_id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, conn, te_id, -1, cuit, rs, email, tel, cel) { }
 
-        public DBEntidades(DBEmpresa newCuenta, DBTipoEntidad newTipo, MySqlDataReader reader) : this(
+        public DBEntidades(DBCuenta newCuenta, DBTipoEntidad newTipo, MySqlDataReader reader) : this(
             newCuenta,
             newTipo,
             reader.GetInt64Safe(NameOf_id),
@@ -98,7 +98,7 @@ namespace SistemaEMMG_Alpha
             reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)
         ) {}
 
-        public static List<DBEntidades> GetAll(MySqlConnection conn, DBEmpresa cuenta)
+        public static List<DBEntidades> GetAll(MySqlConnection conn, DBCuenta cuenta)
         {
             List<DBEntidades> returnList = new List<DBEntidades>();
             try
@@ -120,7 +120,7 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static DBEntidades GetByID(MySqlConnection conn, DBEmpresa cuenta, long id)
+        public static DBEntidades GetByID(MySqlConnection conn, DBCuenta cuenta, long id)
         {
             DBEntidades returnEntidad = null;
             try
@@ -141,7 +141,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnEntidad;
         }
-        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBEmpresa cuenta, long id)
+        public static DBEntidades GetByID(List<DBEntidades> listaEntidades, DBCuenta cuenta, long id)
         {
             foreach (DBEntidades entidadComercial in listaEntidades)
             {
@@ -212,7 +212,7 @@ namespace SistemaEMMG_Alpha
                                 {EntidadesComercialesData.NameOf_ec_email} = '{_data.ec_email}', 
                                 {EntidadesComercialesData.NameOf_ec_telefono} ='{_data.ec_telefono}', 
                                 {EntidadesComercialesData.NameOf_ec_celular} ='{_data.ec_celular}' 
-                                WHERE {NameOf_ec_em_id} = {_cuentaEmpresa.GetID()} AND {NameOf_id} = {GetID()}";
+                                WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
@@ -240,7 +240,7 @@ namespace SistemaEMMG_Alpha
                                 {EntidadesComercialesData.NameOf_ec_email}, 
                                 {EntidadesComercialesData.NameOf_ec_telefono}, 
                                 {EntidadesComercialesData.NameOf_ec_celular}) 
-                                VALUES ({_cuentaEmpresa.GetID()}, 
+                                VALUES ({_cuenta.GetID()}, 
                                         {_tipoEntidad.GetID()}, 
                                         {_data.ec_cuit}, 
                                         '{_data.ec_rs}', 
@@ -263,7 +263,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE {NameOf_ec_em_id} = {_cuentaEmpresa.GetID()} AND {NameOf_id} = {GetID()}";
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -274,7 +274,7 @@ namespace SistemaEMMG_Alpha
             }
             if (deletedCorrectly)
             {
-                _cuentaEmpresa.RemoveEntidad(this);
+                _cuenta.RemoveEntidad(this);
             }
             return deletedCorrectly;
         }
@@ -284,7 +284,7 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_ec_em_id} = {_cuentaEmpresa.GetID()} AND {NameOf_id} = {GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
@@ -331,21 +331,21 @@ namespace SistemaEMMG_Alpha
                 return false;
             }
             _db_comprobantes.Add(newComprobante);
-            _cuentaEmpresa.AddNewComprobante(newComprobante);
+            _cuenta.AddNewComprobante(newComprobante);
             return true;
         }
         public void RemoveComprobante(DBComprobantes entRemove)
         {
             _db_comprobantes.Remove(entRemove);
-            _cuentaEmpresa.RemoveComprobante(entRemove);
+            _cuenta.RemoveComprobante(entRemove);
         }
 
         protected override void ChangeID(long id) => _id = id;
         public override long GetID() => _id;
 
-        public long GetCuentaID() => _cuentaEmpresa.GetID();
+        public long GetCuentaID() => _cuenta.GetID();
 
-        public DBEmpresa GetCuenta() => _cuentaEmpresa;
+        public DBCuenta GetCuenta() => _cuenta;
 
         public long GetCUIT() => _data.ec_cuit;
 

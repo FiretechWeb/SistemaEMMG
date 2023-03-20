@@ -106,12 +106,12 @@
     </Compile>
     <Compile Include="DBConnection.cs" />
     <Compile Include="DBConsultas.cs" />
-    <Compile Include="DBFields.cs" />
+    <Compile Include="DBMain.cs" />
     <Compile Include="DBBaseClass.cs" />
     <Compile Include="DBExtensions.cs" />
     <Compile Include="dbtypes\DBComprobantePago.cs" />
     <Compile Include="dbtypes\DBComprobantes.cs" />
-    <Compile Include="dbtypes\DBEmpresa.cs" />
+    <Compile Include="dbtypes\DBCuenta.cs" />
     <Compile Include="dbtypes\DBEntidades.cs" />
     <Compile Include="dbtypes\DBFormasPago.cs" />
     <Compile Include="dbtypes\DBTipoEntidad.cs" />

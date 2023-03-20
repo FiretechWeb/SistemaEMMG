@@ -16,26 +16,6 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Text.RegularExpressions;
 
-/*
-rdbCMDRecibido
-rdbCMDEmitido
-cbxCMDTipoComprobante
-txtCMDNumero
-lsbCMDEntidades
-txtCMDEntidadesFilter
-txtCMDFechaEmitido
-txtCMDGravado
-txtCMDIVA
-txtCMDNoGravado
-txtCMDPercepcion
-
-cbxCMTiposPagos
-txtCMPagoObservacion
-lbxCMPagos
-btnCMAgregarPago
-btnCMGuardarPago
-btnCMEliminarPago
-*/
 
 namespace SistemaEMMG_Alpha
 {
@@ -54,7 +34,7 @@ namespace SistemaEMMG_Alpha
         };
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
         public DBConnection dbCon = null;
-        public DBFields dbData = null; // Aca está la papa
+        public DBMain dbData = null; // Aca está la papa
         //winCMDetalles
         private void guiSetComprobantesMainVisible()
         {
@@ -158,11 +138,11 @@ namespace SistemaEMMG_Alpha
             Console.WriteLine("Able to connect Database!");
 
             //Intialize accounts
-            dbData = DBFields.Instance();
-            dbData.ReadEmpresasFromDB(dbCon.Connection);
-            if (dbData.empresas.Count > 0)
+            dbData = DBMain.Instance();
+            dbData.ReadCuentasFromDB(dbCon.Connection);
+            if (dbData.cuentas.Count > 0)
             {
-                dbData.idCuentaSeleccionada = dbData.empresas[0].GetID();
+                dbData.idCuentaSeleccionada = dbData.cuentas[0].GetID();
             } else
             {
                 dbData.idCuentaSeleccionada = -1;
@@ -282,23 +262,23 @@ namespace SistemaEMMG_Alpha
         {
             if (refreshDatabase)
             {
-                dbData.ReadEmpresasFromDB(dbCon.Connection);
+                dbData.ReadCuentasFromDB(dbCon.Connection);
             }
             cmbCuentasEmpresas.Items.Clear();
             cmbCuentasEmpresas.SelectedValuePath = "Key";
             cmbCuentasEmpresas.DisplayMemberPath = "Value";
-            foreach (DBEmpresa empresa in dbData.empresas)
+            foreach (DBCuenta empresa in dbData.cuentas)
             {
                 cmbCuentasEmpresas.Items.Add(new KeyValuePair<long, string>(empresa.GetID(), empresa.GetRazonSocial()));
             }
-            if (dbData.empresas.Count > 0)
+            if (dbData.cuentas.Count > 0)
             {
                 if (dbData.idCuentaSeleccionada < 0)
                 {
-                    dbData.idCuentaSeleccionada = dbData.empresas[0].GetID();
-                } else if (dbData.idCuentaSeleccionada >= dbData.empresas.Count)
+                    dbData.idCuentaSeleccionada = dbData.cuentas[0].GetID();
+                } else if (dbData.idCuentaSeleccionada >= dbData.cuentas.Count)
                 {
-                    dbData.idCuentaSeleccionada = dbData.empresas[dbData.empresas.Count - 1].GetID();
+                    dbData.idCuentaSeleccionada = dbData.cuentas[dbData.cuentas.Count - 1].GetID();
                 }
                 cmbCuentasEmpresas.SelectedValue = dbData.idCuentaSeleccionada;
             }
@@ -465,7 +445,7 @@ namespace SistemaEMMG_Alpha
              }
             else
             {
-                lblCuentaSeleccionada.Content = $"{dbData.empresas[dbData.GetCuentaIndexByID(dbData.idCuentaSeleccionada)].GetRazonSocial()}";
+                lblCuentaSeleccionada.Content = $"{dbData.cuentas[dbData.GetCuentaIndexByID(dbData.idCuentaSeleccionada)].GetRazonSocial()}";
             }
         }
         public MainWindow()
@@ -523,7 +503,7 @@ namespace SistemaEMMG_Alpha
             {
                 return;
             }
-            dbData.AgregarNuevaCuentaDeEmpresa(txbNuevaCuentaNombre.Text.Trim(), SafeConvert.ToInt64(txbNuevaCuentaCUIT.Text.Trim()), dbCon.Connection);
+            dbData.AgregarNuevaCuenta(txbNuevaCuentaNombre.Text.Trim(), SafeConvert.ToInt64(txbNuevaCuentaCUIT.Text.Trim()), dbCon.Connection);
             txbNuevaCuentaNombre.Text = "";
             txbNuevaCuentaCUIT.Text = "";
             guiCuentasRefresh();
@@ -562,7 +542,7 @@ namespace SistemaEMMG_Alpha
         {
             if (MessageBox.Show("¿Seguro que queres eliminar una cuenta?, vas a perder todos los datos asociados a esta cuenta: Clientes, Proovedores, comprobantes, etc... Recomiendo hacer un backup primero.", "Confirmación", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                dbData.EliminarCuentaDeEmpresa(dbData.GetCuentaIndexByID(dbData.idCuentaSeleccionada), dbCon.Connection);
+                dbData.EliminarCuenta(dbData.GetCuentaIndexByID(dbData.idCuentaSeleccionada), dbCon.Connection);
                 guiCuentasRefresh();
             }
             else
@@ -1100,8 +1080,6 @@ namespace SistemaEMMG_Alpha
             {
                 dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
                 dbData.SetComprobanteSelected(newComprobante);
-
-                //Now let's add the "pagos" to the database...
 
                 List<DBComprobantePago> listaPagosToAdd = dbData.GetComprobanteSelected().GetAllPagos();
 

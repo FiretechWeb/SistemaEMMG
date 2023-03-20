@@ -31,7 +31,7 @@ namespace SistemaEMMG_Alpha
         }
     }
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBComprobantePago y ComprobantePagoData
-    public class DBComprobantePago : DBBaseClass, IDBase<DBComprobantePago>, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
+    public class DBComprobantePago : DBBaseClass, IDBase<DBComprobantePago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
     {
         public const string db_table = "comprobantes_pagos";
         public const string NameOf_cp_em_id = "cp_em_id";
@@ -61,7 +61,7 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBComprobantePago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static bool RemoveFromDB(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long cm_id, long id)
+        public static bool RemoveFromDB(MySqlConnection conn, DBCuenta cuenta, long ec_id, long cm_id, long id)
         {
             bool deletedCorrectly = false;
             try
@@ -123,7 +123,7 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static List<DBComprobantePago> GetAll(MySqlConnection conn, DBEmpresa cuenta)
+        public static List<DBComprobantePago> GetAll(MySqlConnection conn, DBCuenta cuenta)
         {
             List<DBComprobantePago> returnList = new List<DBComprobantePago>();
             try
@@ -168,7 +168,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
-        public static DBComprobantePago GetByID(MySqlConnection conn, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
+        public static DBComprobantePago GetByID(MySqlConnection conn, DBCuenta cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
         {
             return GetByID(conn, DBComprobantes.GetByID(conn, cuenta, cp_ec_id, cp_cm_id), cp_id);
         }
@@ -178,7 +178,7 @@ namespace SistemaEMMG_Alpha
             return GetByID(conn, DBComprobantes.GetByID(conn, entidadComercial, cp_cm_id), cp_id);
         }
 
-        public static DBComprobantePago GetByID(List<DBComprobantePago> listaPagos, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
+        public static DBComprobantePago GetByID(List<DBComprobantePago> listaPagos, DBCuenta cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
         {
             foreach (DBComprobantePago pago in listaPagos)
             {
@@ -236,7 +236,7 @@ namespace SistemaEMMG_Alpha
             _comprobante = comprobante;
             _data = newData;
         }
-        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData)
+        public DBComprobantePago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData)
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
@@ -248,7 +248,7 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
-        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData) //Directly from DB
+        public DBComprobantePago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData) //Directly from DB
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id, conn);
@@ -263,10 +263,10 @@ namespace SistemaEMMG_Alpha
         public DBComprobantePago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
         public DBComprobantePago(DBComprobantes comprobante, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, -1, fp_id,  importe, obs, fecha) { }
 
-        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
-        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
-        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
-        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
+        public DBComprobantePago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBComprobantePago(DBCuenta cuenta, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
+        public DBComprobantePago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBComprobantePago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
         
         public DBComprobantePago(DBComprobantes comprobante, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
             comprobante,
@@ -409,7 +409,7 @@ namespace SistemaEMMG_Alpha
         public override long GetID() => _id;
 
         public long GetCuentaID() => _comprobante.GetCuentaID();
-        public DBEmpresa GetCuenta() => _comprobante.GetCuenta();
+        public DBCuenta GetCuenta() => _comprobante.GetCuenta();
 
         public long GetEntidadComercialID() => _comprobante.GetEntidadComercialID();
 

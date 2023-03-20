@@ -9,9 +9,9 @@ using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
-    public struct EmpresasData
+    public struct CuentaData
     {
-        public EmpresasData(long cuit, string rs)
+        public CuentaData(long cuit, string rs)
         {
             em_cuit = cuit;
             em_rs = rs; //Event handler to check that rs is not longer than 64 characters
@@ -24,56 +24,56 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return $"Nombre Empresa: {em_rs} - CUIT: {em_cuit}";
+            return $"Nombre Cuenta: {em_rs} - CUIT: {em_cuit}";
         }
     }
-    public class DBEmpresa : DBBaseClass, IDBase<DBEmpresa>, IDBDataType<DBEmpresa>
+    public class DBCuenta : DBBaseClass, IDBase<DBCuenta>, IDBDataType<DBCuenta>
     {
         /*************************
          * Global Static STUFFF *
          ************************/
-        public const string db_table = "empresas";
+        public const string db_table = "cuentas";
         public const string NameOf_id = "em_id";
-        private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
+        private static readonly List<DBCuenta> _db_cuentas = new List<DBCuenta>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
             return $"SELECT {fieldsToGet} FROM {db_table}";
         }
-        string IDBase<DBEmpresa>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
+        string IDBase<DBCuenta>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
+        public static List<DBCuenta> UpdateAll(MySqlConnection conn)
         {
-            List<DBEmpresa> returnList = new List<DBEmpresa>();
+            List<DBCuenta> returnList = new List<DBCuenta>();
             try
             {
                 string query = GetSQL_SelectQueryWithRelations("*");
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
-                _db_empresas.Clear();
+                _db_cuentas.Clear();
 
                 while (reader.Read())
                 {
-                    _db_empresas.Add(new DBEmpresa(reader));
-                    returnList.Add(new DBEmpresa(reader));
+                    _db_cuentas.Add(new DBCuenta(reader));
+                    returnList.Add(new DBCuenta(reader));
                 }
 
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de obtener todas las empresas, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener todas las cuentas, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnList;
         }
 
-        public static List<DBEmpresa> GetAll()
+        public static List<DBCuenta> GetAll()
         {
-            List<DBEmpresa> returnList = new List<DBEmpresa>();
-            foreach (DBEmpresa empresa in _db_empresas)
+            List<DBCuenta> returnList = new List<DBCuenta>();
+            foreach (DBCuenta cuenta in _db_cuentas)
             {
-                returnList.Add(empresa);
+                returnList.Add(cuenta);
             }
             return returnList;
         }
@@ -82,55 +82,55 @@ namespace SistemaEMMG_Alpha
          * START: IDBDataType Implementation contract
          * *****************************/
 
-        List<DBEmpresa> IDBDataType<DBEmpresa>.UpdateAll(MySqlConnection conn)
+        List<DBCuenta> IDBDataType<DBCuenta>.UpdateAll(MySqlConnection conn)
         {
-            return DBEmpresa.UpdateAll(conn);
+            return DBCuenta.UpdateAll(conn);
         }
 
-        List<DBEmpresa> IDBDataType<DBEmpresa>.GetAll()
+        List<DBCuenta> IDBDataType<DBCuenta>.GetAll()
         {
-            return DBEmpresa.GetAll();
+            return DBCuenta.GetAll();
         }
 
         /***************************
          * END: IDBDataType Implementation contract
          * *****************************/
 
-        public static bool EmpresaYaExiste(string str, long cuit, List<DBEmpresa> empresas)
+        public static bool CuentaYaExiste(string str, long cuit, List<DBCuenta> cuentas)
         {
-            foreach (DBEmpresa empresa in empresas)
+            foreach (DBCuenta cuenta in cuentas)
             {
-                if (str.ToLower().Equals(empresa.GetRazonSocial().ToLower()) || empresa.GetCUIT() == cuit)
+                if (str.ToLower().Equals(cuenta.GetRazonSocial().ToLower()) || cuenta.GetCUIT() == cuit)
                 {
                     return true;
                 }
             }
             return false;
         }
-        public static bool EmpresaYaExiste(string str, long cuit) => EmpresaYaExiste(str, cuit, _db_empresas);
+        public static bool CuentaYaExiste(string str, long cuit) => CuentaYaExiste(str, cuit, _db_cuentas);
 
         /***************
          * Local STUFF *
          ***************/
 
         private long _id;
-        private EmpresasData _data;
+        private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
-        public DBEmpresa(EmpresasData newData)
+        public DBCuenta(CuentaData newData)
         {
             _data = newData;
         }
 
-        public DBEmpresa(long id, long cuit, string rs)
+        public DBCuenta(long id, long cuit, string rs)
         {
             _id = id;
-            _data = new EmpresasData(cuit, rs);
+            _data = new CuentaData(cuit, rs);
         }
-        public DBEmpresa(long cuit, string rs) : this(-1, cuit, rs) { }
+        public DBCuenta(long cuit, string rs) : this(-1, cuit, rs) { }
 
-        public DBEmpresa(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs)) { }
-        public DBEmpresa(MySqlConnection conn, int id)
+        public DBCuenta(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(CuentaData.NameOf_em_cuit), reader.GetStringSafe(CuentaData.NameOf_em_rs)) { }
+        public DBCuenta(MySqlConnection conn, int id)
         {
             try
             {
@@ -141,13 +141,13 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new EmpresasData(reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs));
+                    _data = new CuentaData(reader.GetInt64Safe(CuentaData.NameOf_em_cuit), reader.GetStringSafe(CuentaData.NameOf_em_rs));
                 }
 
                 reader.Close();
             } catch (Exception ex)
             {
-                MessageBox.Show("Error en el constructor de DBEmpresa, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en el constructor de DBCuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -167,7 +167,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET {EmpresasData.NameOf_em_cuit} = {_data.em_cuit}, {EmpresasData.NameOf_em_rs} = '{_data.em_rs}' WHERE {NameOf_id} = {GetID()}";
+                string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{_data.em_rs}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
@@ -178,7 +178,7 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 wasAbleToUpdate = false;
-                MessageBox.Show("Error en DBEmpresa::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en DBCuenta::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToUpdate;
         }
@@ -188,14 +188,14 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({EmpresasData.NameOf_em_cuit}, {EmpresasData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
+                string query = $"INSERT INTO {db_table} ({CuentaData.NameOf_em_cuit}, {CuentaData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
             {
                 wasAbleToInsert = false;
-                MessageBox.Show("Error DBEmpresa::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error DBCuenta::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToInsert;
         }
@@ -212,7 +212,7 @@ namespace SistemaEMMG_Alpha
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBEmpresa: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBCuenta: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return deletedCorrectly;
         }
@@ -227,7 +227,7 @@ namespace SistemaEMMG_Alpha
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             } catch (Exception ex)
             {
-                MessageBox.Show("Error en el método DBEmpresa::ExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en el método DBCuenta::ExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 existsInDB = null;
             }
             return existsInDB;
@@ -335,7 +335,7 @@ namespace SistemaEMMG_Alpha
              _db_comprobantes.Remove(entRemove);
         }
 
-        public EmpresasData Data
+        public CuentaData Data
         {
             get => _data;
             set
@@ -347,7 +347,7 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///DO NOT USET! Warning this method will return null. It is not implemented yet!
         ///</summary>
-        public DBEmpresa Clone()
+        public DBCuenta Clone()
         {
             return null;
         }

@@ -12,7 +12,7 @@ namespace SistemaEMMG_Alpha
 {
     public static class DBConsultas
     {
-        public static List<DBEntidades> DBEntidadesWith(MySqlConnection conn, DBEmpresa cuenta, string toFind)
+        public static List<DBEntidades> DBEntidadesWith(MySqlConnection conn, DBCuenta cuenta, string toFind)
         {
             List<DBEntidades> returnList = new List<DBEntidades>();
             try

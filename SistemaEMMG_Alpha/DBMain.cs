@@ -9,24 +9,24 @@ using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
-    public class DBFields
+    public class DBMain
     {
-        private DBFields()
+        private DBMain()
         {
 
         }
 
-        public static DBFields Instance()
+        public static DBMain Instance()
         {
             if (_instance == null)
             {
-                _instance = new DBFields();
+                _instance = new DBMain();
             }
             return _instance;
         }
-        private static DBFields _instance = null;
+        private static DBMain _instance = null;
         public long idCuentaSeleccionada = 0;
-        public List<DBEmpresa> empresas;
+        public List<DBCuenta> cuentas;
         public List<DBTipoEntidad> tipos_entidades;
         public List<DBTiposComprobantes> tipos_comprobantes;
         public List<DBFormasPago> formas_pago;
@@ -61,39 +61,37 @@ namespace SistemaEMMG_Alpha
             formas_pago = DBFormasPago.UpdateAll(conn);
         }
 
-        public void ReadEmpresasFromDB(MySqlConnection conn)
+        public void ReadCuentasFromDB(MySqlConnection conn)
         {
-            if (!(empresas is null))
+            if (!(cuentas is null))
             {
-                empresas.Clear();
+                cuentas.Clear();
             }
-            empresas = DBEmpresa.UpdateAll(conn);
+            cuentas = DBCuenta.UpdateAll(conn);
         }
         public void ReadEntidadesComercialesFromDB(MySqlConnection conn)
         {
             ReadTiposEntidadesFromDB(conn); //We need to make sure we have the tipos_entidades for the Checkbox and stuff...
-            DBEmpresa empresaSeleccionada = GetCurrentAccount();
-            empresaSeleccionada.GetAllEntidadesComerciales(conn);
+            GetCurrentAccount().GetAllEntidadesComerciales(conn);
         }
         public void ReadComprobantesFromDB(MySqlConnection conn)
         {
             ReadTiposComprobantesFromDB(conn);
             ReadFormasDePago(conn);
-            DBEmpresa empresaSeleccionada = GetCurrentAccount();
-            empresaSeleccionada.GetAllComprobantes(conn);
+            GetCurrentAccount().GetAllComprobantes(conn);
         }
-        public DBEmpresa GetCurrentAccount() {
+        public DBCuenta GetCurrentAccount() {
             int index = GetCuentaIndexByID(idCuentaSeleccionada);
             if (index == -1)
                 return null;
-            return empresas[index];
+            return cuentas[index];
         }
 
         public int GetCuentaIndexByID(long cuentaID)
         {
-            for (int i=0; i < empresas.Count; i++)
+            for (int i=0; i < cuentas.Count; i++)
             {
-                if (empresas[i].GetID() == cuentaID)
+                if (cuentas[i].GetID() == cuentaID)
                 {
                     return i;
                 }
@@ -101,35 +99,35 @@ namespace SistemaEMMG_Alpha
             return -1;
         }
 
-        public bool EliminarCuentaDeEmpresa(int index, MySqlConnection conn)
+        public bool EliminarCuenta(int index, MySqlConnection conn)
         {
-            if (index < 0 || index >= empresas.Count)
+            if (index < 0 || index >= cuentas.Count)
             {
                 return false;
             }
-            if (empresas[index].DeleteFromDatabase(conn))
+            if (cuentas[index].DeleteFromDatabase(conn))
             {
-                empresas.RemoveAt(index);
+                cuentas.RemoveAt(index);
             }
 
             return true;
 
         }
 
-        public bool AgregarNuevaCuentaDeEmpresa(string nombreCuenta, long cuitCuenta, MySqlConnection conn)
+        public bool AgregarNuevaCuenta(string nombreCuenta, long cuitCuenta, MySqlConnection conn)
         {
-            if (DBEmpresa.EmpresaYaExiste(nombreCuenta, cuitCuenta, empresas))
+            if (DBCuenta.CuentaYaExiste(nombreCuenta, cuitCuenta, cuentas))
             {
-                MessageBox.Show("¡La cuenta de empresa que quiso crear ya existe!, el CUIT y la razón social deben ser únicas.");
+                MessageBox.Show("¡La cuenta que quiso crear ya existe!, el CUIT y la razón social deben ser únicas.");
                 return false;
             }
-            DBEmpresa newEmpresa = new DBEmpresa(cuitCuenta, nombreCuenta);
+            DBCuenta newCuenta = new DBCuenta(cuitCuenta, nombreCuenta);
 
-            if (!newEmpresa.PushToDatabase(conn))
+            if (!newCuenta.PushToDatabase(conn))
             {
                 return false;
             }
-            empresas.Add(newEmpresa);
+            cuentas.Add(newCuenta);
 
             return true;
         }

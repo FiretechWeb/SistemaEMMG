@@ -42,7 +42,7 @@ namespace SistemaEMMG_Alpha
             return $"Fecha: {cm_fecha} - Número: {cm_numero} - Gravado: {cm_gravado} - IVA: {cm_iva} - No Gravado: {cm_no_gravado} - Percepción: {cm_percepcion} - Emitido: {cm_emitido}";
         }
     }
-    public class DBComprobantes : DBBaseClass, IDBase<DBComprobantes>, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>
+    public class DBComprobantes : DBBaseClass, IDBase<DBComprobantes>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
     {
         public const string db_table = "comprobantes";
         public const string NameOf_cm_em_id = "cm_em_id";
@@ -71,7 +71,7 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static bool RemoveFromDB(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long id)
+        public static bool RemoveFromDB(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id)
         {
             bool deletedCorrectly = false;
             try
@@ -89,7 +89,7 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
-        public static List<DBComprobantes> GetAll(MySqlConnection conn, DBEmpresa cuenta)
+        public static List<DBComprobantes> GetAll(MySqlConnection conn, DBCuenta cuenta)
         {
             List<DBComprobantes> returnList = new List<DBComprobantes>();
             try
@@ -157,12 +157,12 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
-        public static DBComprobantes GetByID(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long id)
+        public static DBComprobantes GetByID(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id)
         {
             return GetByID(conn, DBEntidades.GetByID(conn, cuenta, ec_id), id);
         }
 
-        public static DBComprobantes GetByID(List<DBComprobantes> listaComprobantes, DBEmpresa cuenta, long ec_id, long id)
+        public static DBComprobantes GetByID(List<DBComprobantes> listaComprobantes, DBCuenta cuenta, long ec_id, long id)
         {
             foreach (DBComprobantes comprobante in listaComprobantes)
             {
@@ -215,7 +215,7 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
         {
             _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
@@ -223,14 +223,14 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, long id, long ec_id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tc_id, ComprobantesData newData)
         {
             _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
         }
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, ComprobantesData newData)
         {
             _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
@@ -238,7 +238,7 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
-        public DBComprobantes(DBEmpresa cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
         {
             _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
@@ -318,7 +318,7 @@ namespace SistemaEMMG_Alpha
         )
         { }
         public DBComprobantes(
-            DBEmpresa cuentaSeleccioanda,
+            DBCuenta cuentaSeleccioanda,
             long ec_id,
             DBTiposComprobantes newTipo,
             long id,
@@ -338,7 +338,7 @@ namespace SistemaEMMG_Alpha
         )
         { }
         public DBComprobantes(
-            DBEmpresa cuentaSeleccioanda,
+            DBCuenta cuentaSeleccioanda,
             long ec_id,
             DBTiposComprobantes newTipo,
             bool emitido,
@@ -357,7 +357,7 @@ namespace SistemaEMMG_Alpha
         )
         { }
         public DBComprobantes(
-            DBEmpresa cuentaSeleccioanda,
+            DBCuenta cuentaSeleccioanda,
             MySqlConnection conn,
             long ec_id,
             DBTiposComprobantes newTipo,
@@ -379,7 +379,7 @@ namespace SistemaEMMG_Alpha
         )
         { }
         public DBComprobantes(
-            DBEmpresa cuentaSeleccioanda,
+            DBCuenta cuentaSeleccioanda,
             MySqlConnection conn,
             long ec_id,
             DBTiposComprobantes newTipo,
@@ -628,7 +628,7 @@ namespace SistemaEMMG_Alpha
         public DBEntidades GetEntidadComercial() => _entidadComercial;
         public long GetCuentaID() => _entidadComercial.GetCuentaID();
 
-        public DBEmpresa GetCuenta() => _entidadComercial.GetCuenta();
+        public DBCuenta GetCuenta() => _entidadComercial.GetCuenta();
         public DBTiposComprobantes GetTipoComprobante() => _tipoComprobante.Clone();
         public string GetNumeroComprobante() => _data.cm_numero;
         ///<summary>
