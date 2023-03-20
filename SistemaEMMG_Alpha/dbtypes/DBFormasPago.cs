@@ -24,7 +24,7 @@ namespace SistemaEMMG_Alpha
             return $"Nombre: {fp_nombre}";
         }
     }
-    public class DBFormasPago : DBBaseClass, IDBDataType<DBFormasPago>
+    public class DBFormasPago : DBBaseClass, IDBase<DBFormasPago>, IDBDataType<DBFormasPago>
     {
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
@@ -34,6 +34,12 @@ namespace SistemaEMMG_Alpha
         private long _id;
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
+
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            return $"SELECT {fieldsToGet} FROM {db_table}";
+        }
+        string IDBase<DBFormasPago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static bool TipoFormaPagoExists(string formaPagoNombre, List<DBFormasPago> listaFormasPago)
         {
@@ -56,7 +62,7 @@ namespace SistemaEMMG_Alpha
             List<DBFormasPago> returnList = new List<DBFormasPago>();
             try
             {
-                string query = $"SELECT * FROM {db_table}";
+                string query = GetSQL_SelectQueryWithRelations("*");
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -76,6 +82,8 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
+        List<DBFormasPago> IDBDataType<DBFormasPago>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
+
         public static List<DBFormasPago> GetAll()
         {
             List<DBFormasPago> returnList = new List<DBFormasPago>();
@@ -86,25 +94,7 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        /***************************
-         * START: IDBDataType Implementation contract
-         * *****************************/
-
-        List<DBFormasPago> IDBDataType<DBFormasPago>.UpdateAll(MySqlConnection conn)
-        {
-            return DBFormasPago.UpdateAll(conn);
-        }
-
-        List<DBFormasPago> IDBDataType<DBFormasPago>.GetAll()
-        {
-            return DBFormasPago.GetAll();
-        }
-
-
-        /***************************
-         * END: IDBDataType Implementation contract
-         * *****************************/
-
+        List<DBFormasPago> IDBDataType<DBFormasPago>.GetAll() => GetAll();
 
         public static DBFormasPago GetByID(long fp_id, bool clone = true)
         {
@@ -123,13 +113,13 @@ namespace SistemaEMMG_Alpha
             DBFormasPago returnEnt = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {fp_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {fp_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEnt = new DBFormasPago(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    returnEnt = new DBFormasPago(reader);
                 }
                 reader.Close();
             }
@@ -154,7 +144,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())

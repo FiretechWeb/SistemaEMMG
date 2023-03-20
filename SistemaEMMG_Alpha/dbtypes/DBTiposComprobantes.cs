@@ -26,7 +26,7 @@ namespace SistemaEMMG_Alpha
         }
     }
 
-    public class DBTiposComprobantes : DBBaseClass, IDBDataType<DBTiposComprobantes>
+    public class DBTiposComprobantes : DBBaseClass, IDBase<DBTiposComprobantes>, IDBDataType<DBTiposComprobantes>
     {
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
@@ -36,6 +36,12 @@ namespace SistemaEMMG_Alpha
         private long _id;
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
+
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            return $"SELECT {fieldsToGet} FROM {db_table}";
+        }
+        string IDBase<DBTiposComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static bool TipoComprobanteExists(string tipoComprobanteNombre, List<DBTiposComprobantes> listaTiposComprobantes)
         {
@@ -58,7 +64,7 @@ namespace SistemaEMMG_Alpha
             List<DBTiposComprobantes> returnList = new List<DBTiposComprobantes>();
             try
             {
-                string query = $"SELECT * FROM {db_table}";
+                string query = GetSQL_SelectQueryWithRelations("*");
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -78,6 +84,8 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
+        List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
+
         public static List<DBTiposComprobantes> GetAll()
         {
             List<DBTiposComprobantes> returnList = new List<DBTiposComprobantes>();
@@ -87,26 +95,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-
-
-        /***************************
-         * START: IDBDataType Implementation contract
-         * *****************************/
-
-        List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.UpdateAll(MySqlConnection conn)
-        {
-            return DBTiposComprobantes.UpdateAll(conn);
-        }
-
-        List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAll()
-        {
-            return DBTiposComprobantes.GetAll();
-        }
-
-
-        /***************************
-         * END: IDBDataType Implementation contract
-         * *****************************/
+        List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAll() => GetAll();
 
         public static DBTiposComprobantes GetByID(long tc_id, bool clone = true)
         {
@@ -125,13 +114,13 @@ namespace SistemaEMMG_Alpha
             DBTiposComprobantes returnEnt = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {tc_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {tc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEnt = new DBTiposComprobantes(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    returnEnt = new DBTiposComprobantes(reader);
                 }
                 reader.Close();
             }
@@ -156,7 +145,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())

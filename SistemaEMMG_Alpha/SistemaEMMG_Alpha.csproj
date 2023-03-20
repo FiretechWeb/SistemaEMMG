@@ -93,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DBInterfaces.cs" />
     <Compile Include="dbtypes\DBBancos.cs" />
     <Compile Include="SafeConvert.cs" />
     <Page Include="MainWindow.xaml">

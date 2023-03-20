@@ -27,7 +27,7 @@ namespace SistemaEMMG_Alpha
             return $"Nombre Empresa: {em_rs} - CUIT: {em_cuit}";
         }
     }
-    public class DBEmpresa : DBBaseClass, IDBDataType<DBEmpresa>
+    public class DBEmpresa : DBBaseClass, IDBase<DBEmpresa>, IDBDataType<DBEmpresa>
     {
         /*************************
          * Global Static STUFFF *
@@ -36,12 +36,18 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_id = "em_id";
         private static readonly List<DBEmpresa> _db_empresas = new List<DBEmpresa>();
 
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            return $"SELECT {fieldsToGet} FROM {db_table}";
+        }
+        string IDBase<DBEmpresa>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
+
         public static List<DBEmpresa> UpdateAll(MySqlConnection conn)
         {
             List<DBEmpresa> returnList = new List<DBEmpresa>();
             try
             {
-                string query = $"SELECT * FROM {db_table}";
+                string query = GetSQL_SelectQueryWithRelations("*");
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -128,7 +134,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                

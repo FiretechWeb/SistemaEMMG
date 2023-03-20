@@ -25,7 +25,7 @@ namespace SistemaEMMG_Alpha
         }
     }
 
-    public class DBTipoEntidad : DBBaseClass, IDBDataType<DBTipoEntidad>
+    public class DBTipoEntidad : DBBaseClass, IDBase<DBTipoEntidad>, IDBDataType<DBTipoEntidad>
     {
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
@@ -35,6 +35,12 @@ namespace SistemaEMMG_Alpha
         private long _id;
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
+
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            return $"SELECT {fieldsToGet} FROM {db_table}";
+        }
+        string IDBase<DBTipoEntidad>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static bool TipoEntidadYaExiste(string tipoEntidadNombre, List<DBTipoEntidad> tiposEntidades)
         {
@@ -52,7 +58,7 @@ namespace SistemaEMMG_Alpha
             List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();
             try
             {
-                string query = $"SELECT * FROM {db_table}";
+                string query = GetSQL_SelectQueryWithRelations("*");
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -71,6 +77,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
+        List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
         public static List<DBTipoEntidad> GetAll()
         {
@@ -82,24 +89,7 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-
-        /***************************
-         * START: IDBDataType Implementation contract
-         * *****************************/
-
-        List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAll()
-        {
-            return DBTipoEntidad.GetAll();
-        }
-
-        List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.UpdateAll(MySqlConnection conn)
-        {
-            return DBTipoEntidad.UpdateAll(conn);
-        }
-
-        /***************************
-         * END: IDBDataType Implementation contract
-         * *****************************/
+        List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAll() => GetAll();
 
         public static DBTipoEntidad GetByID(long te_id, bool clone = true)
         {
@@ -118,13 +108,13 @@ namespace SistemaEMMG_Alpha
             DBTipoEntidad returnTipoEntidad = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {te_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {te_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnTipoEntidad = new DBTipoEntidad(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    returnTipoEntidad = new DBTipoEntidad(reader);
                 }
                 reader.Close();
             }
@@ -149,7 +139,7 @@ namespace SistemaEMMG_Alpha
         {
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 

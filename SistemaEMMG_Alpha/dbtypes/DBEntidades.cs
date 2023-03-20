@@ -31,7 +31,7 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_ec_telefono = nameof(ec_telefono);
         public static readonly string NameOf_ec_celular = nameof(ec_celular);
     }
-    public class DBEntidades : DBBaseClass, IDBCuenta<DBEmpresa>
+    public class DBEntidades : DBBaseClass, IDBase<DBEntidades>, IDBCuenta<DBEmpresa>
     {
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
@@ -48,6 +48,12 @@ namespace SistemaEMMG_Alpha
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
+
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            return $"SELECT {fieldsToGet} FROM {db_table} JOIN {DBTipoEntidad.db_table} ON {DBTipoEntidad.db_table}.{DBTipoEntidad.NameOf_id} = {db_table}.{NameOf_ec_te_id}";
+        }
+        string IDBase<DBEntidades>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public DBEntidades(DBEmpresa newCuenta, long id, DBTipoEntidad newTipo, EntidadesComercialesData newData)
         {
@@ -97,7 +103,7 @@ namespace SistemaEMMG_Alpha
             List<DBEntidades> returnList = new List<DBEntidades>();
             try
             {
-                string query = $"SELECT * FROM {db_table} JOIN {DBTipoEntidad.db_table} ON {DBTipoEntidad.db_table}.{DBTipoEntidad.NameOf_id} = {db_table}.{NameOf_ec_te_id} WHERE {NameOf_ec_em_id} = {cuenta.GetID()}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_ec_em_id} = {cuenta.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 
@@ -119,7 +125,7 @@ namespace SistemaEMMG_Alpha
             DBEntidades returnEntidad = null;
             try
             {
-                string query = $"SELECT * FROM {db_table} JOIN {DBTipoEntidad.db_table} ON {DBTipoEntidad.db_table}.{DBTipoEntidad.NameOf_id} = {db_table}.{NameOf_ec_te_id} WHERE {NameOf_ec_em_id} = {cuenta.GetID()} AND {NameOf_id} = {id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_ec_em_id} = {cuenta.GetID()} AND {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 

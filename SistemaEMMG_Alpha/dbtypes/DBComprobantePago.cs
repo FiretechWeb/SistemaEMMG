@@ -25,7 +25,7 @@ namespace SistemaEMMG_Alpha
         }
     }
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBComprobantePago y ComprobantePagoData
-    public class DBComprobantePago : DBBaseClass, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
+    public class DBComprobantePago : DBBaseClass, IDBase<DBComprobantePago>, IDBCuenta<DBEmpresa>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
     {
         public const string db_table = "comprobantes_pagos";
         public const string NameOf_cp_em_id = "cp_em_id";
@@ -37,6 +37,23 @@ namespace SistemaEMMG_Alpha
         private ComprobantePagoData _data;
         private DBComprobantes _comprobante;
         private DBFormasPago _formaDePago;
+
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            string te_table = DBTipoEntidad.db_table;
+            string ec_table = DBEntidades.db_table;
+            string tc_table = DBTiposComprobantes.db_table;
+            string fp_table = DBFormasPago.db_table;
+            string cm_table = DBComprobantes.db_table;
+
+            return $@"SELECT {fieldsToGet} FROM {db_table} 
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} ";
+        }
+        string IDBase<DBComprobantePago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static bool RemoveFromDB(MySqlConnection conn, DBEmpresa cuenta, long ec_id, long cm_id, long id)
         {
@@ -61,20 +78,7 @@ namespace SistemaEMMG_Alpha
             List<DBComprobantePago> returnList = new List<DBComprobantePago>();
             try
             {
-                string te_table = DBTipoEntidad.db_table;
-                string ec_table = DBEntidades.db_table;
-                string tc_table = DBTiposComprobantes.db_table;
-                string fp_table = DBFormasPago.db_table;
-                string cm_table = DBComprobantes.db_table;
-
-                string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
-                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
-                WHERE {NameOf_cp_em_id} = {comprobante.GetCuentaID()} AND {NameOf_cp_ec_id} = {comprobante.GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {comprobante.GetID()}";
-
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cp_em_id} = {comprobante.GetCuentaID()} AND {NameOf_cp_ec_id} = {comprobante.GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {comprobante.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -96,20 +100,7 @@ namespace SistemaEMMG_Alpha
             List<DBComprobantePago> returnList = new List<DBComprobantePago>();
             try
             {
-                string te_table = DBTipoEntidad.db_table;
-                string ec_table = DBEntidades.db_table;
-                string tc_table = DBTiposComprobantes.db_table;
-                string fp_table = DBFormasPago.db_table;
-                string cm_table = DBComprobantes.db_table;
-
-                string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
-                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
-                WHERE {NameOf_cp_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cp_ec_id} = {entidadComercial.GetID()}";
-
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cp_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cp_ec_id} = {entidadComercial.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -131,19 +122,7 @@ namespace SistemaEMMG_Alpha
             List<DBComprobantePago> returnList = new List<DBComprobantePago>();
             try
             {
-                string te_table = DBTipoEntidad.db_table;
-                string ec_table = DBEntidades.db_table;
-                string tc_table = DBTiposComprobantes.db_table;
-                string fp_table = DBFormasPago.db_table;
-                string cm_table = DBComprobantes.db_table;
-
-                string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
-                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
-                WHERE cp_em_id = {cuenta.GetID()}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE cp_em_id = {cuenta.GetID()}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
@@ -161,95 +140,12 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static DBComprobantePago GetByID(MySqlConnection conn, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
-        {
-            DBComprobantePago returnEnt = null;
-            try
-            {
-                string te_table = DBTipoEntidad.db_table;
-                string ec_table = DBEntidades.db_table;
-                string tc_table = DBTiposComprobantes.db_table;
-                string fp_table = DBFormasPago.db_table;
-                string cm_table = DBComprobantes.db_table;
-
-                string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
-                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
-                WHERE cp_em_id = {cuenta.GetID()} AND cp_ec_id = {cp_ec_id} AND cp_cm_id = {cp_cm_id} AND cp_id = {cp_id}";
-
-                var cmd = new MySqlCommand(query, conn);
-                var reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    returnEnt = new DBComprobantePago(new DBComprobantes(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTiposComprobantes(reader), reader), new DBFormasPago(reader), reader);
-                }
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            return returnEnt;
-        }
-
-        public static DBComprobantePago GetByID(MySqlConnection conn, DBEntidades entidadComercial, long cp_cm_id, long cp_id)
-        {
-            DBComprobantePago returnEnt = null;
-            try
-            {
-                string te_table = DBTipoEntidad.db_table;
-                string ec_table = DBEntidades.db_table;
-                string tc_table = DBTiposComprobantes.db_table;
-                string fp_table = DBFormasPago.db_table;
-                string cm_table = DBComprobantes.db_table;
-
-                string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
-                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
-                WHERE cp_em_id = {entidadComercial.GetCuentaID()} AND cp_ec_id = {entidadComercial.GetID()} AND cp_cm_id = {cp_cm_id} AND cp_id = {cp_id}";
-
-                var cmd = new MySqlCommand(query, conn);
-                var reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    returnEnt = new DBComprobantePago(new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), reader), new DBFormasPago(reader), reader);
-                }
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            return returnEnt;
-        }
-
         public static DBComprobantePago GetByID(MySqlConnection conn, DBComprobantes comprobante, long cp_id)
         {
             DBComprobantePago returnEnt = null;
             try
             {
-                //SELECT * FROM ent_comerciales JOIN tipos_entidades ON tipos_entidades.te_id = ent_comerciales.ec_te_id WHERE ec_em_id = 1;
-                string te_table = DBTipoEntidad.db_table;
-                string ec_table = DBEntidades.db_table;
-                string tc_table = DBTiposComprobantes.db_table;
-                string fp_table = DBFormasPago.db_table;
-                string cm_table = DBComprobantes.db_table;
-
-                string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
-                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
-                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
-                WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetEntidadComercialID()} AND cp_cm_id = {comprobante.GetID()} AND cp_id = {cp_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetEntidadComercialID()} AND cp_cm_id = {comprobante.GetID()} AND cp_id = {cp_id}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
@@ -266,7 +162,15 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
+        public static DBComprobantePago GetByID(MySqlConnection conn, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
+        {
+            return GetByID(conn, DBComprobantes.GetByID(conn, cuenta, cp_ec_id, cp_cm_id), cp_id);
+        }
 
+        public static DBComprobantePago GetByID(MySqlConnection conn, DBEntidades entidadComercial, long cp_cm_id, long cp_id)
+        {
+            return GetByID(conn, DBComprobantes.GetByID(conn, entidadComercial, cp_cm_id), cp_id);
+        }
 
         public static DBComprobantePago GetByID(List<DBComprobantePago> listaPagos, DBEmpresa cuenta, long cp_ec_id, long cp_cm_id, long cp_id)
         {
