@@ -43,7 +43,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table}  WHERE cp_em_id = {cuenta.GetID()} AND cp_ec_id = {ec_id} AND cp_cm_id = {cm_id} AND cp_id = {id}";
+                string query = $"DELETE FROM {db_table}  WHERE {NameOf_cp_em_id} = {cuenta.GetID()} AND {NameOf_cp_ec_id} = {ec_id} AND {NameOf_cp_cm_id} = {cm_id} AND {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -68,23 +68,20 @@ namespace SistemaEMMG_Alpha
                 string cm_table = DBComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
-                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
-                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
-                WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetEntidadComercialID()} AND cp_cm_id = {comprobante.GetID()}";
-
-                Console.WriteLine("Aca llego");
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
+                WHERE {NameOf_cp_em_id} = {comprobante.GetCuentaID()} AND {NameOf_cp_ec_id} = {comprobante.GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {comprobante.GetID()}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    Console.WriteLine("Leyendo data...");
-                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
-                    returnList.Add(new DBComprobantePago(comprobante, reader.GetInt64Safe("cp_id"), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe(DBFormasPago.NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    returnList.Add(new DBComprobantePago(comprobante, reader.GetInt64Safe(DBComprobantePago.NameOf_id), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs)))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -107,21 +104,31 @@ namespace SistemaEMMG_Alpha
                 string cm_table = DBComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
-                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
-                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
-                WHERE cp_em_id = {entidadComercial.GetCuentaID()} AND cp_ec_id = {entidadComercial.GetID()}";
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
+                WHERE {NameOf_cp_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cp_ec_id} = {entidadComercial.GetID()}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe(DBFormasPago.NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial,
+                        reader.GetInt64Safe(DBComprobantes.NameOf_id),
+                        newTipoComprobante,
+                        new ComprobantesData(
+                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
+                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado), 
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva), 
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado), 
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion), 
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))); //Waste of persformance but helps with making the code less propense to error.
 
                     returnList.Add(new DBComprobantePago(newComprobante, reader.GetInt64Safe("cp_id"), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
                 }
@@ -146,11 +153,11 @@ namespace SistemaEMMG_Alpha
                 string cm_table = DBComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
-                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
-                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
                 WHERE cp_em_id = {cuenta.GetID()}";
 
                 var cmd = new MySqlCommand(query, conn);
@@ -158,13 +165,35 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
-                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe(DBTipoEntidad.NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    DBEntidades newEntidadComercial = new DBEntidades(
+                        cuenta, 
+                        newTipoEntidadComercial, 
+                        reader.GetInt64Safe(DBEntidades.NameOf_id), 
+                        reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit), 
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs), 
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email), 
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono), 
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular));
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe(DBFormasPago.NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial,
+                        reader.GetInt64Safe(DBComprobantes.NameOf_id),
+                        newTipoComprobante,
+                        new ComprobantesData(
+                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
+                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))); //Waste of persformance but helps with making the code less propense to error.
 
-                    returnList.Add(new DBComprobantePago(newComprobante, reader.GetInt64Safe("cp_id"), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe("cp_obs")))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantePago(
+                        newComprobante,
+                        reader.GetInt64Safe(NameOf_id),
+                        newFormaDePago, 
+                        new ComprobantePagoData(reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs)))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -187,11 +216,11 @@ namespace SistemaEMMG_Alpha
                 string cm_table = DBComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
-                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
-                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
                 WHERE cp_em_id = {cuenta.GetID()} AND cp_ec_id = {cp_ec_id} AND cp_cm_id = {cp_cm_id} AND cp_id = {cp_id}";
 
                 var cmd = new MySqlCommand(query, conn);
@@ -199,13 +228,38 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe("te_id"), reader.GetStringSafe("te_nombre"));
-                    DBEntidades newEntidadComercial = new DBEntidades(cuenta, newTipoEntidadComercial, reader.GetInt64Safe("ec_id"), reader.GetInt64Safe("ec_cuit"), reader.GetStringSafe("ec_rs"), reader.GetStringSafe("ec_email"), reader.GetStringSafe("ec_telefono"), reader.GetStringSafe("ec_celular"));
-                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(newEntidadComercial, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe(DBTipoEntidad.NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    DBEntidades newEntidadComercial = new DBEntidades(
+                        cuenta,
+                        newTipoEntidadComercial,
+                        reader.GetInt64Safe(DBEntidades.NameOf_id),
+                        reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
+                        reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular));
 
-                    returnEnt = new DBComprobantePago(newComprobante, reader.GetInt64Safe("cp_id"), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe(DBFormasPago.NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    DBComprobantes newComprobante = new DBComprobantes(
+                        newEntidadComercial,
+                        reader.GetInt64Safe(DBComprobantes.NameOf_id),
+                        newTipoComprobante,
+                        new ComprobantesData(
+                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
+                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))); //Waste of persformance but helps with making the code less propense to error.
+
+                    returnEnt = new DBComprobantePago(
+                        newComprobante,
+                        reader.GetInt64Safe(NameOf_id),
+                        newFormaDePago,
+                        new ComprobantePagoData(
+                            reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -228,11 +282,11 @@ namespace SistemaEMMG_Alpha
                 string cm_table = DBComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
-                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
-                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
                 WHERE cp_em_id = {entidadComercial.GetCuentaID()} AND cp_ec_id = {entidadComercial.GetID()} AND cp_cm_id = {cp_cm_id} AND cp_id = {cp_id}";
 
                 var cmd = new MySqlCommand(query, conn);
@@ -240,11 +294,25 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe("tc_id"), reader.GetStringSafe("tc_nombre"));
-                    DBComprobantes newComprobante = new DBComprobantes(entidadComercial, reader.GetInt64Safe("cm_id"), newTipoComprobante, new ComprobantesData(reader.GetDateTimeSafe("cm_fecha"), reader.GetStringSafe("cm_numero"), reader.GetDoubleSafe("cm_gravado"), reader.GetDoubleSafe("cm_iva"), reader.GetDoubleSafe("cm_no_gravado"), reader.GetDoubleSafe("cm_percepcion"), Convert.ToBoolean(reader.GetInt32("cm_emitido")))); //Waste of persformance but helps with making the code less propense to error.
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe(DBFormasPago.NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    DBComprobantes newComprobante = new DBComprobantes(
+                        entidadComercial,
+                        reader.GetInt64Safe(DBComprobantes.NameOf_id),
+                        newTipoComprobante,
+                        new ComprobantesData(
+                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
+                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
+                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
+                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))); //Waste of persformance but helps with making the code less propense to error.
 
-                    returnEnt = new DBComprobantePago(newComprobante, reader.GetInt64Safe("cp_id"), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
+                    returnEnt = new DBComprobantePago(newComprobante,
+                        reader.GetInt64Safe(DBComprobantePago.NameOf_id),
+                        newFormaDePago,
+                        new ComprobantePagoData(reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -268,11 +336,11 @@ namespace SistemaEMMG_Alpha
                 string cm_table = DBComprobantes.db_table;
 
                 string query = $@"SELECT * FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.fp_id = {db_table}.cp_fp_id 
-                JOIN {cm_table} ON {cm_table}.cm_id = {db_table}.cp_cm_id AND {cm_table}.cm_ec_id = {db_table}.cp_ec_id AND {cm_table}.cm_em_id = {db_table}.cp_em_id 
-                JOIN {tc_table} ON {tc_table}.tc_id = {cm_table}.cm_tc_id 
-                JOIN {ec_table} ON {ec_table}.ec_id = {db_table}.cp_ec_id AND {ec_table}.ec_em_id = {db_table}.cp_em_id 
-                JOIN {te_table} ON {te_table}.te_id = {ec_table}.ec_te_id 
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_cp_cm_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_cp_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_cp_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_cp_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} 
                 WHERE cp_em_id = {comprobante.GetCuentaID()} AND cp_ec_id = {comprobante.GetEntidadComercialID()} AND cp_cm_id = {comprobante.GetID()} AND cp_id = {cp_id}";
 
                 var cmd = new MySqlCommand(query, conn);
@@ -280,8 +348,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe("fp_id"), reader.GetStringSafe("fp_nombre"));
-                    returnEnt = new DBComprobantePago(comprobante, reader.GetInt64Safe("cp_id"), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe("cp_obs"))); //Waste of persformance but helps with making the code less propense to error.
+                    DBFormasPago newFormaDePago = new DBFormasPago(reader.GetInt64Safe(DBFormasPago.NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    returnEnt = new DBComprobantePago(comprobante, reader.GetInt64Safe(DBComprobantePago.NameOf_id), newFormaDePago, new ComprobantePagoData(reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs))); //Waste of persformance but helps with making the code less propense to error.
                 }
                 reader.Close();
             }
@@ -416,7 +484,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET cp_fp_id = {_formaDePago.GetID()}, cp_obs = '{_data.cp_obs}' WHERE cp_em_id = {GetCuentaID()} AND cp_ec_id = {GetEntidadComercialID()} AND cp_cm_id = {GetComprobanteID()} AND cp_id = {GetID()}";
+                string query = $"UPDATE {db_table} SET {NameOf_cp_fp_id} = {_formaDePago.GetID()}, {ComprobantePagoData.NameOf_cp_obs} = '{_data.cp_obs}' WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
@@ -437,7 +505,13 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} (cp_em_id, cp_ec_id, cp_cm_id, cp_fp_id, cp_obs) VALUES ({GetCuentaID()}, {GetEntidadComercialID()}, {GetComprobanteID()}, {_formaDePago.GetID()}, '{_data.cp_obs}')";
+                string query = $@"INSERT INTO {db_table} (
+                                {NameOf_cp_em_id},
+                                {NameOf_cp_ec_id},
+                                {NameOf_cp_cm_id},
+                                {NameOf_cp_fp_id},
+                                {ComprobantePagoData.NameOf_cp_obs}) VALUES ({GetCuentaID()}, {GetEntidadComercialID()}, {GetComprobanteID()}, {_formaDePago.GetID()}, '{_data.cp_obs}')";
+
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
             }
@@ -454,7 +528,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE cp_em_id = {GetCuentaID()} AND cp_ec_id = {GetEntidadComercialID()} AND cp_cm_id = {GetComprobanteID()} AND cp_id = {GetID()}";
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 deletedCorrectly = true;
@@ -475,7 +549,7 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE cp_em_id = {GetCuentaID()} AND cp_ec_id = {GetEntidadComercialID()} AND cp_cm_id = {GetComprobanteID()} AND cp_id = {GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
