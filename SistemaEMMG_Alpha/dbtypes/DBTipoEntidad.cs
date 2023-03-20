@@ -60,8 +60,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_tipos_entidades.Add(new DBTipoEntidad(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre)));
-                    returnList.Add(new DBTipoEntidad(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre))); //Waste of persformance but helps with making the code less propense to error.
+                    _db_tipos_entidades.Add(new DBTipoEntidad(reader));
+                    returnList.Add(new DBTipoEntidad(reader));
                 }
                 reader.Close();
             }
@@ -166,7 +166,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructo de DBTipoEntidad, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        public DBTipoEntidad(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), TiposEntidadesData.NameOf_te_nombre) { }
+        public DBTipoEntidad(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre)) { }
         public override bool PushToDatabase(MySqlConnection conn)
         {
             bool? existsInDB = ExistsInDatabase(conn);

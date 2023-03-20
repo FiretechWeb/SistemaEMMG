@@ -97,29 +97,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
-                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe(DBTipoEntidad.NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
-                    DBEntidades newEntidad = new DBEntidades(cuenta,
-                        reader.GetInt64Safe(DBEntidades.NameOf_id),
-                        newTipoEntidadComercial,
-                        new EntidadesComercialesData(
-                            reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)));
-
-                    returnList.Add(new DBComprobantes(newEntidad,
-                        reader.GetInt64Safe(NameOf_id),
-                        newTipoComprobante,
-                        new ComprobantesData(
-                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
-                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))))); 
+                    returnList.Add(new DBComprobantes(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTiposComprobantes(reader), reader));
                 }
                 reader.Close();
             }
@@ -150,18 +128,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
-                    returnList.Add(new DBComprobantes(entidadComercial,
-                        reader.GetInt64Safe(NameOf_id),
-                        newTipoComprobante,
-                        new ComprobantesData(
-                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
-                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))))); //Waste of persformance but helps with making the code less propense to error.
+                    returnList.Add(new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), reader));
                 }
                 reader.Close();
             }
@@ -192,29 +159,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(reader.GetInt64Safe(DBTiposComprobantes.NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
-                    DBTipoEntidad newTipoEntidadComercial = new DBTipoEntidad(reader.GetInt64Safe(DBTipoEntidad.NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
-                    DBEntidades newEntidad = new DBEntidades(cuenta,
-                        reader.GetInt64Safe(DBEntidades.NameOf_id),
-                        newTipoEntidadComercial,
-                        new EntidadesComercialesData(
-                            reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
-                            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)));
-
-                    returnEnt = new DBComprobantes(newEntidad,
-                        reader.GetInt64Safe(NameOf_id),
-                        newTipoComprobante,
-                        new ComprobantesData(
-                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
-                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido))));
+                    returnEnt = new DBComprobantes(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTiposComprobantes(reader), reader);
                 }
                 reader.Close();
             }
@@ -245,20 +190,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    DBTiposComprobantes newTipoComprobante = new DBTiposComprobantes(
-                        reader.GetInt64Safe(DBTiposComprobantes.NameOf_id),
-                        reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
-                    returnEnt = new DBComprobantes(entidadComercial,
-                        reader.GetInt64Safe(NameOf_id),
-                        newTipoComprobante,
-                        new ComprobantesData(
-                            reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
-                            reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
-                            reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                            Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))); //Waste of persformance but helps with making the code less propense to error.
+                    returnEnt = new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), reader);
                 }
                 reader.Close();
             }

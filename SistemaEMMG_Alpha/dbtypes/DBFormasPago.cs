@@ -64,8 +64,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_formas_pago.Add(new DBFormasPago(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre)));
-                    returnList.Add(new DBFormasPago(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre))); //Waste of performance but helps with making the code less propense to error.
+                    _db_formas_pago.Add(new DBFormasPago(reader));
+                    returnList.Add(new DBFormasPago(reader));
                 }
                 reader.Close();
             }

@@ -66,8 +66,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_tipos_comprobantes.Add(new DBTiposComprobantes(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre)));
-                    returnList.Add(new DBTiposComprobantes(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre))); //Waste of performance but helps with making the code less propense to error.
+                    _db_tipos_comprobantes.Add(new DBTiposComprobantes(reader));
+                    returnList.Add(new DBTiposComprobantes(reader));
                 }
                 reader.Close();
             }

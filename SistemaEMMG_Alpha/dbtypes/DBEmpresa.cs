@@ -49,8 +49,8 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBEmpresa(reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs)));
-                    _db_empresas.Add(new DBEmpresa(reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(EmpresasData.NameOf_em_cuit), reader.GetStringSafe(EmpresasData.NameOf_em_rs)));
+                    _db_empresas.Add(new DBEmpresa(reader));
+                    returnList.Add(new DBEmpresa(reader));
                 }
 
                 reader.Close();
@@ -328,8 +328,6 @@ namespace SistemaEMMG_Alpha
         {
              _db_comprobantes.Remove(entRemove);
         }
-
-
 
         public EmpresasData Data
         {

@@ -103,19 +103,7 @@ namespace SistemaEMMG_Alpha
                 
                 while (reader.Read())
                 {
-                   returnList.Add(
-                       new DBEntidades(
-                           cuenta,
-                           new DBTipoEntidad(
-                               reader.GetInt64Safe(DBTipoEntidad.NameOf_id),
-                               reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre)),
-                           reader.GetInt64Safe(NameOf_id),
-                           reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)
-                  ));
+                    returnList.Add(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader));
                 }
                 reader.Close();
             }
@@ -137,17 +125,7 @@ namespace SistemaEMMG_Alpha
 
                 if (reader.Read())
                 {
-                    returnEntidad = new DBEntidades(
-                           cuenta,
-                           new DBTipoEntidad(
-                               reader.GetInt64Safe(DBTipoEntidad.NameOf_id),
-                               reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre)),
-                           reader.GetInt64Safe(NameOf_id),
-                           reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
-                           reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular));
+                    returnEntidad = new DBEntidades(cuenta, new DBTipoEntidad(reader), reader);
                 }
                 reader.Close();
             }
