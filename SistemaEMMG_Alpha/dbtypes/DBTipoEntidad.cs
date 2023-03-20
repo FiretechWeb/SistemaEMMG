@@ -33,6 +33,7 @@ namespace SistemaEMMG_Alpha
         public const string db_table = "tipos_entidades";
         public const string NameOf_id = "te_id";
         private long _id;
+        private bool _shouldPush = false;
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
 
@@ -66,8 +67,9 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_tipos_entidades.Add(new DBTipoEntidad(reader));
-                    returnList.Add(new DBTipoEntidad(reader));
+                    DBTipoEntidad tipoEntidad = new DBTipoEntidad(reader);
+                    _db_tipos_entidades.Add(tipoEntidad);
+                    returnList.Add(tipoEntidad);
                 }
                 reader.Close();
             }
@@ -84,20 +86,20 @@ namespace SistemaEMMG_Alpha
             List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();
             foreach (DBTipoEntidad tipoEntidad in _db_tipos_entidades)
             {
-                returnList.Add(new DBTipoEntidad(tipoEntidad.GetID(), tipoEntidad.GetName()));
+                returnList.Add(tipoEntidad);
             }
             return returnList;
         }
 
         List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAll() => GetAll();
 
-        public static DBTipoEntidad GetByID(long te_id, bool clone = true)
+        public static DBTipoEntidad GetByID(long te_id)
         {
             foreach (DBTipoEntidad tmpTipo in _db_tipos_entidades)
             {
                 if (tmpTipo.GetID() == te_id)
                 {
-                    return clone ? tmpTipo.Clone() : tmpTipo;
+                    return tmpTipo;
                 }
             }
             return null;
@@ -129,6 +131,7 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _data = newData;
+            DBMain.Instance().RegisterEntity(this);
         }
 
         public DBTipoEntidad(long id, string nombre) : this(id, new TiposEntidadesData(nombre)) { }
@@ -150,6 +153,7 @@ namespace SistemaEMMG_Alpha
                 }
 
                 reader.Close();
+                DBMain.Instance().RegisterEntity(this);
             }
             catch (Exception ex)
             {
@@ -157,9 +161,41 @@ namespace SistemaEMMG_Alpha
             }
         }
         public DBTipoEntidad(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre)) { }
+
+        public override bool PullFromDatabase(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    _data = new TiposEntidadesData(reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    _shouldPush = false;
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBTipoEntidad::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
+        }
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
@@ -176,10 +212,6 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET te_nombre = '{_data.te_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
-                if (wasAbleToUpdate)
-                {
-                    ChangeID(cmd.LastInsertedId);
-                }
             }
             catch (Exception ex)
             {
@@ -197,6 +229,10 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({TiposEntidadesData.NameOf_te_nombre}) VALUES ('{_data.te_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                }
             }
             catch (Exception ex)
             {
@@ -239,18 +275,9 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-
-        public TiposEntidadesData Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-            }
-        }
-
         public void SetName(string newName)
         {
+            _shouldPush = !_data.te_nombre.Equals(newName);
             _data.te_nombre = newName;
         }
 
@@ -258,7 +285,13 @@ namespace SistemaEMMG_Alpha
 
         public override long GetID() => _id;
 
-        protected override void ChangeID(long id) => _id = id;
+        protected override void ChangeID(long id)
+        {
+            _shouldPush = (_id != id);
+            _id = id;
+        }
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
 
         public override string ToString()
         {
@@ -268,6 +301,11 @@ namespace SistemaEMMG_Alpha
         public DBTipoEntidad Clone()
         {
             return new DBTipoEntidad(_id, _data.te_nombre);
+        }
+
+        ~DBTipoEntidad()
+        {
+            DBMain.Instance().UnregisterEntity(this);
         }
     }
 }
