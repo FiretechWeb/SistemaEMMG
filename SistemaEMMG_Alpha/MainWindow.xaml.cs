@@ -892,7 +892,7 @@ namespace SistemaEMMG_Alpha
                 }
             }
 
-            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, txtCMPagoObservacion.Text);
+            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, 0.0, txtCMPagoObservacion.Text);
             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true)
             {
                 if (newPago.PushToDatabase(dbCon.Connection))
@@ -935,7 +935,7 @@ namespace SistemaEMMG_Alpha
             pagoModificado.SetFormaDePago(((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key);
             pagoModificado.SetObservacion(txtCMPagoObservacion.Text);
 
-             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true || pagoModificado.PushToDatabase(dbCon.Connection))
+             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false || pagoModificado.PushToDatabase(dbCon.Connection))
              {
                 guiRefreshComprobantesDetallesPagos();
              }
@@ -967,7 +967,7 @@ namespace SistemaEMMG_Alpha
             }
             DBComprobantePago pagoEliminar = dbData.GetPagoSelected();
 
-            if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true || pagoEliminar.DeleteFromDatabase(dbCon.Connection))
+            if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false || pagoEliminar.DeleteFromDatabase(dbCon.Connection))
             {
                 dbData.GetComprobanteSelected().RemovePago(pagoEliminar);
             }

@@ -11,13 +11,19 @@ namespace SistemaEMMG_Alpha
 {
     public struct ComprobantePagoData
     {
-        public ComprobantePagoData(string obs)
+        public ComprobantePagoData(double importe, string obs, DateTime? fecha)
         {
+            cp_importe = importe;
             cp_obs = obs;
+            cp_fecha = fecha;
         }
         public string cp_obs { get; set; }
+        public double cp_importe { get; set; }
+        public DateTime? cp_fecha { get; set; }
 
         public static readonly string NameOf_cp_obs = nameof(cp_obs);
+        public static readonly string NameOf_cp_importe = nameof(cp_importe);
+        public static readonly string NameOf_cp_fecha = nameof(cp_fecha);
 
         public override string ToString()
         {
@@ -254,19 +260,24 @@ namespace SistemaEMMG_Alpha
             _data = newData;
         }
 
-        public DBComprobantePago(DBComprobantes comprobante, long id, long fp_id, string obs) : this(comprobante, id, fp_id, new ComprobantePagoData(obs)) { }
-        public DBComprobantePago(DBComprobantes comprobante, long fp_id, string obs) : this(comprobante, -1, fp_id, new ComprobantePagoData(obs)) { }
-        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long id, long fp_id, string obs) : this(cuenta, ec_id, cm_id, id, fp_id, new ComprobantePagoData(obs)) { }
-        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long fp_id, string obs) : this(cuenta, ec_id, cm_id, -1, fp_id, new ComprobantePagoData(obs)) { }
-        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, string obs) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new ComprobantePagoData(obs)) { }
-        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, string obs) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, new ComprobantePagoData(obs)) { }
+        public DBComprobantePago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBComprobantePago(DBComprobantes comprobante, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, -1, fp_id,  importe, obs, fecha) { }
+
+        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBComprobantePago(DBEmpresa cuenta, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
+        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBComprobantePago(DBEmpresa cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
+        
         public DBComprobantePago(DBComprobantes comprobante, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
             comprobante,
             reader.GetInt64Safe(NameOf_id),
             newFormaPago,
             new ComprobantePagoData(
-                reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs)
+                reader.GetDoubleSafe(ComprobantePagoData.NameOf_cp_importe),
+                reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs),
+                reader.GetDateTimeSafe(ComprobantePagoData.NameOf_cp_fecha)
             )) { }
+
         public ComprobantePagoData Data
         {
             get => _data;
@@ -301,7 +312,13 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET {NameOf_cp_fp_id} = {_formaDePago.GetID()}, {ComprobantePagoData.NameOf_cp_obs} = '{_data.cp_obs}' WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
+                string fechaPago = (_data.cp_fecha.HasValue) ? $"'{((DateTime)_data.cp_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
+                string query = $@"UPDATE {db_table} SET 
+                                {NameOf_cp_fp_id} = {_formaDePago.GetID()}, 
+                                {ComprobantePagoData.NameOf_cp_importe} = {_data.cp_importe.ToString().Replace(",", ".")}, 
+                                {ComprobantePagoData.NameOf_cp_obs} = '{_data.cp_obs}', 
+                                {ComprobantePagoData.NameOf_cp_fecha} = {fechaPago} 
+                                WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToUpdate)
@@ -322,12 +339,22 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
+                string fechaPago = (_data.cp_fecha.HasValue) ? $"'{((DateTime)_data.cp_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"INSERT INTO {db_table} (
-                                {NameOf_cp_em_id},
-                                {NameOf_cp_ec_id},
-                                {NameOf_cp_cm_id},
-                                {NameOf_cp_fp_id},
-                                {ComprobantePagoData.NameOf_cp_obs}) VALUES ({GetCuentaID()}, {GetEntidadComercialID()}, {GetComprobanteID()}, {_formaDePago.GetID()}, '{_data.cp_obs}')";
+                                {NameOf_cp_em_id}, 
+                                {NameOf_cp_ec_id}, 
+                                {NameOf_cp_cm_id}, 
+                                {NameOf_cp_fp_id}, 
+                                {ComprobantePagoData.NameOf_cp_importe}, 
+                                {ComprobantePagoData.NameOf_cp_obs}, 
+                                {ComprobantePagoData.NameOf_cp_fecha}) VALUES (
+                                {GetCuentaID()}, 
+                                {GetEntidadComercialID()}, 
+                                {GetComprobanteID()}, 
+                                {_formaDePago.GetID()}, 
+                                {_data.cp_importe.ToString().Replace(",", ".")}, 
+                                '{_data.cp_obs}', 
+                                {fechaPago})";
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
@@ -342,6 +369,7 @@ namespace SistemaEMMG_Alpha
 
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
+            Console.WriteLine("aca llego...");
             bool deletedCorrectly = false;
             try
             {
