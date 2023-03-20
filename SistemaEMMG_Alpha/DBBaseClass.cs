@@ -35,9 +35,21 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         abstract public bool PushToDatabase(MySqlConnection conn);
         ///<summary>
+        ///Refresh (pull) the information directly from DB.
+        ///</summary>
+        abstract public bool PullFromDatabase(MySqlConnection conn);
+        ///<summary>
         ///Delete this element from the database.
         ///</summary>
         abstract public bool DeleteFromDatabase(MySqlConnection conn);
+        ///<summary>
+        ///Returns true if the entity changed after being read from the DB (or being created in general)
+        ///</summary>
+        abstract public bool ShouldPush();
+        ///<summary>
+        ///Returns true if the data was locally created and not present originally in the DB.
+        ///</summary>
+        abstract public bool IsLocal();
     }
 
 }

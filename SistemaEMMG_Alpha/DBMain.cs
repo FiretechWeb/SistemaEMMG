@@ -7,6 +7,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 
+
 namespace SistemaEMMG_Alpha
 {
     public class DBMain
@@ -15,6 +16,8 @@ namespace SistemaEMMG_Alpha
         {
 
         }
+        //Object = null destroys the object in case there are no more references to it..
+        ~DBMain() { } //Destructor, muy importante
 
         public static DBMain Instance()
         {
@@ -24,128 +27,84 @@ namespace SistemaEMMG_Alpha
             }
             return _instance;
         }
+
         private static DBMain _instance = null;
-        public long idCuentaSeleccionada = 0;
 
-        public List<DBCuenta> cuentas;
-        public List<DBTipoEntidad> tipos_entidades;
-        public List<DBTiposComprobantes> tipos_comprobantes;
-        public List<DBFormasPago> formas_pago;
-        private DBComprobantes _comprobanteSeleccionado = null;
-        private DBEntidades _entidadSeleccionada = null;
-        private DBComprobantePago _pagoSelected = null;
+        private List<DBCuenta> _cuentas = new List<DBCuenta>();
+        private List<DBTipoEntidad> _tipos_entidades = new List<DBTipoEntidad>();
+        private List<DBTiposComprobantes> _tipos_comprobantes = new List<DBTiposComprobantes>();
+        private List<DBFormasPago> _formas_pago = new List<DBFormasPago>();
+        private List<DBBaseClass> _datos = new List<DBBaseClass>(); //lista de todos los datos cargados en el programa (no es lo mismo que todos los datos en la BD)
 
-        public void ReadTiposEntidadesFromDB(MySqlConnection conn)
+        public IReadOnlyCollection<DBCuenta> GetCuentas() => _cuentas.AsReadOnly();
+        public IReadOnlyCollection<DBTiposComprobantes> GetTiposDeComprobantes() => _tipos_comprobantes.AsReadOnly();
+        public IReadOnlyCollection<DBTipoEntidad> GetTiposDeEntidades() => _tipos_entidades.AsReadOnly();
+        public IReadOnlyCollection<DBFormasPago> GetFormasDePago() => _formas_pago.AsReadOnly();
+        public IReadOnlyCollection<DBCuenta> GetLocalCuentas() => _cuentas.Where(x => x.GetID() < 0).ToList().AsReadOnly();
+        public IReadOnlyCollection<DBTiposComprobantes> GetLocalTiposDeComprobantes() => _tipos_comprobantes.Where(x => x.GetID() < 0).ToList().AsReadOnly();
+        public IReadOnlyCollection<DBTipoEntidad> GetLocalTiposDeEntidades() => _tipos_entidades.Where(x => x.GetID() < 0).ToList().AsReadOnly();
+        public IReadOnlyCollection<DBFormasPago> GetLocalFormasDePago() => _formas_pago.Where(x => x.GetID() < 0).ToList().AsReadOnly();
+
+        public void RefreshBasicDataDB(MySqlConnection conn)
         {
-            if (!(tipos_entidades is null))
-            {
-                tipos_entidades.Clear();
-            }
-            tipos_entidades = DBTipoEntidad.UpdateAll(conn);
+            RefreshCuentasDB(conn);
+            RefreshTiposDeComprobantesDB(conn);
+            RefreshTipoDeEntidadesDB(conn);
+            RefreshFormasDePagoDB(conn);
+        }
+        public void RefreshCuentasDB(MySqlConnection conn)
+        {
+            _cuentas.Clear();
+            _cuentas = DBCuenta.UpdateAll(conn);
+        }
+        public void RefreshTiposDeComprobantesDB(MySqlConnection conn)
+        {
+            _tipos_comprobantes.Clear();
+            _tipos_comprobantes = DBTiposComprobantes.UpdateAll(conn);
+        }
+        public void RefreshTipoDeEntidadesDB(MySqlConnection conn)
+        {
+            _tipos_entidades.Clear();
+            _tipos_entidades = DBTipoEntidad.UpdateAll(conn);
+        }
+        public void RefreshFormasDePagoDB(MySqlConnection conn)
+        {
+            _formas_pago.Clear();
+            _formas_pago = DBFormasPago.UpdateAll(conn);
         }
 
-        public void ReadTiposComprobantesFromDB(MySqlConnection conn)
+        public void PushChangesToDB(MySqlConnection conn, List<DBBaseClass> listToPush)
         {
-            if (!(tipos_comprobantes is null))
+            foreach (DBBaseClass dato in listToPush)
             {
-                tipos_comprobantes.Clear();
+                dato.PushToDatabase(conn); //it does not push to DB if nothing changed...
             }
-            tipos_comprobantes = DBTiposComprobantes.UpdateAll(conn);
+        }
+        public void PullFromDB(MySqlConnection conn, List<DBBaseClass> listToPull)
+        {
+            foreach (DBBaseClass dato in listToPull)
+            {
+                dato.PullFromDatabase(conn);
+            }
         }
 
-        public void ReadFormasDePago(MySqlConnection conn)
+        public void PushChangesToDB(MySqlConnection conn) => PushChangesToDB(conn, _datos);
+
+        public void PullFromDB(MySqlConnection conn) => PullFromDB(conn, _datos);
+
+        public bool RegisterEntity(DBBaseClass dato)
         {
-            if (!(formas_pago is null))
+            if (_datos.Contains(dato))
             {
-                formas_pago.Clear();
+                return false; //already exists, no need to add again.
             }
-            formas_pago = DBFormasPago.UpdateAll(conn);
-        }
-
-        public void ReadCuentasFromDB(MySqlConnection conn)
-        {
-            if (!(cuentas is null))
-            {
-                cuentas.Clear();
-            }
-            cuentas = DBCuenta.UpdateAll(conn);
-        }
-        public void ReadEntidadesComercialesFromDB(MySqlConnection conn)
-        {
-            ReadTiposEntidadesFromDB(conn); //We need to make sure we have the tipos_entidades for the Checkbox and stuff...
-            GetCurrentAccount().GetAllEntidadesComerciales(conn);
-        }
-        public void ReadComprobantesFromDB(MySqlConnection conn)
-        {
-            ReadTiposComprobantesFromDB(conn);
-            ReadFormasDePago(conn);
-            GetCurrentAccount().GetAllComprobantes(conn);
-        }
-        public DBCuenta GetCurrentAccount() {
-            int index = GetCuentaIndexByID(idCuentaSeleccionada);
-            if (index == -1)
-                return null;
-            return cuentas[index];
-        }
-
-        public int GetCuentaIndexByID(long cuentaID)
-        {
-            for (int i=0; i < cuentas.Count; i++)
-            {
-                if (cuentas[i].GetID() == cuentaID)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        public bool EliminarCuenta(int index, MySqlConnection conn)
-        {
-            if (index < 0 || index >= cuentas.Count)
-            {
-                return false;
-            }
-            if (cuentas[index].DeleteFromDatabase(conn))
-            {
-                cuentas.RemoveAt(index);
-            }
-
-            return true;
-
-        }
-
-        public bool AgregarNuevaCuenta(string nombreCuenta, long cuitCuenta, MySqlConnection conn)
-        {
-            if (DBCuenta.CuentaYaExiste(nombreCuenta, cuitCuenta, cuentas))
-            {
-                MessageBox.Show("¡La cuenta que quiso crear ya existe!, el CUIT y la razón social deben ser únicas.");
-                return false;
-            }
-            DBCuenta newCuenta = new DBCuenta(cuitCuenta, nombreCuenta);
-
-            if (!newCuenta.PushToDatabase(conn))
-            {
-                return false;
-            }
-            cuentas.Add(newCuenta);
-
+            _datos.Add(dato);
             return true;
         }
 
-        public void SetPagoSelected(DBComprobantePago pagoSelected) => _pagoSelected = pagoSelected;
-        public DBComprobantePago GetPagoSelected() => _pagoSelected;
-        public void DeselectPago() => _pagoSelected = null;
-        public void SetComprobanteSelected(DBComprobantes comprobanteSelected) => _comprobanteSeleccionado = comprobanteSelected;
-
-        public DBComprobantes GetComprobanteSelected() => _comprobanteSeleccionado;
-
-        public void DeselectComprobante() => _comprobanteSeleccionado = null;
-
-        public void SetEntidadComercialSelected(DBEntidades entidadComercialSelected) => _entidadSeleccionada = entidadComercialSelected;
-
-        public DBEntidades GetEntidadComercialSelected() => _entidadSeleccionada;
-
-        public void DeselectEntidadComercial() => _entidadSeleccionada = null;
+        public bool UnregisterEntity(DBBaseClass dato)
+        {
+            return _datos.Remove(dato);
+        }
     }
 }

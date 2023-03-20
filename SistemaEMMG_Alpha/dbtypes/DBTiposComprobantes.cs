@@ -34,9 +34,9 @@ namespace SistemaEMMG_Alpha
         public const string db_table = "tipos_comprobantes";
         public const string NameOf_id = "tc_id";
         private long _id;
+        private bool _shouldPush=false;
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
-
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
             return $"SELECT {fieldsToGet} FROM {db_table}";
@@ -135,6 +135,11 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _data = newData;
+            DBMain.Instance().RegisterEntity(this);
+            if (IsLocal()) //Locally created
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBTiposComprobantes(long id, string nombre) : this(id, new TiposComprobantesData(nombre)) { }
@@ -154,6 +159,8 @@ namespace SistemaEMMG_Alpha
                     _data = new TiposComprobantesData(reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
                 }
                 reader.Close();
+
+                DBMain.Instance().RegisterEntity(this);
             }
             catch (Exception ex)
             {
@@ -164,13 +171,44 @@ namespace SistemaEMMG_Alpha
 
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            } 
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
             }
 
             return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+        public override bool PullFromDatabase(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    _data = new TiposComprobantesData(reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    _shouldPush = false;
+                }
+                reader.Close();
+            } catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBTiposComprobantes::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
         }
 
         public override bool UpdateToDatabase(MySqlConnection conn)
@@ -181,10 +219,6 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET {TiposComprobantesData.NameOf_tc_nombre} = '{_data.tc_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
-                if (wasAbleToUpdate)
-                {
-                    ChangeID(cmd.LastInsertedId);
-                }
             }
             catch (Exception ex)
             {
@@ -202,6 +236,10 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({TiposComprobantesData.NameOf_tc_nombre}) VALUES ('{_data.tc_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                }
             }
             catch (Exception ex)
             {
@@ -243,19 +281,20 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-        public TiposComprobantesData Data
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
+        protected override void ChangeID(long id)
         {
-            get => _data;
-            set
-            {
-                _data = value;
-            }
+            _shouldPush = (id != _id);
+            _id = id;
         }
-        protected override void ChangeID(long id) => _id = id;
-
         public override long GetID() => _id;
 
-        public void SetName(string newName) => _data.tc_nombre = newName;
+        public void SetName(string newName)
+        {
+             _data.tc_nombre = newName;
+            _shouldPush = !_data.tc_nombre.Equals(newName);
+        }
 
         public string GetName() => _data.tc_nombre;
 
@@ -267,6 +306,11 @@ namespace SistemaEMMG_Alpha
         public override string ToString()
         {
             return _data.ToString();
+        }
+
+        ~DBTiposComprobantes()
+        {
+            DBMain.Instance().UnregisterEntity(this);
         }
     }
 }
