@@ -93,6 +93,12 @@ namespace SistemaEMMG_Alpha
 
         List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAll() => GetAll();
 
+        public static IReadOnlyCollection<DBTipoEntidad> GetAllLocal()
+        {
+            return _db_tipos_entidades.Where(x => x.IsLocal()).ToList().AsReadOnly();
+        }
+        IReadOnlyCollection<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAllLocal() => GetAllLocal();
+
         public static DBTipoEntidad GetByID(long te_id)
         {
             foreach (DBTipoEntidad tmpTipo in _db_tipos_entidades)
@@ -131,7 +137,11 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _data = newData;
-            DBMain.Instance().RegisterEntity(this);
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBTipoEntidad(long id, string nombre) : this(id, new TiposEntidadesData(nombre)) { }
@@ -153,7 +163,6 @@ namespace SistemaEMMG_Alpha
                 }
 
                 reader.Close();
-                DBMain.Instance().RegisterEntity(this);
             }
             catch (Exception ex)
             {
@@ -212,6 +221,7 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET te_nombre = '{_data.te_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -229,6 +239,7 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({TiposEntidadesData.NameOf_te_nombre}) VALUES ('{_data.te_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToInsert;
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
@@ -305,7 +316,6 @@ namespace SistemaEMMG_Alpha
 
         ~DBTipoEntidad()
         {
-            DBMain.Instance().UnregisterEntity(this);
         }
     }
 }

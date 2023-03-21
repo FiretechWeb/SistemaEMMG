@@ -459,10 +459,6 @@ namespace SistemaEMMG_Alpha
                                 WHERE {NameOf_cm_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
-                if (wasAbleToUpdate)
-                {
-                    ChangeID(cmd.LastInsertedId);
-                }
             }
             catch (Exception ex)
             {
@@ -504,6 +500,10 @@ namespace SistemaEMMG_Alpha
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                }
             }
             catch (Exception ex)
             {

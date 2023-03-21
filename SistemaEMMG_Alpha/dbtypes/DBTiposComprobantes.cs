@@ -84,7 +84,6 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-
         List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
         public static List<DBTiposComprobantes> GetAll()
@@ -97,6 +96,12 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
         List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAll() => GetAll();
+
+        public static IReadOnlyCollection<DBTiposComprobantes> GetAllLocal()
+        {
+            return _db_tipos_comprobantes.Where(x => x.IsLocal()).ToList().AsReadOnly();
+        }
+        IReadOnlyCollection<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAllLocal() => GetAllLocal();
 
         public static DBTiposComprobantes GetByID(long tc_id)
         {
@@ -136,7 +141,6 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _data = newData;
-            DBMain.Instance().RegisterEntity(this);
             if (IsLocal()) //Locally created
             {
                 _shouldPush = true;
@@ -160,8 +164,6 @@ namespace SistemaEMMG_Alpha
                     _data = new TiposComprobantesData(reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
                 }
                 reader.Close();
-
-                DBMain.Instance().RegisterEntity(this);
             }
             catch (Exception ex)
             {
@@ -220,6 +222,7 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET {TiposComprobantesData.NameOf_tc_nombre} = '{_data.tc_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -237,6 +240,7 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({TiposComprobantesData.NameOf_tc_nombre}) VALUES ('{_data.tc_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToInsert;
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
@@ -293,8 +297,8 @@ namespace SistemaEMMG_Alpha
 
         public void SetName(string newName)
         {
-             _data.tc_nombre = newName;
             _shouldPush = !_data.tc_nombre.Equals(newName);
+            _data.tc_nombre = newName;
         }
 
         public string GetName() => _data.tc_nombre;
@@ -311,7 +315,7 @@ namespace SistemaEMMG_Alpha
 
         ~DBTiposComprobantes()
         {
-            DBMain.Instance().UnregisterEntity(this);
+
         }
     }
 }

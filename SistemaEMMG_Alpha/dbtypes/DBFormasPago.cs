@@ -32,6 +32,7 @@ namespace SistemaEMMG_Alpha
         public const string db_table = "formas_pago";
         public const string NameOf_id = "fp_id";
         private long _id;
+        private bool _shouldPush = false;
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
 
@@ -96,6 +97,11 @@ namespace SistemaEMMG_Alpha
 
         List<DBFormasPago> IDBDataType<DBFormasPago>.GetAll() => GetAll();
 
+        public static IReadOnlyCollection<DBFormasPago> GetAllLocal()
+        {
+            return _db_formas_pago.Where(x => x.IsLocal()).ToList().AsReadOnly();
+        }
+        IReadOnlyCollection<DBFormasPago> IDBDataType<DBFormasPago>.GetAllLocal() => GetAllLocal();
         public static DBFormasPago GetByID(long fp_id, bool clone = true)
         {
             foreach (DBFormasPago formaPago in _db_formas_pago)
@@ -134,6 +140,10 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _data = newData;
+            if (IsLocal()) //Locally created
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBFormasPago(long id, string nombre) : this(id, new FormasPagoData(nombre)) { }
@@ -160,18 +170,41 @@ namespace SistemaEMMG_Alpha
             }
         }
         public DBFormasPago(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre)) { }
-        public FormasPagoData Data
+        public override bool PullFromDatabase(MySqlConnection conn)
         {
-            get => _data;
-            set
+            if (IsLocal())
             {
-                _data = value;
+                return false;
             }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    _data = new FormasPagoData(reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    _shouldPush = false;
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBFormasPago::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
         }
 
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
@@ -188,10 +221,7 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET {FormasPagoData.NameOf_fp_nombre} = '{_data.fp_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
-                if (wasAbleToUpdate)
-                {
-                    ChangeID(cmd.LastInsertedId);
-                }
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -209,6 +239,11 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({FormasPagoData.NameOf_fp_nombre}) VALUES ('{_data.fp_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToInsert;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                }
             }
             catch (Exception ex)
             {
@@ -254,10 +289,20 @@ namespace SistemaEMMG_Alpha
         }
         public DBFormasPago Clone() => new DBFormasPago(_id, _data.fp_nombre);
         public override long GetID() => _id;
-        protected override void ChangeID(long id) => _id = id;
+        protected override void ChangeID(long id)
+        {
+            _shouldPush = (_id != id);
+            _id = id;
+        }
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
         public string GetName() => _data.fp_nombre;
 
-        public void SetName(string newName) => _data.fp_nombre = newName;
+        public void SetName(string newName)
+        {
+            _shouldPush = !_data.fp_nombre.Equals(newName);
+            _data.fp_nombre = newName;
+        }
 
         public override string ToString()
         {

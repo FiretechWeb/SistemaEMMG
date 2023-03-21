@@ -55,8 +55,9 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _db_cuentas.Add(new DBCuenta(reader));
-                    returnList.Add(new DBCuenta(reader));
+                    DBCuenta newCuenta = new DBCuenta(reader);
+                    _db_cuentas.Add(newCuenta);
+                    returnList.Add(newCuenta);
                 }
 
                 reader.Close();
@@ -67,6 +68,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
+        List<DBCuenta> IDBDataType<DBCuenta>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
         public static List<DBCuenta> GetAll()
         {
@@ -77,24 +79,13 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
+        List<DBCuenta> IDBDataType<DBCuenta>.GetAll() => GetAll();
 
-        /***************************
-         * START: IDBDataType Implementation contract
-         * *****************************/
-
-        List<DBCuenta> IDBDataType<DBCuenta>.UpdateAll(MySqlConnection conn)
+        public static IReadOnlyCollection<DBCuenta> GetAllLocal()
         {
-            return DBCuenta.UpdateAll(conn);
+            return _db_cuentas.Where(x => x.IsLocal()).ToList().AsReadOnly();
         }
-
-        List<DBCuenta> IDBDataType<DBCuenta>.GetAll()
-        {
-            return DBCuenta.GetAll();
-        }
-
-        /***************************
-         * END: IDBDataType Implementation contract
-         * *****************************/
+        IReadOnlyCollection<DBCuenta> IDBDataType<DBCuenta>.GetAllLocal() => GetAllLocal();
 
         public static bool CuentaYaExiste(string str, long cuit, List<DBCuenta> cuentas)
         {
@@ -170,10 +161,6 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{_data.em_rs}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
-                if (wasAbleToUpdate)
-                {
-                    ChangeID(cmd.LastInsertedId);
-                }
             }
             catch (Exception ex)
             {
@@ -191,6 +178,10 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({CuentaData.NameOf_em_cuit}, {CuentaData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                }
             }
             catch (Exception ex)
             {

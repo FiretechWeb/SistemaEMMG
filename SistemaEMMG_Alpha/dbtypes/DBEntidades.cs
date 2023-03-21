@@ -215,10 +215,6 @@ namespace SistemaEMMG_Alpha
                                 WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
-                if (wasAbleToUpdate)
-                {
-                    ChangeID(cmd.LastInsertedId);
-                }
             }
             catch (Exception ex)
             {
@@ -249,6 +245,10 @@ namespace SistemaEMMG_Alpha
                                         '{_data.ec_celular}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                }
             }
             catch (Exception ex)
             {

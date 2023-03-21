@@ -13,12 +13,17 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Refresh and return all the elements of this type allocated in the database
         ///</summary>
-        List<T> UpdateAll(MySqlConnection conn);
+        List<T> UpdateAll(MySqlConnection conn); //In future change to IReadOnlyCollection
 
         ///<summary>
         ///Get all elements of this type allocated in the database (call UpdateAll() First)
         ///</summary>
-        List<T> GetAll();
+        List<T> GetAll(); //In future change to IReadOnlyCollection
+        ///<summary>
+        ///Returns a list with all the elements of this type that are locally created (not pushed into the DB yet)
+        ///</summary>
+        ///
+        IReadOnlyCollection<T> GetAllLocal();
         ///<summary>
         ///Returns a clone of the element, no reference but value data duplicated.
         ///</summary>
