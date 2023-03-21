@@ -487,7 +487,7 @@ namespace SistemaEMMG_Alpha
         public void SetFormaDePago(long fp_id) => _formaDePago = DBFormasPago.GetByID(fp_id);
         public void SetObservacion(string obs) => _data.cp_obs = obs;
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {

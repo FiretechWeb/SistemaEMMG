@@ -444,7 +444,7 @@ namespace SistemaEMMG_Alpha
             return _data.em_rs;
         }
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {

@@ -317,7 +317,7 @@ namespace SistemaEMMG_Alpha
             return new DBTiposComprobantes(_id, _data.tc_nombre);
         }
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {

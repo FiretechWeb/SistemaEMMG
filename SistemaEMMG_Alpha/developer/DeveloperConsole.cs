@@ -36,8 +36,12 @@ namespace SistemaEMMG_Alpha
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("refreshdata", (x) => _CMD_RefreshBasicDataDB()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("crear cuenta", (x) => _CMD_CrearCuenta(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("selected", (x) => _CMD_PrintSelected()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("delete", (x) => _CMD_DeleteSelected()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("push", (x) => _CMD_PushSelected()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("pull", (x) => _CMD_PullSelected()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make local", (x) => _CMD_MakeLocalSelected()));
         }
         ///<summary>
         ///Process an input string and retrieves the result.
@@ -191,15 +195,17 @@ namespace SistemaEMMG_Alpha
             _seleccion = _cuentaSeleccionada;
             _outputStr = $"Cuenta seleccionada> {_cuentaSeleccionada}";
         }
-        private void _CMD_DeleteSelected()
+        private void _CMD_CrearCuenta(string args)
         {
-            if (_seleccion is null)
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
             {
-                _outputStr = "No hay entidad seleccionada.";
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear cuenta CUIT, Razón Social";
                 return;
             }
-            MySqlConnection conn = DBConnection.Instance().Connection;
-            _seleccion.DeleteFromDatabase(conn);
+            _cuentaSeleccionada = new DBCuenta(Convert.ToInt64(parametros[0]), parametros[1]);
+            _seleccion = _cuentaSeleccionada;
+            _outputStr = $"Cuenta creada> {_seleccion}";
         }
 
         private void _CMD_PrintSelected()
@@ -210,6 +216,72 @@ namespace SistemaEMMG_Alpha
                 return;
             }
             _outputStr = $"Entidad seleccionada> {_seleccion}";
+        }
+
+        private void _CMD_PushSelected()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (_seleccion.PushToDatabase(conn))
+            {
+                _outputStr = "La entidad se ha agregado correctamente a la base de datos.";
+            } else if (!_seleccion.ShouldPush())
+            {
+                _outputStr = "La entidad no ha cambiado en nada, no es necesario agregarla a la base de datos.";
+            } else
+            {
+                _outputStr = "No se ha podido agregar la entidad seleccionada a la base de datos..";
+            }
+        }
+
+        private void _CMD_PullSelected()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (_seleccion.PullFromDatabase(conn))
+            {
+                _outputStr = "La entidad se ha obtenido correctamente desde la base de datos.";
+            }
+            else
+            {
+                _outputStr = "No se ha podido obtener esta entidad desde la base de datos.";
+            }
+        }
+        private void _CMD_DeleteSelected()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (_seleccion.DeleteFromDatabase(conn))
+            {
+                _outputStr = "La entidad se ha eliminado correctamente de la base de datos. Ahora es local";
+            }
+            else
+            {
+                _outputStr = "No se ha podido eliminar la entidad seleccionada de la base de datos.";
+            }
+        }
+        private void _CMD_MakeLocalSelected()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+            _seleccion.MakeLocal();
+            _outputStr = "Ahora la entidad es local";
         }
     }
 }

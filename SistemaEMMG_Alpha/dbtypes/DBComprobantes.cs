@@ -702,7 +702,7 @@ namespace SistemaEMMG_Alpha
         public void SetPercepcion(double percepcion) => _data.cm_percepcion = percepcion;
         public void SetEmitido(bool esEmitido) => _data.cm_emitido = esEmitido;
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {

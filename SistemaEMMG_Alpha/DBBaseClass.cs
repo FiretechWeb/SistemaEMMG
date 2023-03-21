@@ -54,7 +54,7 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///If this element was retrieved from DB, it makes it now local so it can be pushed into the DB as a new element usign PushToDatabase
         ///</summary>
-        abstract public void MakeLocal();
+        abstract protected void MakeLocal();
     }
 
 }

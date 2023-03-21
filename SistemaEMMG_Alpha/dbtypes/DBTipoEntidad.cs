@@ -312,7 +312,7 @@ namespace SistemaEMMG_Alpha
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {

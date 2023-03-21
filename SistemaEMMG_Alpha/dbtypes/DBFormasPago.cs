@@ -311,7 +311,7 @@ namespace SistemaEMMG_Alpha
             _data.fp_nombre = newName;
         }
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {

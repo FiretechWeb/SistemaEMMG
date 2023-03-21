@@ -447,7 +447,7 @@ namespace SistemaEMMG_Alpha
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
         }
 
-        public override void MakeLocal()
+        protected override void MakeLocal()
         {
             if (GetID() >= 0)
             {
