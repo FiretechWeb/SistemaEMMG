@@ -295,14 +295,14 @@ namespace SistemaEMMG_Alpha
         public override bool IsLocal() => _id < 0;
         protected override void ChangeID(long id)
         {
-            _shouldPush = (id != _id);
+            _shouldPush = _shouldPush || (id != _id);
             _id = id;
         }
         public override long GetID() => _id;
 
         public void SetName(string newName)
         {
-            _shouldPush = !_data.tc_nombre.Equals(newName);
+            _shouldPush = _shouldPush || !_data.tc_nombre.Equals(newName);
             _data.tc_nombre = newName;
         }
 

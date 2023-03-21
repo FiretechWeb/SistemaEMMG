@@ -293,7 +293,7 @@ namespace SistemaEMMG_Alpha
         }
         public void SetName(string newName)
         {
-            _shouldPush = !_data.te_nombre.Equals(newName);
+            _shouldPush = _shouldPush || !_data.te_nombre.Equals(newName);
             _data.te_nombre = newName;
         }
 
@@ -303,7 +303,7 @@ namespace SistemaEMMG_Alpha
 
         protected override void ChangeID(long id)
         {
-            _shouldPush = (_id != id);
+            _shouldPush = _shouldPush || (_id != id);
             _id = id;
         }
         public override bool ShouldPush() => _shouldPush;

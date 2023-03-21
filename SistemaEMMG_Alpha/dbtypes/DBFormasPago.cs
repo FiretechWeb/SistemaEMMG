@@ -295,7 +295,7 @@ namespace SistemaEMMG_Alpha
         public override long GetID() => _id;
         protected override void ChangeID(long id)
         {
-            _shouldPush = (_id != id);
+            _shouldPush = _shouldPush || (_id != id);
             _id = id;
         }
         public override bool ShouldPush() => _shouldPush;
@@ -304,7 +304,7 @@ namespace SistemaEMMG_Alpha
 
         public void SetName(string newName)
         {
-            _shouldPush = !_data.fp_nombre.Equals(newName);
+            _shouldPush = _shouldPush || !_data.fp_nombre.Equals(newName);
             _data.fp_nombre = newName;
         }
 
