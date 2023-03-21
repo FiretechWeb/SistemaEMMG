@@ -19,6 +19,11 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_te_nombre = nameof(te_nombre);
 
+        public static TiposEntidadesData CreateFromReader(MySqlDataReader reader)
+        {
+            return new TiposEntidadesData(reader.GetStringSafe(NameOf_te_nombre));
+        }
+
         public override string ToString()
         {
             return $"Tipo Entidad: {te_nombre}";
@@ -159,7 +164,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new TiposEntidadesData(reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    _data = TiposEntidadesData.CreateFromReader(reader);
                 }
 
                 reader.Close();
@@ -169,7 +174,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructo de DBTipoEntidad, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        public DBTipoEntidad(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre)) { }
+        public DBTipoEntidad(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), TiposEntidadesData.CreateFromReader(reader)) { }
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {

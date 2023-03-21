@@ -19,6 +19,10 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_fp_nombre = nameof(fp_nombre);
 
+        public static FormasPagoData CreateFromReader(MySqlDataReader reader)
+        {
+            return new FormasPagoData(reader.GetStringSafe(NameOf_fp_nombre));
+        }
         public override string ToString()
         {
             return $"Nombre: {fp_nombre}";
@@ -160,7 +164,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new FormasPagoData(reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    _data = FormasPagoData.CreateFromReader(reader);
                 }
                 reader.Close();
             }
@@ -169,7 +173,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructor de DBFormasPago. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        public DBFormasPago(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre)) { }
+        public DBFormasPago(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), FormasPagoData.CreateFromReader(reader)) { }
         public override bool PullFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())

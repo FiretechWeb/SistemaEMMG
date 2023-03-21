@@ -25,6 +25,13 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_cp_importe = nameof(cp_importe);
         public static readonly string NameOf_cp_fecha = nameof(cp_fecha);
 
+        public static ComprobantePagoData CreateFromReader(MySqlDataReader reader)
+        {
+            return new ComprobantePagoData(reader.GetDoubleSafe(NameOf_cp_importe),
+                                            reader.GetStringSafe(NameOf_cp_obs),
+                                            reader.GetDateTimeSafe(NameOf_cp_fecha));
+        }
+
         public override string ToString()
         {
             return $"Observación: {cp_obs}";
@@ -272,11 +279,7 @@ namespace SistemaEMMG_Alpha
             comprobante,
             reader.GetInt64Safe(NameOf_id),
             newFormaPago,
-            new ComprobantePagoData(
-                reader.GetDoubleSafe(ComprobantePagoData.NameOf_cp_importe),
-                reader.GetStringSafe(ComprobantePagoData.NameOf_cp_obs),
-                reader.GetDateTimeSafe(ComprobantePagoData.NameOf_cp_fecha)
-            )) { }
+            ComprobantePagoData.CreateFromReader(reader)) { }
 
         public ComprobantePagoData Data
         {

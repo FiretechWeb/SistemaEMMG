@@ -20,6 +20,11 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_tc_nombre = nameof(tc_nombre);
 
+        public static TiposComprobantesData CreateFromReader(MySqlDataReader reader)
+        {
+            return new TiposComprobantesData(reader.GetStringSafe(NameOf_tc_nombre));
+        }
+
         public override string ToString()
         {
             return $"Nombre: {tc_nombre}";
@@ -161,7 +166,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new TiposComprobantesData(reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    _data = TiposComprobantesData.CreateFromReader(reader);
                 }
                 reader.Close();
             }
@@ -170,7 +175,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el constructor de DBTiposComprobantes. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        public DBTiposComprobantes(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre)) { }
+        public DBTiposComprobantes(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), TiposComprobantesData.CreateFromReader(reader)) { }
 
         public override bool PushToDatabase(MySqlConnection conn)
         {

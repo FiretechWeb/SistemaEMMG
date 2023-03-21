@@ -37,6 +37,16 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_cm_percepcion = nameof(cm_percepcion);
         public static readonly string NameOf_cm_emitido = nameof(cm_emitido);
 
+        public static ComprobantesData CreateFromReader(MySqlDataReader reader)
+        {
+            return new ComprobantesData(reader.GetDateTimeSafe(NameOf_cm_fecha),
+                                        reader.GetStringSafe(NameOf_cm_numero),
+                                        reader.GetDoubleSafe(NameOf_cm_gravado),
+                                        reader.GetDoubleSafe(NameOf_cm_iva),
+                                        reader.GetDoubleSafe(NameOf_cm_no_gravado),
+                                        reader.GetDoubleSafe(NameOf_cm_percepcion),
+                                        Convert.ToBoolean(reader.GetInt32Safe(NameOf_cm_emitido)));
+        }
         public override string ToString()
         {
             return $"Fecha: {cm_fecha} - Número: {cm_numero} - Gravado: {cm_gravado} - IVA: {cm_iva} - No Gravado: {cm_no_gravado} - Percepción: {cm_percepcion} - Emitido: {cm_emitido}";
@@ -403,14 +413,7 @@ namespace SistemaEMMG_Alpha
             entidadComercial,
             reader.GetInt64Safe(NameOf_id),
             newTipo,
-             new ComprobantesData(
-                reader.GetDateTimeSafe(ComprobantesData.NameOf_cm_fecha),
-                reader.GetStringSafe(ComprobantesData.NameOf_cm_numero),
-                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_gravado),
-                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_iva),
-                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_no_gravado),
-                reader.GetDoubleSafe(ComprobantesData.NameOf_cm_percepcion),
-                Convert.ToBoolean(reader.GetInt32(ComprobantesData.NameOf_cm_emitido)))) { }
+            ComprobantesData.CreateFromReader(reader)) { }
 
         public ComprobantesData Data
         {

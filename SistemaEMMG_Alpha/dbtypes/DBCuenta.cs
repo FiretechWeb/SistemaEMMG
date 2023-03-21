@@ -21,7 +21,10 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_em_cuit = nameof(em_cuit);
         public static readonly string NameOf_em_rs = nameof(em_rs);
-
+        public static CuentaData CreateFromReader(MySqlDataReader reader)
+        {
+            return new CuentaData(reader.GetInt64Safe(NameOf_em_cuit), reader.GetStringSafe(NameOf_em_rs));
+        }
         public override string ToString()
         {
             return $"Nombre Cuenta: {em_rs} - CUIT: {em_cuit}";
@@ -108,8 +111,9 @@ namespace SistemaEMMG_Alpha
         private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
-        public DBCuenta(CuentaData newData)
+        public DBCuenta(long id, CuentaData newData)
         {
+            _id = id;
             _data = newData;
         }
 
@@ -120,7 +124,7 @@ namespace SistemaEMMG_Alpha
         }
         public DBCuenta(long cuit, string rs) : this(-1, cuit, rs) { }
 
-        public DBCuenta(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), reader.GetInt64Safe(CuentaData.NameOf_em_cuit), reader.GetStringSafe(CuentaData.NameOf_em_rs)) { }
+        public DBCuenta(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), CuentaData.CreateFromReader(reader)) { }
         public DBCuenta(MySqlConnection conn, int id)
         {
             try
@@ -132,7 +136,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = new CuentaData(reader.GetInt64Safe(CuentaData.NameOf_em_cuit), reader.GetStringSafe(CuentaData.NameOf_em_rs));
+                    _data = CuentaData.CreateFromReader(reader);
                 }
 
                 reader.Close();
