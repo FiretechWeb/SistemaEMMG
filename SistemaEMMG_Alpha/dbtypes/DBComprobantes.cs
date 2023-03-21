@@ -669,7 +669,7 @@ namespace SistemaEMMG_Alpha
         public long GetCuentaID() => _entidadComercial.GetCuentaID();
 
         public DBCuenta GetCuenta() => _entidadComercial.GetCuenta();
-        public DBTiposComprobantes GetTipoComprobante() => _tipoComprobante.Clone();
+        public DBTiposComprobantes GetTipoComprobante() => _tipoComprobante;
         public string GetNumeroComprobante() => _data.cm_numero;
         ///<summary>
         ///Returns the DateTime date when this business receipt was generated.
@@ -691,7 +691,7 @@ namespace SistemaEMMG_Alpha
         public void SetEntidadComercial(DBEntidades newEntidadComercial) => _entidadComercial = newEntidadComercial;
         public void SetEntidadComercial(long ec_id) => _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
         public void SetEntidadComercial(long ec_id, MySqlConnection conn) => _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
-        public void SetTipoComprobante(DBTiposComprobantes newType) => _tipoComprobante = newType.Clone();
+        public void SetTipoComprobante(DBTiposComprobantes newType) => _tipoComprobante = newType;
         public void SetTipoComprobante(long tc_id) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
         public void SetTipoComprobante(long tc_id, MySqlConnection conn) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id, conn);
         public void SetNumeroComprobante(string numeroCom) => _data.cm_numero = numeroCom;
@@ -708,6 +708,11 @@ namespace SistemaEMMG_Alpha
             {
                 ChangeID(-1);
             }
+        }
+
+        public DBComprobantes GetLocalCopy()
+        {
+            return new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _data);
         }
     }
 }

@@ -407,14 +407,6 @@ namespace SistemaEMMG_Alpha
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
 
-        ///<summary>
-        ///DO NOT USE! Warning this method will return null. It is not implemented yet!
-        ///</summary>
-        public DBCuenta Clone()
-        {
-            return null;
-        }
-
         public void SetRazonSocial(string name)
         {
             _shouldPush = _shouldPush || !_data.em_rs.Equals(name);
@@ -450,6 +442,11 @@ namespace SistemaEMMG_Alpha
             {
                 ChangeID(-1);
             }
+        }
+
+        public DBCuenta GetLocalCopy()
+        {
+            return new DBCuenta(-1, _data);
         }
 
         public override string ToString()

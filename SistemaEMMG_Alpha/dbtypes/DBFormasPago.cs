@@ -106,13 +106,13 @@ namespace SistemaEMMG_Alpha
             return _db_formas_pago.Where(x => x.IsLocal()).ToList().AsReadOnly();
         }
         IReadOnlyCollection<DBFormasPago> IDBDataType<DBFormasPago>.GetAllLocal() => GetAllLocal();
-        public static DBFormasPago GetByID(long fp_id, bool clone = true)
+        public static DBFormasPago GetByID(long fp_id)
         {
             foreach (DBFormasPago formaPago in _db_formas_pago)
             {
                 if (formaPago.GetID() == fp_id)
                 {
-                    return clone ? formaPago.Clone() : formaPago;
+                    return formaPago;
                 }
             }
             return null;
@@ -150,6 +150,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        public DBFormasPago(FormasPagoData newData) : this(-1, newData) { }
         public DBFormasPago(long id, string nombre) : this(id, new FormasPagoData(nombre)) { }
 
         public DBFormasPago(string nombre) : this(-1, nombre) { }
@@ -294,7 +295,6 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-        public DBFormasPago Clone() => new DBFormasPago(_id, _data.fp_nombre);
         public override long GetID() => _id;
         protected override void ChangeID(long id)
         {
@@ -309,6 +309,11 @@ namespace SistemaEMMG_Alpha
         {
             _shouldPush = _shouldPush || !_data.fp_nombre.Equals(newName);
             _data.fp_nombre = newName;
+        }
+
+        public DBFormasPago GetLocalCopy()
+        {
+            return new DBFormasPago(-1, _data);
         }
 
         protected override void MakeLocal()

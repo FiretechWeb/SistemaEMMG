@@ -494,5 +494,10 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
+
+        public DBComprobantePago GetLocalCopy()
+        {
+            return new DBComprobantePago(_comprobante, -1, _formaDePago, _data);
+        }
     }
 }

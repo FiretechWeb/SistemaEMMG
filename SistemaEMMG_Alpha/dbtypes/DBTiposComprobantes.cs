@@ -152,6 +152,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        public DBTiposComprobantes(TiposComprobantesData newData) : this(-1, newData) { }
         public DBTiposComprobantes(long id, string nombre) : this(id, new TiposComprobantesData(nombre)) { }
 
         public DBTiposComprobantes(string nombre) : this(-1, nombre) { }
@@ -312,11 +313,6 @@ namespace SistemaEMMG_Alpha
 
         public string GetName() => _data.tc_nombre;
 
-        public DBTiposComprobantes Clone() //not ideal maybe with the new system.
-        {
-            return new DBTiposComprobantes(_id, _data.tc_nombre);
-        }
-
         protected override void MakeLocal()
         {
             if (GetID() >= 0)
@@ -325,6 +321,10 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        public DBTiposComprobantes GetLocalCopy()
+        {
+            return new DBTiposComprobantes(-1, _data);
+        }
         public override string ToString()
         {
             return $"ID: {GetID()} - {_data.ToString()}";

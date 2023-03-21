@@ -24,10 +24,6 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         ///
         IReadOnlyCollection<T> GetAllLocal();
-        ///<summary>
-        ///Returns a clone of the element, no reference but value data duplicated.
-        ///</summary>
-        T Clone();
     }
 
     public interface IDBComprobante<T>
@@ -74,5 +70,10 @@ namespace SistemaEMMG_Alpha
         /// Returns the SQL string used to join the table corresponding to this datatype with all its relations and the relations of its relations.
         ///</summary>
         string GetSQL_SelectQueryWithRelations(string fieldsToGet);
+
+        ///<summary>
+        /// Returns a local copy of the element so it can be pushed as a new element in the DB.
+        ///</summary>
+        T GetLocalCopy();
     }
 }

@@ -149,6 +149,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        public DBTipoEntidad(TiposEntidadesData newData) : this(-1, newData) { }
         public DBTipoEntidad(long id, string nombre) : this(id, new TiposEntidadesData(nombre)) { }
 
         public DBTipoEntidad(string nombre) : this(-1, nombre) { }
@@ -324,9 +325,9 @@ namespace SistemaEMMG_Alpha
             return $"ID: {GetID()} - {_data.ToString()}";
         }
 
-        public DBTipoEntidad Clone()
+        public DBTipoEntidad GetLocalCopy()
         {
-            return new DBTipoEntidad(_id, _data.te_nombre);
+            return new DBTipoEntidad(-1, _data);
         }
 
         /**********************

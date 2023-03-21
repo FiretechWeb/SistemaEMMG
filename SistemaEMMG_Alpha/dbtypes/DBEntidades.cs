@@ -75,6 +75,7 @@ namespace SistemaEMMG_Alpha
                 _shouldPush = true;
             }
         }
+
         public DBEntidades(DBCuenta newCuenta, long id, long te_id, EntidadesComercialesData newData)
         {
             _id = id;
@@ -406,7 +407,7 @@ namespace SistemaEMMG_Alpha
 
         public string GetCelular() => _data.ec_celular;
 
-        public DBTipoEntidad GetTipoEntidad() => _tipoEntidad.Clone();
+        public DBTipoEntidad GetTipoEntidad() => _tipoEntidad;
 
         public void SetCuit(long cuit)
         {
@@ -453,6 +454,10 @@ namespace SistemaEMMG_Alpha
             {
                 ChangeID(-1);
             }
+        }
+        public DBEntidades GetLocalCopy()
+        {
+            return new DBEntidades(_cuenta, -1, _tipoEntidad, _data);
         }
     }
 }
