@@ -1102,9 +1102,28 @@ namespace SistemaEMMG_Alpha
         {
             if (e.Key == Key.Return)
             {
-                txtDeveloperDisplayConsole.Text += txtDeveloperInputConsole.Text + "\n";
+                txtDeveloperDisplayConsole.Text += DeveloperConsole.Instance().ProcessInput(txtDeveloperInputConsole.Text);
                 txtDeveloperDisplayConsole.ScrollToEnd();
                 txtDeveloperInputConsole.Text = "";
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F11)
+            {
+                developerWin.Visibility = developerWin.IsVisible ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
+        private void txtDeveloperInputConsole_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                txtDeveloperInputConsole.Text = DeveloperConsole.Instance().RetrieveConsoleHistory(txtDeveloperInputConsole.Text, true);
+            } else if (e.Key == Key.Down)
+            {
+                txtDeveloperInputConsole.Text = DeveloperConsole.Instance().RetrieveConsoleHistory(txtDeveloperInputConsole.Text, false);
             }
         }
     }

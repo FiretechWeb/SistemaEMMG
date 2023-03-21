@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaEMMG_Alpha"
         mc:Ignorable="d"
-        Title="Sistema Compra-Venta (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip">
+        Title="Sistema Compra-Venta (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip" KeyDown="Window_KeyDown">
     <Grid>
     <DockPanel Canvas.Left="0" Canvas.Top="0" Canvas.Right="0" Canvas.Bottom="0">
         <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="40" VerticalAlignment="Top">
@@ -512,7 +512,7 @@
                            BorderBrush="Green"
                            BorderThickness="2"
                          Foreground="LightGreen"></TextBox>
-                <TextBox x:Name="txtDeveloperInputConsole" Background="Black" Grid.Row="2" Foreground="White" VerticalAlignment="Center" FontSize="15" KeyDown="txtDeveloperInputConsole_KeyDown"></TextBox>
+                <TextBox x:Name="txtDeveloperInputConsole" Background="Black" Grid.Row="2" Foreground="White" VerticalAlignment="Center" FontSize="15" KeyDown="txtDeveloperInputConsole_KeyDown" PreviewKeyDown="txtDeveloperInputConsole_PreviewKeyDown"></TextBox>
             </Grid>
     </Grid>
     </Grid>
