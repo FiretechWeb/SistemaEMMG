@@ -239,11 +239,11 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({TiposEntidadesData.NameOf_te_nombre}) VALUES ('{_data.te_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
-                _shouldPush = _shouldPush && !wasAbleToInsert;
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {

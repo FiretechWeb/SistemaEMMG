@@ -240,11 +240,11 @@ namespace SistemaEMMG_Alpha
                 string query = $"INSERT INTO {db_table} ({TiposComprobantesData.NameOf_tc_nombre}) VALUES ('{_data.tc_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
-                _shouldPush = _shouldPush && !wasAbleToInsert;
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {

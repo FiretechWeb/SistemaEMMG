@@ -30,6 +30,14 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_ec_email = nameof(ec_email);
         public static readonly string NameOf_ec_telefono = nameof(ec_telefono);
         public static readonly string NameOf_ec_celular = nameof(ec_celular);
+        public static EntidadesComercialesData CreateFromReader(MySqlDataReader reader)
+        {
+            return new EntidadesComercialesData(reader.GetInt64Safe(NameOf_ec_cuit),
+                                reader.GetStringSafe(NameOf_ec_rs),
+                                reader.GetStringSafe(NameOf_ec_email),
+                                reader.GetStringSafe(NameOf_ec_telefono),
+                                reader.GetStringSafe(NameOf_ec_celular));
+        }
     }
     public class DBEntidades : DBBaseClass, IDBase<DBEntidades>, IDBCuenta<DBCuenta>
     {
@@ -45,6 +53,7 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         private readonly DBCuenta _cuenta;
         private long _id;
+        private bool _shouldPush = false;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
@@ -61,6 +70,10 @@ namespace SistemaEMMG_Alpha
             _tipoEntidad = newTipo;
             _cuenta = newCuenta;
             _data = newData;
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
         public DBEntidades(DBCuenta newCuenta, long id, long te_id, EntidadesComercialesData newData)
         {
@@ -68,6 +81,10 @@ namespace SistemaEMMG_Alpha
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
             _cuenta = newCuenta;
             _data = newData;
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBEntidades(DBCuenta newCuenta, MySqlConnection conn, long id, long te_id, EntidadesComercialesData newData)
@@ -76,6 +93,10 @@ namespace SistemaEMMG_Alpha
             _tipoEntidad = DBTipoEntidad.GetByID(te_id, conn);
             _cuenta = newCuenta;
             _data = newData;
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBEntidades(DBCuenta newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, newTipo, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
@@ -89,13 +110,9 @@ namespace SistemaEMMG_Alpha
 
         public DBEntidades(DBCuenta newCuenta, DBTipoEntidad newTipo, MySqlDataReader reader) : this(
             newCuenta,
-            newTipo,
             reader.GetInt64Safe(NameOf_id),
-            reader.GetInt64Safe(EntidadesComercialesData.NameOf_ec_cuit),
-            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_rs),
-            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_email),
-            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_telefono),
-            reader.GetStringSafe(EntidadesComercialesData.NameOf_ec_celular)
+            newTipo,
+            EntidadesComercialesData.CreateFromReader(reader)
         ) {}
 
         public static List<DBEntidades> GetAll(MySqlConnection conn, DBCuenta cuenta)
@@ -172,27 +189,43 @@ namespace SistemaEMMG_Alpha
             }
             return false;
         }
-        public EntidadesComercialesData Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-            }
-        }
 
-        public DBTipoEntidad TipoEntidad
+        public override bool PullFromDatabase(MySqlConnection conn)
         {
-            get => _tipoEntidad;
-            set
+            if (IsLocal())
             {
-                _tipoEntidad = value;
+                return false;
             }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    _data = EntidadesComercialesData.CreateFromReader(reader);
+                    _tipoEntidad = DBTipoEntidad.GetByID(reader.GetInt64(NameOf_ec_te_id));
+                    _shouldPush = false;
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBEntidades::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
         }
 
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
@@ -215,6 +248,7 @@ namespace SistemaEMMG_Alpha
                                 WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -249,6 +283,7 @@ namespace SistemaEMMG_Alpha
                 {
                     ChangeID(cmd.LastInsertedId);
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {
@@ -340,7 +375,13 @@ namespace SistemaEMMG_Alpha
             _cuenta.RemoveComprobante(entRemove);
         }
 
-        protected override void ChangeID(long id) => _id = id;
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
+        protected override void ChangeID(long id)
+        {
+            _shouldPush = _shouldPush || (_id != id);
+            _id = id;
+        }
         public override long GetID() => _id;
 
         public long GetCuentaID() => _cuenta.GetID();
@@ -359,18 +400,43 @@ namespace SistemaEMMG_Alpha
 
         public DBTipoEntidad GetTipoEntidad() => _tipoEntidad.Clone();
 
-        public void SetCuit(long cuit) => _data.ec_cuit = cuit;
+        public void SetCuit(long cuit)
+        {
+            _shouldPush = _shouldPush || (_data.ec_cuit != cuit);
+            _data.ec_cuit = cuit;
+        }
 
-        public void SetRazonSocial(string rs) => _data.ec_rs = rs;
 
-        public void SetEmail(string email) => _data.ec_email = email;
+        public void SetRazonSocial(string rs)
+        {
+            _shouldPush = _shouldPush || !_data.ec_rs.Equals(rs);
+            _data.ec_rs = rs;
+        }
 
-        public void SetTelefono(string tel) => _data.ec_telefono = tel;
-
-        public void SetCelular(string cel) => _data.ec_celular = cel;
-
-        public void SetTipoEntidad(DBTipoEntidad newType) => _tipoEntidad = newType.Clone();
-
-        public void SetTipoEntidad(long te_id) => _tipoEntidad = DBTipoEntidad.GetByID(te_id);
+        public void SetEmail(string email)
+        {
+            _shouldPush = _shouldPush || !_data.ec_email.Equals(email);
+            _data.ec_email = email;
+        }
+        public void SetTelefono(string tel)
+        {
+            _shouldPush = _shouldPush || !_data.ec_telefono.Equals(tel);
+            _data.ec_telefono = tel;
+        }
+        public void SetCelular(string cel)
+        {
+            _shouldPush = _shouldPush || !_data.ec_celular.Equals(cel);
+            _data.ec_celular = cel;
+        }
+        public void SetTipoEntidad(DBTipoEntidad newType)
+        {
+            _shouldPush = _shouldPush || (_tipoEntidad.GetID() != newType.GetID());
+            _tipoEntidad = newType;
+        }
+        public void SetTipoEntidad(long te_id)
+        {
+            _shouldPush = _shouldPush || (_tipoEntidad.GetID() != te_id);
+            _tipoEntidad = DBTipoEntidad.GetByID(te_id);
+        }
     }
 }

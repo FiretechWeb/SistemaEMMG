@@ -631,7 +631,7 @@ namespace SistemaEMMG_Alpha
             selectedEntidad.SetEmail(tbxEmailEC.Text);
             selectedEntidad.SetTelefono(tbxTelEC.Text);
             selectedEntidad.SetCelular(tbxCelEC.Text);
-            selectedEntidad.TipoEntidad = DBTipoEntidad.GetByID(((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key);
+            selectedEntidad.SetTipoEntidad(DBTipoEntidad.GetByID(((KeyValuePair<long, string>)cmbTipoEC.SelectedItem).Key));
 
             selectedEntidad.PushToDatabase(dbCon.Connection);
 
