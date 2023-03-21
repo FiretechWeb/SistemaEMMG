@@ -422,14 +422,16 @@ namespace SistemaEMMG_Alpha
 
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
-            Console.WriteLine("aca llego...");
             bool deletedCorrectly = false;
             try
             {
                 string query = $"DELETE FROM {db_table} WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                deletedCorrectly = true;
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    MakeLocal();
+                }
             }
             catch (Exception ex)
             {

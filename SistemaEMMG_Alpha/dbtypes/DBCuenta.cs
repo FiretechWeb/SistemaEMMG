@@ -27,7 +27,7 @@ namespace SistemaEMMG_Alpha
         }
         public override string ToString()
         {
-            return $"Nombre Cuenta: {em_rs} - CUIT: {em_cuit}";
+            return $"Razón Social: {em_rs} - CUIT: {em_cuit}";
         }
     }
     public class DBCuenta : DBBaseClass, IDBase<DBCuenta>, IDBDataType<DBCuenta>
@@ -89,6 +89,40 @@ namespace SistemaEMMG_Alpha
             return _db_cuentas.Where(x => x.IsLocal()).ToList().AsReadOnly();
         }
         IReadOnlyCollection<DBCuenta> IDBDataType<DBCuenta>.GetAllLocal() => GetAllLocal();
+
+        public static DBCuenta GetByID(long tc_id)
+        {
+            foreach (DBCuenta cuenta in _db_cuentas)
+            {
+                if (cuenta.GetID() == tc_id)
+                {
+                    return cuenta;
+                }
+            }
+            return null;
+        }
+
+        public static DBCuenta GetByID(long tc_id, MySqlConnection conn)
+        {
+            DBCuenta returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {tc_id}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    returnEnt = new DBCuenta(reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener una cuenta en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
 
         public static bool CuentaYaExiste(string str, long cuit, List<DBCuenta> cuentas)
         {
@@ -238,8 +272,11 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                deletedCorrectly = true;
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    MakeLocal();
+                }
             }
             catch (Exception ex)
             {
@@ -417,7 +454,20 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return _data.ToString();
+            return $"ID: {GetID()} - {_data.ToString()}";
+        }
+
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+        public static string PrintAll()
+        {
+            string str = "";
+            foreach (DBCuenta cuenta in _db_cuentas)
+            {
+                str += $"Cuenta> {cuenta}\n";
+            }
+            return str;
         }
     }
 }

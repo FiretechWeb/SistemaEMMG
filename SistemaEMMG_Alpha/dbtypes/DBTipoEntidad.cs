@@ -26,7 +26,7 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return $"Tipo Entidad: {te_nombre}";
+            return $"Tipo: {te_nombre}";
         }
     }
 
@@ -265,8 +265,11 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                deletedCorrectly = true;
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    MakeLocal();
+                }
             }
             catch (Exception ex)
             {
@@ -318,7 +321,7 @@ namespace SistemaEMMG_Alpha
         }
         public override string ToString()
         {
-            return _data.ToString();
+            return $"ID: {GetID()} - {_data.ToString()}";
         }
 
         public DBTipoEntidad Clone()
@@ -326,6 +329,18 @@ namespace SistemaEMMG_Alpha
             return new DBTipoEntidad(_id, _data.te_nombre);
         }
 
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+        public static string PrintAll()
+        {
+            string str = "";
+            foreach (DBTipoEntidad tipoEntidad in _db_tipos_entidades)
+            {
+                str += $"Tipo de Entidad> {tipoEntidad}\n";
+            }
+            return str;
+        }
         ~DBTipoEntidad()
         {
         }

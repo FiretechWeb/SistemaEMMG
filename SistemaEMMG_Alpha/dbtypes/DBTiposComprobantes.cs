@@ -27,7 +27,7 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return $"Nombre: {tc_nombre}";
+            return $"Tipo: {tc_nombre}";
         }
     }
 
@@ -267,6 +267,10 @@ namespace SistemaEMMG_Alpha
                 string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    MakeLocal();
+                }
             }
             catch (Exception ex)
             {
@@ -323,12 +327,24 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return _data.ToString();
+            return $"ID: {GetID()} - {_data.ToString()}";
         }
 
         ~DBTiposComprobantes()
         {
 
+        }
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+        public static string PrintAll()
+        {
+            string str = "";
+            foreach (DBTiposComprobantes tipoComprobante in _db_tipos_comprobantes)
+            {
+                str += $"Tipo de Comprobante> {tipoComprobante}\n";
+            }
+            return str;
         }
     }
 }

@@ -25,7 +25,7 @@ namespace SistemaEMMG_Alpha
         }
         public override string ToString()
         {
-            return $"Nombre: {fp_nombre}";
+            return $"Forma: {fp_nombre}";
         }
     }
     public class DBFormasPago : DBBaseClass, IDBase<DBFormasPago>, IDBDataType<DBFormasPago>
@@ -264,8 +264,11 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                deletedCorrectly = true;
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    MakeLocal();
+                }
             }
             catch (Exception ex)
             {
@@ -315,9 +318,21 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+        public static string PrintAll()
+        {
+            string str = "";
+            foreach (DBFormasPago formaPago in _db_formas_pago)
+            {
+                str += $"Forma de Pago> {formaPago}\n";
+            }
+            return str;
+        }
         public override string ToString()
         {
-            return _data.ToString();
+            return $"ID: {GetID()} - {_data.ToString()}";
         }
 
     }

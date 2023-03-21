@@ -25,17 +25,26 @@ namespace SistemaEMMG_Alpha
         private List<string> _inputRegister = new List<string>();
         private int _currentRegisterSelected = -1;
         private List<KeyValuePair<string, Action<string>>> commandsList = new List<KeyValuePair<string, Action<string>>>();
+        private List<KeyValuePair<string, Action<string>>> internalComandsList = new List<KeyValuePair<string, Action<string>>>();
+        private DBCuenta _cuentaSeleccionada;
+        private DBBaseClass _seleccion;
         private DeveloperConsole()
         {
             commandsList.Add(new KeyValuePair<string, Action<string>>("SQL>", (x) => ProcessSQLCommand(x)));
             commandsList.Add(new KeyValuePair<string, Action<string>>("sql>", (x) => ProcessSQLCommand(x))); //alias
-            commandsList.Add(new KeyValuePair<string, Action<string>>("$>", (x) => ProcessInternalCommand(x)));
+            commandsList.Add(new KeyValuePair<string, Action<string>>("$>", (x) => ProcessInternalCommand(x))); //internal commands
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("refreshdata", (x) => _CMD_RefreshBasicDataDB()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("selected", (x) => _CMD_PrintSelected()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("delete", (x) => _CMD_DeleteSelected()));
         }
         ///<summary>
         ///Process an input string and retrieves the result.
         ///</summary
         public string ProcessInput(string input)
         {
+            bool commandNotFound = true;
             _outputStr = "";
             _inputRegister.Add(input);
             if (_inputRegister.Count > 32)
@@ -48,8 +57,13 @@ namespace SistemaEMMG_Alpha
                 if (input.StartsWith(command.Key))
                 {
                     command.Value.Invoke(input.ReplaceFirst(command.Key, ""));
+                    commandNotFound = false;
                     break;
                 }
+            }
+            if (commandNotFound)
+            {
+                _outputStr = $"Command '{input}' not found";
             }
             if (_outputStr.Length > 0)
             {
@@ -74,7 +88,7 @@ namespace SistemaEMMG_Alpha
                     {
                         if (row == 0)
                         {
-                            _outputStr += $"\tColumns> ";
+                            _outputStr += $"\tColumns\t>";
                             for (int column = 0; column < reader.FieldCount; column++)
                             {
                                 _outputStr += $"{reader.GetName(column)}";
@@ -85,11 +99,11 @@ namespace SistemaEMMG_Alpha
                             }
                             _outputStr += "\n";
                         }
-                        _outputStr += $"\tRow {row}> ";
+                        _outputStr += $"\tRow {row}\t> ";
                         for (int column = 0; column < reader.FieldCount; column++)
                         {
                             _outputStr += $"{reader.GetStringSafe(column)}";
-                            if (column < reader.FieldCount-1)
+                            if (column < reader.FieldCount - 1)
                             {
                                 _outputStr += "\t|\t";
                             }
@@ -104,13 +118,14 @@ namespace SistemaEMMG_Alpha
                     cmd.ExecuteNonQuery();
                     _outputStr += "SQL command executed without errors.";
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _outputStr += $"SQL error: {ex.ToString()}";
             }
         }
 
-        public string RetrieveConsoleHistory(string input, bool back=true)
+        public string RetrieveConsoleHistory(string input, bool back = true)
         {
             if (_inputRegister.Count <= 0)
             {
@@ -124,17 +139,77 @@ namespace SistemaEMMG_Alpha
             if (back)
             {
                 _currentRegisterSelected -= 1;
-            } else
+            }
+            else
             {
                 _currentRegisterSelected += 1;
             }
             _currentRegisterSelected = _currentRegisterSelected.Clamp<int>(0, _inputRegister.Count - 1);
 
-           return _inputRegister[_currentRegisterSelected];
+            return _inputRegister[_currentRegisterSelected];
         }
         private void ProcessInternalCommand(string command)
         {
-            _outputStr = $"Executed Internal COMMAND: {command}";
+            bool commandNotFound = true;
+            foreach (KeyValuePair<string, Action<string>> internalCommand in internalComandsList)
+            {
+                if (command.StartsWith(internalCommand.Key))
+                {
+                    internalCommand.Value.Invoke(command.ReplaceFirst(internalCommand.Key, ""));
+                    commandNotFound = false;
+                    break;
+                }
+            }
+            if (commandNotFound)
+            {
+                _outputStr = $"Internal command '{command}' not found";
+            }
+
+        }
+
+        private void _CMD_RefreshBasicDataDB()
+        {
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBMain.Instance().RefreshBasicDataDB(conn);
+            _outputStr = "\t:: CUENTAS ::\n";
+            _outputStr += DBCuenta.PrintAll();
+            _outputStr += "\t:: Tipos de Entidades ::\n";
+            _outputStr += DBTipoEntidad.PrintAll();
+            _outputStr += "\t:: Tipos de Comprobantes ::\n";
+            _outputStr += DBTiposComprobantes.PrintAll();
+            _outputStr += "\t:: Formas de Pago ::\n";
+            _outputStr += DBFormasPago.PrintAll();
+        }
+        private void _CMD_SelectCuenta(string id)
+        {
+            _cuentaSeleccionada = DBCuenta.GetByID(Convert.ToInt64(id.Trim()));
+            if (_cuentaSeleccionada is null)
+            {
+                _outputStr = "No exise una cuenta con el ID introducido.";
+                return;
+            }
+            _seleccion = _cuentaSeleccionada;
+            _outputStr = $"Cuenta seleccionada> {_cuentaSeleccionada}";
+        }
+        private void _CMD_DeleteSelected()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            _seleccion.DeleteFromDatabase(conn);
+        }
+
+        private void _CMD_PrintSelected()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+            _outputStr = $"Entidad seleccionada> {_seleccion}";
         }
     }
 }
