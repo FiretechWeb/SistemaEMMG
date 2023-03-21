@@ -873,7 +873,7 @@ namespace SistemaEMMG_Alpha
             }
 
             DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, 0.0, txtCMPagoObservacion.Text);
-            if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == true)
+            if (!dbData.GetComprobanteSelected().IsLocal())
             {
                 if (newPago.PushToDatabase(dbCon.Connection))
                 {
@@ -882,7 +882,7 @@ namespace SistemaEMMG_Alpha
                 }
             } else //Add locally...
             {
-                dbData.GetComprobanteSelected().AddPagoLocally(newPago);
+                dbData.GetComprobanteSelected().AddPago(newPago);
                 guiRefreshComprobantesDetallesPagos();
             }
         }
@@ -1069,7 +1069,7 @@ namespace SistemaEMMG_Alpha
             long entidadComercial_id = ((KeyValuePair<long, string>)lbxCMDEntidadSelected.SelectedItem).Key;
 
             DBComprobantes newComprobante;
-            if (!(dbData.GetComprobanteSelected() is null) && dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false)
+            if (!(dbData.GetComprobanteSelected() is null) && dbData.GetComprobanteSelected().IsLocal())
             {
                 UpdateSelectedComprobanteFromDetallesForm();
                 newComprobante = dbData.GetComprobanteSelected();
@@ -1096,6 +1096,16 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("¡Información agregada a la base de datos correctamente!");
             }
 
+        }
+
+        private void txtDeveloperInputConsole_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                txtDeveloperDisplayConsole.Text += txtDeveloperInputConsole.Text + "\n";
+                txtDeveloperDisplayConsole.ScrollToEnd();
+                txtDeveloperInputConsole.Text = "";
+            }
         }
     }
 }

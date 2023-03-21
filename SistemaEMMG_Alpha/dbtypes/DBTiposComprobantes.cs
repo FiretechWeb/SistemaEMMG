@@ -313,6 +313,14 @@ namespace SistemaEMMG_Alpha
             return new DBTiposComprobantes(_id, _data.tc_nombre);
         }
 
+        public override void MakeLocal()
+        {
+            if (GetID() >= 0)
+            {
+                ChangeID(-1);
+            }
+        }
+
         public override string ToString()
         {
             return _data.ToString();

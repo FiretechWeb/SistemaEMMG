@@ -407,6 +407,14 @@ namespace SistemaEMMG_Alpha
             return _data.em_rs;
         }
 
+        public override void MakeLocal()
+        {
+            if (GetID() >= 0)
+            {
+                ChangeID(-1);
+            }
+        }
+
         public override string ToString()
         {
             return _data.ToString();

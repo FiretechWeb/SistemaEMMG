@@ -443,5 +443,13 @@ namespace SistemaEMMG_Alpha
             _shouldPush = _shouldPush || (_tipoEntidad.GetID() != te_id);
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
         }
+
+        public override void MakeLocal()
+        {
+            if (GetID() >= 0)
+            {
+                ChangeID(-1);
+            }
+        }
     }
 }

@@ -641,32 +641,7 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an payament from another account, entity or receipt like this...
             }
-            if (DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago))
-            {
-                return false;
-            }
-            _db_pagos.Add(newPago);
-            return true;
-        }
-        private long GetLocalPagoAvailableID()
-        {
-            long availableID = -1;
-            foreach (DBComprobantePago pago in _db_pagos)
-            {
-                if (pago.GetID() <= availableID)
-                {
-                    availableID = pago.GetID() - 1;
-                }
-            }
-            return availableID;
-        }
-        public bool AddPagoLocally(DBComprobantePago newPago) //used to handle local data that is not stored at the DB yet...
-        {
-            if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || newPago.GetComprobanteID() != GetID())
-            {
-                return false; //Cannot add an payament from another account, entity or receipt like this...
-            }
-            if (DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago))
+            if (!newPago.IsLocal() && DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago)) //always add if it is Local...
             {
                 return false;
             }
@@ -723,5 +698,13 @@ namespace SistemaEMMG_Alpha
         public void SetNoGravado(double no_gravado) => _data.cm_no_gravado = no_gravado;
         public void SetPercepcion(double percepcion) => _data.cm_percepcion = percepcion;
         public void SetEmitido(bool esEmitido) => _data.cm_emitido = esEmitido;
+
+        public override void MakeLocal()
+        {
+            if (GetID() >= 0)
+            {
+                ChangeID(-1);
+            }
+        }
     }
 }

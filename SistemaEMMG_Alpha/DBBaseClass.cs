@@ -50,6 +50,11 @@ namespace SistemaEMMG_Alpha
         ///Returns true if the data was locally created and not present originally in the DB.
         ///</summary>
         abstract public bool IsLocal();
+
+        ///<summary>
+        ///If this element was retrieved from DB, it makes it now local so it can be pushed into the DB as a new element usign PushToDatabase
+        ///</summary>
+        abstract public void MakeLocal();
     }
 
 }
