@@ -47,6 +47,7 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_id = "cp_id";
         public const string NameOf_cp_fp_id = "cp_fp_id";
         private long _id;
+        private bool _shouldPush = false;
         private ComprobantePagoData _data;
         private DBComprobantes _comprobante;
         private DBFormasPago _formaDePago;
@@ -230,6 +231,11 @@ namespace SistemaEMMG_Alpha
             _formaDePago = formaDePago;
             _comprobante = comprobante;
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantePago(DBComprobantes comprobante, long id, long fp_id, ComprobantePagoData newData)
@@ -242,6 +248,11 @@ namespace SistemaEMMG_Alpha
             }
             _comprobante = comprobante;
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
         public DBComprobantePago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData)
         {
@@ -253,6 +264,11 @@ namespace SistemaEMMG_Alpha
             }
             _comprobante = cuenta.GetComprobanteByID(ec_id, cm_id);
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantePago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData) //Directly from DB
@@ -265,6 +281,11 @@ namespace SistemaEMMG_Alpha
             }
             _comprobante = DBComprobantes.GetByID(conn, cuenta, ec_id, cm_id);
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantePago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
@@ -281,33 +302,62 @@ namespace SistemaEMMG_Alpha
             newFormaPago,
             ComprobantePagoData.CreateFromReader(reader)) { }
 
-        public ComprobantePagoData Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-            }
-        }
-
-        public DBFormasPago FormaDePago
-        {
-            get => _formaDePago;
-            set
-            {
-                _formaDePago = value;
-            }
-        }
-
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
             }
 
             return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+        public override bool PullFromDatabase(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                long new_tipo_de_pago_id = -1;
+                long new_comprobante_id = -1;
+                long new_entidad_comercial_id = -1;
+                while (reader.Read())
+                {
+                    _data = ComprobantePagoData.CreateFromReader(reader);
+                    new_tipo_de_pago_id = reader.GetInt64Safe(NameOf_cp_fp_id);
+                    new_comprobante_id = reader.GetInt64Safe(NameOf_cp_cm_id);
+                    new_entidad_comercial_id = reader.GetInt64Safe(NameOf_cp_ec_id);
+                    _shouldPush = false;
+                }
+                reader.Close();
+
+                if (new_tipo_de_pago_id != -1)
+                {
+                    _formaDePago = DBFormasPago.GetByID(new_tipo_de_pago_id, conn);
+                }
+                if (new_entidad_comercial_id !=-1 && new_comprobante_id != -1)
+                {
+                    _comprobante = DBComprobantes.GetByID(conn, DBEntidades.GetByID(conn, GetCuenta(), new_entidad_comercial_id), new_comprobante_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBCuenta::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
         }
 
         public override bool UpdateToDatabase(MySqlConnection conn)
@@ -408,6 +458,10 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
+
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
+
         protected override void ChangeID(long id) => _id = id;
         public override long GetID() => _id;
 

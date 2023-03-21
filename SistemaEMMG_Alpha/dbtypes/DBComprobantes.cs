@@ -471,7 +471,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToPull = false;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {GetID()}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND {NameOf_cm_ec_id} = {GetEntidadComercialID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 long new_tipo_comprobante_id=-1;
@@ -479,8 +479,8 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _data = ComprobantesData.CreateFromReader(reader);
-                    new_tipo_comprobante_id = reader.GetInt64(NameOf_cm_tc_id);
-                    new_entidad_comercial_id = reader.GetInt64(NameOf_cm_ec_id);
+                    new_tipo_comprobante_id = reader.GetInt64Safe(NameOf_cm_tc_id);
+                    new_entidad_comercial_id = reader.GetInt64Safe(NameOf_cm_ec_id);
                     _shouldPush = false;
                 }
                 reader.Close();
@@ -491,7 +491,7 @@ namespace SistemaEMMG_Alpha
                 }
                 if (new_entidad_comercial_id != -1)
                 {
-                    _entidadComercial = DBEntidades.GetByID(conn, _entidadComercial.GetCuenta(), new_entidad_comercial_id);
+                    _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), new_entidad_comercial_id);
                 }
             }
             catch (Exception ex)
