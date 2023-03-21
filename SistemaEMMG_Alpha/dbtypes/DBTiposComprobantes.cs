@@ -207,7 +207,7 @@ namespace SistemaEMMG_Alpha
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    _data = new TiposComprobantesData(reader.GetStringSafe(TiposComprobantesData.NameOf_tc_nombre));
+                    _data = TiposComprobantesData.CreateFromReader(reader);
                     _shouldPush = false;
                 }
                 reader.Close();

@@ -191,7 +191,7 @@ namespace SistemaEMMG_Alpha
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    _data = new TiposEntidadesData(reader.GetStringSafe(TiposEntidadesData.NameOf_te_nombre));
+                    _data = TiposEntidadesData.CreateFromReader(reader);
                     _shouldPush = false;
                 }
                 reader.Close();

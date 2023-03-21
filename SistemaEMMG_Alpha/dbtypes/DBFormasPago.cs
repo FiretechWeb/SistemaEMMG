@@ -189,7 +189,7 @@ namespace SistemaEMMG_Alpha
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    _data = new FormasPagoData(reader.GetStringSafe(FormasPagoData.NameOf_fp_nombre));
+                    _data = FormasPagoData.CreateFromReader(reader);
                     _shouldPush = false;
                 }
                 reader.Close();

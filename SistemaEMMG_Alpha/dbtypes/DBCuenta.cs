@@ -108,6 +108,7 @@ namespace SistemaEMMG_Alpha
          ***************/
 
         private long _id;
+        private bool _shouldPush = false;
         private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
@@ -115,13 +116,13 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _data = newData;
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
-        public DBCuenta(long id, long cuit, string rs)
-        {
-            _id = id;
-            _data = new CuentaData(cuit, rs);
-        }
+        public DBCuenta(long id, long cuit, string rs) : this (id, new CuentaData(cuit, rs)) { }
         public DBCuenta(long cuit, string rs) : this(-1, cuit, rs) { }
 
         public DBCuenta(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), CuentaData.CreateFromReader(reader)) { }
@@ -148,13 +149,46 @@ namespace SistemaEMMG_Alpha
 
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
             }
 
             return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+
+        public override bool PullFromDatabase(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    _data = CuentaData.CreateFromReader(reader);
+                    _shouldPush = false;
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBCuenta::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
         }
 
         public override bool UpdateToDatabase(MySqlConnection conn)
@@ -165,6 +199,7 @@ namespace SistemaEMMG_Alpha
                 string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{_data.em_rs}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -186,6 +221,7 @@ namespace SistemaEMMG_Alpha
                 {
                     ChangeID(cmd.LastInsertedId);
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {
@@ -330,17 +366,12 @@ namespace SistemaEMMG_Alpha
              _db_comprobantes.Remove(entRemove);
         }
 
-        public CuentaData Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-            }
-        }
+
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
 
         ///<summary>
-        ///DO NOT USET! Warning this method will return null. It is not implemented yet!
+        ///DO NOT USE! Warning this method will return null. It is not implemented yet!
         ///</summary>
         public DBCuenta Clone()
         {
@@ -349,15 +380,20 @@ namespace SistemaEMMG_Alpha
 
         public void SetRazonSocial(string name)
         {
+            _shouldPush = _shouldPush || !_data.em_rs.Equals(name);
             _data.em_rs = name;
         }
         public void SetCUIT(long cuit)
         {
+            _shouldPush = _shouldPush || (_data.em_cuit != cuit);
             _data.em_cuit = cuit;
         }
 
-        protected override void ChangeID(long id) => _id = id;
-
+        protected override void ChangeID(long id)
+        {
+            _shouldPush = _shouldPush || (id != _id);
+            _id = id;
+        }
         public override long GetID()
         {
             return _id;
