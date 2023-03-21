@@ -64,6 +64,7 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         private DBEntidades _entidadComercial; //this can change actually... (Maybe the DB's design it's flawed... it is what it is LOL)
         private long _id;
+        private bool _shouldPush = false;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
         private readonly List<DBComprobantePago> _db_pagos = new List<DBComprobantePago>();
@@ -213,8 +214,13 @@ namespace SistemaEMMG_Alpha
         {
             _id = id;
             _entidadComercial = entidadComercial;
-            _tipoComprobante = newTipo; //is this a good idea at all, to clone?
+            _tipoComprobante = newTipo;
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, ComprobantesData newData)
@@ -223,6 +229,11 @@ namespace SistemaEMMG_Alpha
             _entidadComercial = entidadComercial;
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
@@ -231,6 +242,11 @@ namespace SistemaEMMG_Alpha
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = newTipo;
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tc_id, ComprobantesData newData)
@@ -239,6 +255,11 @@ namespace SistemaEMMG_Alpha
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
         public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, ComprobantesData newData)
         {
@@ -246,6 +267,11 @@ namespace SistemaEMMG_Alpha
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
@@ -254,6 +280,11 @@ namespace SistemaEMMG_Alpha
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = newTipo;
             _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
         }
 
         public DBComprobantes(
@@ -415,33 +446,60 @@ namespace SistemaEMMG_Alpha
             newTipo,
             ComprobantesData.CreateFromReader(reader)) { }
 
-        public ComprobantesData Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-            }
-        }
-
-        public DBTiposComprobantes TipoComprobante
-        {
-            get => _tipoComprobante;
-            set
-            {
-                _tipoComprobante = value;
-            }
-        }
-
         public override bool PushToDatabase(MySqlConnection conn)
         {
-            bool? existsInDB = ExistsInDatabase(conn);
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
             if (existsInDB is null) //error with DB...
             {
                 return false;
             }
 
             return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+        public override bool PullFromDatabase(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                long new_tipo_comprobante_id=-1;
+                long new_entidad_comercial_id=-1;
+                while (reader.Read())
+                {
+                    _data = ComprobantesData.CreateFromReader(reader);
+                    new_tipo_comprobante_id = reader.GetInt64(NameOf_cm_tc_id);
+                    new_entidad_comercial_id = reader.GetInt64(NameOf_cm_ec_id);
+                    _shouldPush = false;
+                }
+                reader.Close();
+
+                if (new_tipo_comprobante_id != -1)
+                {
+                    _tipoComprobante = DBTiposComprobantes.GetByID(new_tipo_comprobante_id, conn);
+                }
+                if (new_entidad_comercial_id != -1)
+                {
+                    _entidadComercial = DBEntidades.GetByID(conn, _entidadComercial.GetCuenta(), new_entidad_comercial_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBCuenta::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
         }
 
         public override bool UpdateToDatabase(MySqlConnection conn)
@@ -620,7 +678,8 @@ namespace SistemaEMMG_Alpha
         {
             _db_pagos.Remove(entRemove);
         }
-
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
         protected override void ChangeID(long id) => _id = id;
         public override long GetID() => _id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();

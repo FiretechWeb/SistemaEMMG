@@ -203,13 +203,18 @@ namespace SistemaEMMG_Alpha
                 string query = $"SELECT * FROM {db_table} WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
+                long new_tipo_entidad_id = -1;
                 while (reader.Read())
                 {
                     _data = EntidadesComercialesData.CreateFromReader(reader);
-                    _tipoEntidad = DBTipoEntidad.GetByID(reader.GetInt64(NameOf_ec_te_id));
+                    new_tipo_entidad_id = reader.GetInt64(NameOf_ec_te_id);
                     _shouldPush = false;
                 }
                 reader.Close();
+                if (new_tipo_entidad_id != -1)
+                {
+                    _tipoEntidad = DBTipoEntidad.GetByID(new_tipo_entidad_id, conn);
+                }
             }
             catch (Exception ex)
             {
