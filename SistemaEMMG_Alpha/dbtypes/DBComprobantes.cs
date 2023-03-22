@@ -564,6 +564,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
+                    _entidadComercial.AddNewComprobante(this); //safe to add to since now it belongs to de DB.
                 }
             }
             catch (Exception ex)
@@ -585,15 +586,12 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
+                    _entidadComercial.RemoveComprobante(this);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBComprobantes: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            if (deletedCorrectly)
-            {
-                _entidadComercial.RemoveComprobante(this);
             }
             return deletedCorrectly;
         }
@@ -644,10 +642,11 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an payament from another account, entity or receipt like this...
             }
-            if (!newPago.IsLocal() && DBComprobantePago.CheckIfExistsInList(_db_pagos, newPago)) //always add if it is Local...
+            if (_db_pagos.Contains(newPago))
             {
                 return false;
             }
+
             _db_pagos.Add(newPago);
             return true;
         }
@@ -710,9 +709,28 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBComprobantes GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _data);
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {GetID()} - Tipo Comprobante: {_tipoComprobante.GetName()} - {_data.ToString()}";
+        }
+
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+
+        public string PrintAllPagos()
+        {
+            string str = "";
+            foreach (DBComprobantePago pago in _db_pagos)
+            {
+                str += $"Pago> {pago}\n";
+            }
+            return str;
         }
     }
 }

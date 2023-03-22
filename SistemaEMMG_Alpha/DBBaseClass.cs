@@ -56,6 +56,8 @@ namespace SistemaEMMG_Alpha
         ///(private method only, for security reasons)
         ///</summary>
         abstract protected void MakeLocal();
+
+        abstract public DBBaseClass GetLocalCopy();
     }
 
 }

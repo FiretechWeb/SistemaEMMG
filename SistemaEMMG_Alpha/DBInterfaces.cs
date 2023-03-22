@@ -74,6 +74,6 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         /// Returns a local copy of the element so it can be pushed as a new element in the DB.
         ///</summary>
-        T GetLocalCopy();
+        //T GetLocalCopy();
     }
 }

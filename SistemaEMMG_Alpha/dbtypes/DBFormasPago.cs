@@ -311,7 +311,7 @@ namespace SistemaEMMG_Alpha
             _data.fp_nombre = newName;
         }
 
-        public DBFormasPago GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBFormasPago(-1, _data);
         }

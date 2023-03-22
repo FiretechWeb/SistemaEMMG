@@ -325,7 +325,7 @@ namespace SistemaEMMG_Alpha
             return $"ID: {GetID()} - {_data.ToString()}";
         }
 
-        public DBTipoEntidad GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBTipoEntidad(-1, _data);
         }

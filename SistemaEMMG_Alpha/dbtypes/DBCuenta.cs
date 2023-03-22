@@ -145,7 +145,7 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush = false;
         private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
-        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
+        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>(); //Useless, TO REMOVE in future.
         public DBCuenta(long id, CuentaData newData)
         {
             _id = id;
@@ -372,10 +372,10 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an entity from another account like this...
             }
-            if (DBEntidades.CheckIfExistsInList(_db_entidades_comerciales, newEntidadComercial, true))
+            if (_db_entidades_comerciales.Contains(newEntidadComercial))
             {
-                return false; //already exists, at least cuit and name-
-            } 
+                return false; //already in list
+            }
             _db_entidades_comerciales.Add(newEntidadComercial);
             return true;
         }
@@ -444,7 +444,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBCuenta GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBCuenta(-1, _data);
         }
@@ -463,6 +463,15 @@ namespace SistemaEMMG_Alpha
             foreach (DBCuenta cuenta in _db_cuentas)
             {
                 str += $"Cuenta> {cuenta}\n";
+            }
+            return str;
+        }
+        public string PrintAllEntidades()
+        {
+            string str = "";
+            foreach (DBEntidades entidadComercial in _db_entidades_comerciales)
+            {
+                str += $"Entidad comercial> {entidadComercial}\n";
             }
             return str;
         }

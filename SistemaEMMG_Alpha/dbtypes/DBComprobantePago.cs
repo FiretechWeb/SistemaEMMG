@@ -34,7 +34,7 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return $"Observación: {cp_obs}";
+            return $"Importe: {cp_importe} - Observación: {cp_obs} - Fecha: {cp_fecha}";
         }
     }
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBComprobantePago y ComprobantePagoData
@@ -410,6 +410,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
+                    _comprobante.AddPago(this);
                 }
             }
             catch (Exception ex)
@@ -431,15 +432,12 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
+                    _comprobante.RemovePago(this);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DeleteFromDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            if (deletedCorrectly)
-            {
-                //_comprobante.RemovePago(this);
             }
             return deletedCorrectly;
         }
@@ -494,10 +492,14 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
-
-        public DBComprobantePago GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBComprobantePago(_comprobante, -1, _formaDePago, _data);
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - {_data.ToString()}";
         }
     }
 }

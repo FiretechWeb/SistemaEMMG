@@ -321,7 +321,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBTiposComprobantes GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBTiposComprobantes(-1, _data);
         }

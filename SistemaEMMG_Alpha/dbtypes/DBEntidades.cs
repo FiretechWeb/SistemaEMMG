@@ -38,6 +38,11 @@ namespace SistemaEMMG_Alpha
                                 reader.GetStringSafe(NameOf_ec_telefono),
                                 reader.GetStringSafe(NameOf_ec_celular));
         }
+
+        public override string ToString()
+        {
+            return $"CUIT: {ec_cuit} - Razón Social: {ec_rs} - Email: {ec_email} - Teléfono: {ec_telefono} - Celular: {ec_celular}";
+        }
     }
     public class DBEntidades : DBBaseClass, IDBase<DBEntidades>, IDBCuenta<DBCuenta>
     {
@@ -288,6 +293,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
+                    _cuenta.AddNewEntidad(this); //safe to add to since now it belongs to de DB.
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
             }
@@ -310,15 +316,12 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
+                    _cuenta.RemoveEntidad(this);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBEntidades: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            if (deletedCorrectly)
-            {
-                _cuenta.RemoveEntidad(this);
             }
             return deletedCorrectly;
         }
@@ -370,18 +373,16 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an receipt from another account or entity like this...
             }
-            if (DBComprobantes.CheckIfExistsInList(_db_comprobantes, newComprobante))
+            if (_db_comprobantes.Contains(newComprobante))
             {
                 return false;
             }
             _db_comprobantes.Add(newComprobante);
-            _cuenta.AddNewComprobante(newComprobante);
             return true;
         }
         public void RemoveComprobante(DBComprobantes entRemove)
         {
             _db_comprobantes.Remove(entRemove);
-            _cuenta.RemoveComprobante(entRemove);
         }
 
         public override bool ShouldPush() => _shouldPush;
@@ -455,9 +456,28 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
-        public DBEntidades GetLocalCopy()
+        public override DBBaseClass GetLocalCopy()
         {
             return new DBEntidades(_cuenta, -1, _tipoEntidad, _data);
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {GetID()} - Tipo Entidad: {_tipoEntidad.GetName()} - {_data.ToString()}";
+        }
+
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+
+        public string PrintAllComprobantes()
+        {
+            string str = "";
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                str += $"Comprobante> {comprobante}\n";
+            }
+            return str;
         }
     }
 }

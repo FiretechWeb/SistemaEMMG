@@ -1102,7 +1102,14 @@ namespace SistemaEMMG_Alpha
         {
             if (e.Key == Key.Return)
             {
-                txtDeveloperDisplayConsole.Text += DeveloperConsole.Instance().ProcessInput(txtDeveloperInputConsole.Text);
+                if (txtDeveloperInputConsole.Text.Trim().ToLower().Equals("clear"))
+                {
+                    txtDeveloperDisplayConsole.Text = "";
+                }
+                else
+                {
+                    txtDeveloperDisplayConsole.Text += DeveloperConsole.Instance().ProcessInput(txtDeveloperInputConsole.Text);
+                }
                 txtDeveloperDisplayConsole.ScrollToEnd();
                 txtDeveloperInputConsole.Text = "";
             }
