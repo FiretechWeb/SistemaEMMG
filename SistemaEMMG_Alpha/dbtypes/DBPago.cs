@@ -40,16 +40,16 @@ namespace SistemaEMMG_Alpha
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBPago y PagoData
     public class DBPago : DBBaseClass, IDBase<DBPago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
     {
-        public const string db_table = "comprobantes_pagos";
+        public const string db_table = "pagos";
         public const string NameOf_pg_em_id = "pg_em_id";
         public const string NameOf_pg_ec_id = "pg_ec_id";
         public const string NameOf_pg_rc_id = "pg_rc_id";
         public const string NameOf_id = "pg_id";
-        public const string NameOf_cp_fp_id = "cp_fp_id";
+        public const string NameOf_pg_fp_id = "pg_fp_id";
         private long _id;
         private bool _shouldPush = false;
         private PagoData _data;
-        private DBComprobantes _comprobante; //ESTO VUELA DESPUES
+        private DBComprobantes _comprobante; //ESTO Luego se cambia por DBRecibo
         private DBFormasPago _formaDePago;
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
@@ -61,7 +61,7 @@ namespace SistemaEMMG_Alpha
             string cm_table = DBComprobantes.db_table;
 
             return $@"SELECT {fieldsToGet} FROM {db_table} 
-                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_cp_fp_id} 
+                JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_pg_fp_id} 
                 JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_pg_rc_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_pg_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_pg_em_id} 
                 JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
                 JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_pg_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_pg_em_id} 
@@ -337,7 +337,7 @@ namespace SistemaEMMG_Alpha
                 while (reader.Read())
                 {
                     _data = PagoData.CreateFromReader(reader);
-                    new_tipo_de_pago_id = reader.GetInt64Safe(NameOf_cp_fp_id);
+                    new_tipo_de_pago_id = reader.GetInt64Safe(NameOf_pg_fp_id);
                     new_comprobante_id = reader.GetInt64Safe(NameOf_pg_rc_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_pg_ec_id);
                     _shouldPush = false;
@@ -368,7 +368,7 @@ namespace SistemaEMMG_Alpha
             {
                 string fechaPago = (_data.pg_fecha.HasValue) ? $"'{((DateTime)_data.pg_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"UPDATE {db_table} SET 
-                                {NameOf_cp_fp_id} = {_formaDePago.GetID()}, 
+                                {NameOf_pg_fp_id} = {_formaDePago.GetID()}, 
                                 {PagoData.NameOf_pg_importe} = {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 {PagoData.NameOf_pg_obs} = '{_data.pg_obs}', 
                                 {PagoData.NameOf_pg_fecha} = {fechaPago} 
@@ -394,7 +394,7 @@ namespace SistemaEMMG_Alpha
                                 {NameOf_pg_em_id}, 
                                 {NameOf_pg_ec_id}, 
                                 {NameOf_pg_rc_id}, 
-                                {NameOf_cp_fp_id}, 
+                                {NameOf_pg_fp_id}, 
                                 {PagoData.NameOf_pg_importe}, 
                                 {PagoData.NameOf_pg_obs}, 
                                 {PagoData.NameOf_pg_fecha}) VALUES (
@@ -411,7 +411,6 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
-                    _comprobante.AddPago(this);
                 }
             }
             catch (Exception ex)
@@ -433,7 +432,6 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
-                    _comprobante.RemovePago(this);
                 }
             }
             catch (Exception ex)

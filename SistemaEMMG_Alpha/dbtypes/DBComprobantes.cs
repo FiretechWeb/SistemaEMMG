@@ -67,7 +67,6 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush = false;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
-        private readonly List<DBPago> _db_pagos = new List<DBPago>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -611,50 +610,6 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-
-        public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
-        {
-            List<DBPago> returnList = DBPago.GetAll(conn, this);
-            _db_pagos.Clear();
-            foreach (DBPago pago in returnList)
-            {
-                _db_pagos.Add(pago);
-            }
-            return returnList;
-        }
-        public List<DBPago> GetAllPagos() //Get CACHE
-        {
-            List<DBPago> returnList = new List<DBPago>();
-            foreach (DBPago pago in _db_pagos)
-            {
-                returnList.Add(pago);
-            }
-            return returnList;
-        }
-        public DBPago GetPagoByID(long pg_id)
-        {
-            return DBPago.GetByID(_db_pagos, this, pg_id);
-        }
-
-        public bool AddPago(DBPago newPago)
-        {
-            if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || newPago.GetComprobanteID() != GetID())
-            {
-                return false; //Cannot add an payament from another account, entity or receipt like this...
-            }
-            if (_db_pagos.Contains(newPago))
-            {
-                return false;
-            }
-
-            _db_pagos.Add(newPago);
-            return true;
-        }
-
-        public void RemovePago(DBPago entRemove)
-        {
-            _db_pagos.Remove(entRemove);
-        }
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
         protected override void ChangeID(long id) => _id = id;
@@ -727,16 +682,6 @@ namespace SistemaEMMG_Alpha
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
-
-        public string PrintAllPagos()
-        {
-            string str = "";
-            foreach (DBPago pago in _db_pagos)
-            {
-                str += $"Pago> {pago}\n";
-            }
-            return str;
-        }
 
         private static string[] randomFacturaCodigos =
         {

@@ -151,7 +151,6 @@ namespace SistemaEMMG_Alpha
         
         private void guiRefreshComprobantesDetalles(bool refreshDatabase=false)
         {
-            cbxCMTiposPagos.Items.Clear();
             if (dbData.GetCurrentAccount() is null)
             {
                 return; //No accounts available
@@ -160,16 +159,6 @@ namespace SistemaEMMG_Alpha
             {
                 dbData.ReadEntidadesComercialesFromDB(dbCon.Connection); //Necessary for checkbox D:
                 dbData.ReadComprobantesFromDB(dbCon.Connection);
-            }
-            cbxCMTiposPagos.SelectedValuePath = "Key";
-            cbxCMTiposPagos.DisplayMemberPath = "Value";
-            foreach (DBFormasPago formaPago in dbData.formas_pago)
-            {
-                cbxCMTiposPagos.Items.Add(new KeyValuePair<long, string>(formaPago.GetID(), formaPago.GetName()));
-            }
-            if (dbData.formas_pago.Count > 0)
-            {
-                cbxCMTiposPagos.SelectedIndex = 0;
             }
 
             cbxCMDTipoComprobante.Items.Clear();
@@ -207,8 +196,6 @@ namespace SistemaEMMG_Alpha
             {
                 guiRefreshComprobantesForms();
             }
-            
-            guiRefreshComprobantesDetallesPagos(true);
         }
 
         private void guiRefreshComprobantesForms()
@@ -228,34 +215,6 @@ namespace SistemaEMMG_Alpha
             txtCMDNoGravado.Text = SafeConvert.ToString(dbData.GetComprobanteSelected().GetNoGravado());
             txtCMDPercepcion.Text = SafeConvert.ToString(dbData.GetComprobanteSelected().GetPercepcion());
 
-        }
-        private void guiRefreshComprobantesDetallesPagos(bool refreshDatabase = false)
-        {
-            lbxCMPagos.Items.Clear();
-            dbData.DeselectPago();
-            btnCMGuardarPago.IsEnabled = false;
-            btnCMEliminarPago.IsEnabled = false;
-            if (dbData.GetComprobanteSelected() is null)
-            {
-                return;
-            }
-
-            List<DBPago> pagos;
-            if (refreshDatabase)
-            {
-                pagos = dbData.GetComprobanteSelected().GetAllPagos(dbCon.Connection);
-            } else
-            {
-                pagos = dbData.GetComprobanteSelected().GetAllPagos();
-            }
-
-            lbxCMPagos.SelectedValuePath = "Key";
-            lbxCMPagos.DisplayMemberPath = "Value";
-            foreach (DBPago pago in pagos)
-            {
-                lbxCMPagos.Items.Add(new KeyValuePair<long, string>(pago.GetID(), pago.GetObservacion()));
-            }
-            lbxCMPagos.SelectedIndex = -1;
         }
         private void guiCuentasRefresh(bool refreshDatabase=false)
         {
@@ -813,140 +772,7 @@ namespace SistemaEMMG_Alpha
             guiSetComprobantesMainVisible();
         }
 
-        private void lbxCMPagos_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (dbData.GetComprobanteSelected() is null)
-            {
-                MessageBox.Show("Contactar al programador: GetComprobanteSelected() es NULL en lbxCMPagos_SelectionChanged, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            ListBox lbxSender = sender as ListBox;
-            if (lbxSender.SelectedItem is null)
-            {
-                btnCMGuardarPago.IsEnabled = false;
-                btnCMEliminarPago.IsEnabled = false;
-                dbData.DeselectPago();
-                return;
-            }
-            dbData.SetPagoSelected(dbData.GetComprobanteSelected().GetPagoByID(((KeyValuePair<long, string>)lbxSender.SelectedItem).Key));
-
-            if (dbData.GetPagoSelected() is null)
-            {
-                btnCMGuardarPago.IsEnabled = false;
-                btnCMEliminarPago.IsEnabled = false;
-                return;
-            }
-            btnCMGuardarPago.IsEnabled = true;
-            btnCMEliminarPago.IsEnabled = true;
-            txtCMPagoObservacion.Text = dbData.GetPagoSelected().GetObservacion();
-            cbxCMTiposPagos.SelectedValue = dbData.GetPagoSelected().GetFormaDePago().GetID();
-        }
-
-        private void btnCMAgregarPago_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbxCMDEntidadSelected.SelectedItem is null)
-            {
-                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMAgregarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (cbxCMDTipoComprobante.SelectedItem is null)
-            {
-                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMAgregarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            if (dbData.GetComprobanteSelected() is null) //If there is no comprobante selected, then let's try to create a temporary one to work with...
-            {
-                dbData.SetComprobanteSelected(GenerateNewComprobanteFromDetallesForm());
-                if (dbData.GetComprobanteSelected() is null)
-                {
-                    MessageBox.Show("Contactar al programador: GetComprobanteSelected() es NULL en btnCMAgregarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-            }
-
-            DBPago newPago = new DBPago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, 0.0, txtCMPagoObservacion.Text);
-            if (!dbData.GetComprobanteSelected().IsLocal())
-            {
-                if (newPago.PushToDatabase(dbCon.Connection))
-                {
-                    dbData.GetComprobanteSelected().AddPago(newPago);
-                    guiRefreshComprobantesDetallesPagos();
-                }
-            } else //Add locally...
-            {
-                dbData.GetComprobanteSelected().AddPago(newPago);
-                guiRefreshComprobantesDetallesPagos();
-            }
-        }
-
-        private void btnCMGuardarPago_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbxCMDEntidadSelected.SelectedItem is null)
-            {
-                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMGuardarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (cbxCMDTipoComprobante.SelectedItem is null)
-            {
-                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMGuardarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            if ((dbData.GetComprobanteSelected() is null) || (dbData.GetPagoSelected() is null))
-            {
-                MessageBox.Show("Contactar al programador: GetComprobanteSelected() o GetPagoSelected()  es NULL en btnCMGuardarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (dbData.GetPagoSelected().GetEntidadComercialID() != dbData.GetComprobanteSelected().GetEntidadComercialID() || dbData.GetPagoSelected().GetComprobanteID() != dbData.GetComprobanteSelected().GetID())
-            {
-                MessageBox.Show("Contactar al programador: El pago seleccionado no pertenece al comprobante seleccionado en btnCMGuardarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            DBPago pagoModificado = dbData.GetPagoSelected();
-            pagoModificado.SetFormaDePago(((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key);
-            pagoModificado.SetObservacion(txtCMPagoObservacion.Text);
-
-             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false || pagoModificado.PushToDatabase(dbCon.Connection))
-             {
-                guiRefreshComprobantesDetallesPagos();
-             }
-
-        }
-
-        private void btnCMEliminarPago_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbxCMDEntidadSelected.SelectedItem is null)
-            {
-                MessageBox.Show("Contactar al programador: lbxCMDEntidadSelected.SelectedItem NULL en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (cbxCMDTipoComprobante.SelectedItem is null)
-            {
-                MessageBox.Show("Contactar al programador: cbxCMDTipoComprobante.SelectedItem NULL en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            if ((dbData.GetComprobanteSelected() is null) || (dbData.GetPagoSelected() is null))
-            {
-                MessageBox.Show("Contactar al programador: GetComprobanteSelected() o GetPagoSelected()  es NULL en btnCMEliminarPago_Click, eso no debería pasar.", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (dbData.GetPagoSelected().GetEntidadComercialID() != dbData.GetComprobanteSelected().GetEntidadComercialID() || dbData.GetPagoSelected().GetComprobanteID() != dbData.GetComprobanteSelected().GetID())
-            {
-                MessageBox.Show("Contactar al programador: El pago seleccionado no pertenece al comprobante seleccionado en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            DBPago pagoEliminar = dbData.GetPagoSelected();
-
-            if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false || pagoEliminar.DeleteFromDatabase(dbCon.Connection))
-            {
-                dbData.GetComprobanteSelected().RemovePago(pagoEliminar);
-            }
-            guiRefreshComprobantesDetallesPagos();
-        }
-
+   
         private void lsbCMDEntidades_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox lbxSender = sender as ListBox;
@@ -1074,16 +900,6 @@ namespace SistemaEMMG_Alpha
                 dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
                 dbData.SetComprobanteSelected(newComprobante);
 
-                List<DBPago> listaPagosToAdd = dbData.GetComprobanteSelected().GetAllPagos();
-
-                foreach (DBPago pago in listaPagosToAdd)
-                {
-                    Console.WriteLine("Agregando pago...");
-                    if (pago.PushToDatabase(dbCon.Connection))
-                    {
-                        Console.WriteLine("Pago agregado...");
-                    }
-                }
                 guiComprobantesRefresh();
 
                 MessageBox.Show("¡Información agregada a la base de datos correctamente!");

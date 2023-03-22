@@ -55,10 +55,13 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select comprobante", (x) => _CMD_SelectComprobante(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
 
+            /*
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get pagos", (x) => _CMD_GetPagos(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print pagos", (x) => _CMD_PrintPagos()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select pago", (x) => _CMD_SelectPago(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make pago", (x) => _CMD_CrearPago(x)));
+            */
+
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("go back", (x) => _CMD_GoBack()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
@@ -533,6 +536,7 @@ namespace SistemaEMMG_Alpha
 
         }
 
+        /*
         private void _CMD_GetPagos(string filter)
         {
             if (_seleccion is null || !(_seleccion is DBComprobantes))
@@ -626,7 +630,7 @@ namespace SistemaEMMG_Alpha
             }
             _outputStr = $"Pago creado> {_seleccion}";
         }
-
+        */
 
         private void _CMD_ResetDatabase()
         {
@@ -647,7 +651,7 @@ namespace SistemaEMMG_Alpha
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
-                //Deleting comprobantes_pagos
+                //Deleting pagos
                 query = $"DELETE FROM {DBPago.db_table}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();

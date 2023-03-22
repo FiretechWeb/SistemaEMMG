@@ -426,39 +426,6 @@
                                         <Label Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
                                         <TextBox x:Name="txtCMDPercepcion" Grid.Column="1" VerticalAlignment="Center"></TextBox>
                                     </Grid>
-                                    <Grid Grid.Row="5">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left">Pagos:</Label>
-                                        <Grid Grid.Column="1">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="85"></ColumnDefinition>
-                                                <ColumnDefinition></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition></RowDefinition>
-                                                <RowDefinition></RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <Label Grid.Row="0" Grid.Column="0">Tipo: </Label>
-                                            <Label Grid.Row="1" Grid.Column="0">Observación:</Label>
-                                            <ComboBox x:Name="cbxCMTiposPagos" Grid.Row="0" Grid.Column="1"></ComboBox>
-                                            <TextBox x:Name="txtCMPagoObservacion" Grid.Row="1" Grid.Column="1"></TextBox>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid Grid.Row="6">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition Width="120"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <ListBox x:Name="lbxCMPagos" Grid.Column="0" Margin="5, 5, 5, 5" SelectionChanged="lbxCMPagos_SelectionChanged"></ListBox>
-                                        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Button x:Name="btnCMAgregarPago" Click="btnCMAgregarPago_Click">Insertar</Button>
-                                            <Button x:Name="btnCMGuardarPago" Click="btnCMGuardarPago_Click">Guardar</Button>
-                                            <Button x:Name="btnCMEliminarPago" Click="btnCMEliminarPago_Click">Eliminar</Button>
-                                        </StackPanel>
-                                    </Grid>
                                 </Grid>
                             </Grid>
                             <Grid Grid.Row="1">
@@ -493,7 +460,7 @@
             <Button x:Name="btnDbReconnect" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnDbReconnect_Click">Intentar conectar de nuevo</Button>
     </Grid>
     <!-- END: Error Database Connection -->
-    <Grid x:Name="developerWin" Background="#EE000000" Visibility="Visible">
+    <Grid x:Name="developerWin" Background="#EE000000" Visibility="Collapsed">
             <Grid Margin="50, 50, 50, 50">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"></RowDefinition>
