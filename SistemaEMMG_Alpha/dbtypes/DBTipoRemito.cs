@@ -9,156 +9,163 @@ using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
-    public struct FormasPagoData
+    public struct TipoRemitoData
     {
-        public FormasPagoData(string nom)
+        public TipoRemitoData(string nom)
         {
-            fp_nombre = nom;
+            ts_nombre = nom;
         }
-        public string fp_nombre { get; set; }
+        public string ts_nombre { get; set; }
 
-        public static readonly string NameOf_fp_nombre = nameof(fp_nombre);
+        public static readonly string NameOf_ts_nombre = nameof(ts_nombre);
 
-        public static FormasPagoData CreateFromReader(MySqlDataReader reader)
+        public static TipoRemitoData CreateFromReader(MySqlDataReader reader)
         {
-            return new FormasPagoData(reader.GetStringSafe(NameOf_fp_nombre));
+            return new TipoRemitoData(reader.GetStringSafe(NameOf_ts_nombre));
         }
+
         public override string ToString()
         {
-            return $"Forma: {fp_nombre}";
+            return $"Tipo: {ts_nombre}";
         }
     }
-    public class DBFormasPago : DBBaseClass, IDBase<DBFormasPago>, IDBDataType<DBFormasPago>
+    public class DBTipoRemito : DBBaseClass, IDBase<DBTipoRemito>, IDBDataType<DBTipoRemito>
     {
         ///<summary>
         ///Contains the name of the table where this element is stored at the Database.
         ///</summary>
-        public const string db_table = "formas_pago";
-        public const string NameOf_id = "fp_id";
+        public const string db_table = "tipos_remitos";
+        public const string NameOf_id = "ts_id";
         private long _id;
         private bool _shouldPush = false;
-        private FormasPagoData _data;
-        private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
+        private TipoRemitoData _data;
+        private static readonly List<DBTipoRemito> _db_tipos_remitos = new List<DBTipoRemito>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
             return $"SELECT {fieldsToGet} FROM {db_table}";
         }
-        string IDBase<DBFormasPago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
+        string IDBase<DBTipoRemito>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static List<DBFormasPago> UpdateAll(MySqlConnection conn)
+        public static List<DBTipoRemito> UpdateAll(MySqlConnection conn)
         {
-            List<DBFormasPago> returnList = new List<DBFormasPago>();
+            List<DBTipoRemito> returnList = new List<DBTipoRemito>();
             try
             {
                 string query = GetSQL_SelectQueryWithRelations("*");
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
-                _db_formas_pago.Clear();
+                _db_tipos_remitos.Clear();
 
                 while (reader.Read())
                 {
-                    _db_formas_pago.Add(new DBFormasPago(reader));
-                    returnList.Add(new DBFormasPago(reader));
+                    DBTipoRemito tipoRemito = new DBTipoRemito(reader);
+                    _db_tipos_remitos.Add(tipoRemito);
+                    returnList.Add(tipoRemito);
                 }
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de actualizar todos los tipos formas de pago. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener todos los tipos de Remitos. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+        List<DBTipoRemito> IDBDataType<DBTipoRemito>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
+
+        public static List<DBTipoRemito> GetAll()
+        {
+            List<DBTipoRemito> returnList = new List<DBTipoRemito>();
+            foreach (DBTipoRemito tipoRemito in _db_tipos_remitos)
+            {
+                returnList.Add(tipoRemito);
             }
             return returnList;
         }
 
-        List<DBFormasPago> IDBDataType<DBFormasPago>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
+        List<DBTipoRemito> IDBDataType<DBTipoRemito>.GetAll() => GetAll();
 
-        public static List<DBFormasPago> GetAll()
+        public static IReadOnlyCollection<DBTipoRemito> GetAllLocal()
         {
-            List<DBFormasPago> returnList = new List<DBFormasPago>();
-            foreach (DBFormasPago formaPago in _db_formas_pago)
-            {
-                returnList.Add(formaPago);
-            }
-            return returnList;
+            return _db_tipos_remitos.Where(x => x.IsLocal()).ToList().AsReadOnly();
         }
+        IReadOnlyCollection<DBTipoRemito> IDBDataType<DBTipoRemito>.GetAllLocal() => GetAllLocal();
 
-        List<DBFormasPago> IDBDataType<DBFormasPago>.GetAll() => GetAll();
-
-        public static IReadOnlyCollection<DBFormasPago> GetAllLocal()
+        public static DBTipoRemito GetByID(long te_id)
         {
-            return _db_formas_pago.Where(x => x.IsLocal()).ToList().AsReadOnly();
-        }
-        IReadOnlyCollection<DBFormasPago> IDBDataType<DBFormasPago>.GetAllLocal() => GetAllLocal();
-        public static DBFormasPago GetByID(long fp_id)
-        {
-            foreach (DBFormasPago formaPago in _db_formas_pago)
+            foreach (DBTipoRemito tmpTipo in _db_tipos_remitos)
             {
-                if (formaPago.GetID() == fp_id)
+                if (tmpTipo.GetID() == te_id)
                 {
-                    return formaPago;
+                    return tmpTipo;
                 }
             }
             return null;
         }
 
-        public static DBFormasPago GetByID(long fp_id, MySqlConnection conn)
+        public static DBTipoRemito GetByID(long te_id, MySqlConnection conn)
         {
-            DBFormasPago returnEnt = null;
+            DBTipoRemito returnTipoRemito = null;
             try
             {
-                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {fp_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {te_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    returnEnt = new DBFormasPago(reader);
+                    returnTipoRemito = new DBTipoRemito(reader);
                 }
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de obtener una forma de pago en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener un tipo de Remito en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            return returnEnt;
+            return returnTipoRemito;
         }
 
-        public DBFormasPago(long id, FormasPagoData newData)
+        public DBTipoRemito(long id, TipoRemitoData newData)
         {
             _id = id;
             _data = newData;
-            if (IsLocal()) //Locally created
+
+            if (IsLocal())
             {
                 _shouldPush = true;
             }
         }
 
-        public DBFormasPago(FormasPagoData newData) : this(-1, newData) { }
-        public DBFormasPago(long id, string nombre) : this(id, new FormasPagoData(nombre)) { }
+        public DBTipoRemito(TipoRemitoData newData) : this(-1, newData) { }
+        public DBTipoRemito(long id, string nombre) : this(id, new TipoRemitoData(nombre)) { }
 
-        public DBFormasPago(string nombre) : this(-1, nombre) { }
+        public DBTipoRemito(string nombre) : this(-1, nombre) { }
 
-        public DBFormasPago(MySqlConnection conn, long id)
+        public DBTipoRemito(MySqlConnection conn, long id)
         {
             try
             {
                 string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
+
                 while (reader.Read())
                 {
                     _id = id;
-                    _data = FormasPagoData.CreateFromReader(reader);
+                    _data = TipoRemitoData.CreateFromReader(reader);
                 }
+
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error en el constructor de DBFormasPago. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en el constructo de DBTipoRemito, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        public DBFormasPago(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), FormasPagoData.CreateFromReader(reader)) { }
+        public DBTipoRemito(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), TipoRemitoData.CreateFromReader(reader)) { }
+
+
         public override bool PullFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())
@@ -174,7 +181,7 @@ namespace SistemaEMMG_Alpha
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    _data = FormasPagoData.CreateFromReader(reader);
+                    _data = TipoRemitoData.CreateFromReader(reader);
                     _shouldPush = false;
                 }
                 reader.Close();
@@ -182,11 +189,10 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 wasAbleToPull = false;
-                MessageBox.Show("Error en DBFormasPago::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en DBTipoRemito::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToPull;
         }
-
         public override bool PushToDatabase(MySqlConnection conn)
         {
             if (!ShouldPush())
@@ -207,7 +213,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET {FormasPagoData.NameOf_fp_nombre} = '{_data.fp_nombre}' WHERE {NameOf_id} = {GetID()}";
+                string query = $"UPDATE {db_table} SET {TipoRemitoData.NameOf_ts_nombre} = '{_data.ts_nombre}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 _shouldPush = _shouldPush && !wasAbleToUpdate;
@@ -215,7 +221,7 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 wasAbleToUpdate = false;
-                MessageBox.Show("Error en DBFormasPago::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en DBTipoRemito::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToUpdate;
         }
@@ -225,7 +231,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({FormasPagoData.NameOf_fp_nombre}) VALUES ('{_data.fp_nombre}')";
+                string query = $"INSERT INTO {db_table} ({TipoRemitoData.NameOf_ts_nombre}) VALUES ('{_data.ts_nombre}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -237,7 +243,7 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 wasAbleToInsert = false;
-                MessageBox.Show("Error DBFormasPago::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error DBTipoRemito::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToInsert;
         }
@@ -257,7 +263,7 @@ namespace SistemaEMMG_Alpha
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBFormasPago: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBTipoRemito: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return deletedCorrectly;
         }
@@ -270,36 +276,30 @@ namespace SistemaEMMG_Alpha
                 string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error en el método DBFormasPago::ExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error en el método DBTipoRemito::ExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 existsInDB = null;
             }
             return existsInDB;
         }
+
+        public void SetName(string newName)
+        {
+            _shouldPush = _shouldPush || !_data.ts_nombre.Equals(newName);
+            _data.ts_nombre = newName;
+        }
+
+        public string GetName() => _data.ts_nombre;
+
         public override long GetID() => _id;
+
         protected override void ChangeID(long id)
         {
             _shouldPush = _shouldPush || (_id != id);
             _id = id;
         }
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-        public string GetName() => _data.fp_nombre;
-
-        public void SetName(string newName)
-        {
-            _shouldPush = _shouldPush || !_data.fp_nombre.Equals(newName);
-            _data.fp_nombre = newName;
-        }
-
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBFormasPago(-1, _data);
-        }
-
         protected override void MakeLocal()
         {
             if (GetID() >= 0)
@@ -307,27 +307,35 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
+
+        public override string ToString()
+        {
+            return $"ID: {GetID()} - {_data.ToString()}";
+        }
+
+        public override DBBaseClass GetLocalCopy()
+        {
+            return new DBTipoRemito(-1, _data);
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
         public static string PrintAll()
         {
             string str = "";
-            foreach (DBFormasPago formaPago in _db_formas_pago)
+            foreach (DBTipoRemito tipoRemito in _db_tipos_remitos)
             {
-                str += $"Forma de Pago> {formaPago}\n";
+                str += $"Tipo de Remito> {tipoRemito}\n";
             }
             return str;
         }
-        public static DBFormasPago GetRandom()
+        public static DBTipoRemito GetRandom()
         {
             Random r = new Random(Guid.NewGuid().GetHashCode());
-            return _db_formas_pago[r.Next(0, _db_formas_pago.Count)];
+            return _db_tipos_remitos[r.Next(0, _db_tipos_remitos.Count)];
         }
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - {_data.ToString()}";
-        }
-
     }
 }

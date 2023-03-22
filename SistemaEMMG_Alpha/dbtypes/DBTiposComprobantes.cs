@@ -48,22 +48,6 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBTiposComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static bool TipoComprobanteExists(string tipoComprobanteNombre, List<DBTiposComprobantes> listaTiposComprobantes)
-        {
-            foreach (DBTiposComprobantes tipoComprobante in listaTiposComprobantes)
-            {
-                if (tipoComprobanteNombre.Trim().ToLower().Equals(tipoComprobante.GetName().Trim().ToLower()))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public static bool TipoComprobanteExists(string tipoComprobanteNombre)
-        {
-            return TipoComprobanteExists(tipoComprobanteNombre, _db_tipos_comprobantes);
-        }
-
         public static List<DBTiposComprobantes> UpdateAll(MySqlConnection conn)
         {
             List<DBTiposComprobantes> returnList = new List<DBTiposComprobantes>();

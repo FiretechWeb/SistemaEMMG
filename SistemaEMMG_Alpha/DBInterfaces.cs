@@ -26,6 +26,19 @@ namespace SistemaEMMG_Alpha
         IReadOnlyCollection<T> GetAllLocal();
     }
 
+    public interface IDBRecibo<T>
+    {
+        ///<summary>
+        /// Returns the bussiness recibo ID, as in the DB, that contains the data type implementing this Interface 
+        ///</summary>
+        long GetReciboID();
+
+        ///<summary>
+        /// Returns the bussiness recibo that contains the data type implementing this Interface 
+        ///</summary>
+        T GetRecibo();
+    }
+
     public interface IDBComprobante<T>
     {
         ///<summary>

@@ -48,17 +48,6 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBTipoEntidad>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static bool TipoEntidadYaExiste(string tipoEntidadNombre, List<DBTipoEntidad> tiposEntidades)
-        {
-            foreach (DBTipoEntidad tipoEntidad in tiposEntidades)
-            {
-                if (tipoEntidadNombre.Trim().ToLower().Equals(tipoEntidad.GetName().Trim().ToLower()))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         public static List<DBTipoEntidad> UpdateAll(MySqlConnection conn)
         {
             List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();

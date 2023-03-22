@@ -34,6 +34,8 @@ namespace SistemaEMMG_Alpha
             DBTiposComprobantes.UpdateAll(conn);
             DBTipoEntidad.UpdateAll(conn);
             DBFormasPago.UpdateAll(conn);
+            DBTipoRecibo.UpdateAll(conn);
+            DBTipoRemito.UpdateAll(conn);
         }
     }
 }

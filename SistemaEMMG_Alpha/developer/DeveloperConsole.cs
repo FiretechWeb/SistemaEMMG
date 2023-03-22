@@ -211,6 +211,10 @@ namespace SistemaEMMG_Alpha
             _outputStr += DBTiposComprobantes.PrintAll();
             _outputStr += "\t:: Formas de Pago ::\n";
             _outputStr += DBFormasPago.PrintAll();
+            _outputStr += "\t:: Tipos de Remitos ::\n";
+            _outputStr += DBTipoRemito.PrintAll();
+            _outputStr += "\t:: Tipos de Recibos ::\n";
+            _outputStr += DBTipoRecibo.PrintAll();
         }
         private void _CMD_SelectCuenta(string id)
         {
@@ -684,18 +688,18 @@ namespace SistemaEMMG_Alpha
                 cmd.ExecuteNonQuery();
 
                 //Deleting tipos_recibos
-                query = $"DELETE FROM tipos_recibos";
+                query = $"DELETE FROM {DBTipoRecibo.db_table}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE tipos_recibos AUTO_INCREMENT = 1";
+                query = $"ALTER TABLE {DBTipoRecibo.db_table} AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
                 //Deleting tipos_remitos
-                query = $"DELETE FROM tipos_remitos";
+                query = $"DELETE FROM {DBTipoRemito.db_table}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE tipos_remitos AUTO_INCREMENT = 1";
+                query = $"ALTER TABLE {DBTipoRemito.db_table} AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
@@ -751,18 +755,18 @@ namespace SistemaEMMG_Alpha
             try
             {
                 //Deleting tipos_recibos
-                string query = $"DELETE FROM tipos_recibos";
+                string query = $"DELETE FROM {DBTipoRecibo.db_table}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE tipos_recibos AUTO_INCREMENT = 1";
+                query = $"ALTER TABLE {DBTipoRecibo.db_table} AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
                 //Deleting tipos_remitos
-                query = $"DELETE FROM tipos_remitos";
+                query = $"DELETE FROM {DBTipoRemito.db_table}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE tipos_remitos AUTO_INCREMENT = 1";
+                query = $"ALTER TABLE {DBTipoRemito.db_table} AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
@@ -821,6 +825,24 @@ namespace SistemaEMMG_Alpha
                 {
                     tipoEntidad.PushToDatabase(conn);
                 }
+
+                List<DBTipoRecibo> tiposRecibos = new List<DBTipoRecibo>();
+                tiposRecibos.Add(new DBTipoRecibo("X"));
+                tiposRecibos.Add(new DBTipoRecibo("A"));
+
+                foreach (DBTipoRecibo tipoRecibo in tiposRecibos)
+                {
+                    tipoRecibo.PushToDatabase(conn);
+                }
+
+                List<DBTipoRemito> tiposRemitos = new List<DBTipoRemito>();
+                tiposRemitos.Add(new DBTipoRemito("R"));
+
+                foreach (DBTipoRemito tipoRemito in tiposRemitos)
+                {
+                    tipoRemito.PushToDatabase(conn);
+                }
+
                 _outputStr = "Tipos de datos basicos generados nuevamente.";
             }
             catch (Exception ex)

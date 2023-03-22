@@ -95,6 +95,8 @@
     </ApplicationDefinition>
     <Compile Include="DBInterfaces.cs" />
     <Compile Include="DBOldMain.cs" />
+    <Compile Include="dbtypes\DBTipoRecibo.cs" />
+    <Compile Include="dbtypes\DBTipoRemito.cs" />
     <Compile Include="developer\DeveloperConsole.cs" />
     <Compile Include="SafeConvert.cs" />
     <Page Include="MainWindow.xaml">
