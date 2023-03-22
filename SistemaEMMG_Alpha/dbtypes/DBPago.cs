@@ -9,9 +9,9 @@ using System.Windows;
 
 namespace SistemaEMMG_Alpha
 {
-    public struct ComprobantePagoData
+    public struct PagoData
     {
-        public ComprobantePagoData(double importe, string obs, DateTime? fecha)
+        public PagoData(double importe, string obs, DateTime? fecha)
         {
             cp_importe = importe;
             cp_obs = obs;
@@ -25,9 +25,9 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_cp_importe = nameof(cp_importe);
         public static readonly string NameOf_cp_fecha = nameof(cp_fecha);
 
-        public static ComprobantePagoData CreateFromReader(MySqlDataReader reader)
+        public static PagoData CreateFromReader(MySqlDataReader reader)
         {
-            return new ComprobantePagoData(reader.GetDoubleSafe(NameOf_cp_importe),
+            return new PagoData(reader.GetDoubleSafe(NameOf_cp_importe),
                                             reader.GetStringSafe(NameOf_cp_obs),
                                             reader.GetDateTimeSafe(NameOf_cp_fecha));
         }
@@ -37,7 +37,7 @@ namespace SistemaEMMG_Alpha
             return $"Importe: {cp_importe} - Observación: {cp_obs} - Fecha: {cp_fecha}";
         }
     }
-    //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBPago y ComprobantePagoData
+    //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBPago y PagoData
     public class DBPago : DBBaseClass, IDBase<DBPago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
     {
         public const string db_table = "comprobantes_pagos";
@@ -48,7 +48,7 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_cp_fp_id = "cp_fp_id";
         private long _id;
         private bool _shouldPush = false;
-        private ComprobantePagoData _data;
+        private PagoData _data;
         private DBComprobantes _comprobante;
         private DBFormasPago _formaDePago;
 
@@ -221,7 +221,7 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBPago(DBComprobantes comprobante, long id, DBFormasPago formaDePago, ComprobantePagoData newData)
+        public DBPago(DBComprobantes comprobante, long id, DBFormasPago formaDePago, PagoData newData)
         {
             _id = id;
             if (formaDePago is null)
@@ -238,7 +238,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBPago(DBComprobantes comprobante, long id, long fp_id, ComprobantePagoData newData)
+        public DBPago(DBComprobantes comprobante, long id, long fp_id, PagoData newData)
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
@@ -254,7 +254,7 @@ namespace SistemaEMMG_Alpha
                 _shouldPush = true;
             }
         }
-        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData)
+        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, PagoData newData)
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
@@ -271,7 +271,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, ComprobantePagoData newData) //Directly from DB
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, PagoData newData) //Directly from DB
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id, conn);
@@ -288,20 +288,20 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBPago(DBComprobantes comprobante, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(comprobante, -1, formaPago, new ComprobantePagoData(importe, obs, fecha)) { }
-        public DBPago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBPago(DBComprobantes comprobante, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(comprobante, -1, formaPago, new PagoData(importe, obs, fecha)) { }
+        public DBPago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new PagoData(importe, obs, fecha)) { }
         public DBPago(DBComprobantes comprobante, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, -1, fp_id,  importe, obs, fecha) { }
 
-        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, id, fp_id, new PagoData(importe, obs, fecha)) { }
         public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new PagoData(importe, obs, fecha)) { }
         public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
         
         public DBPago(DBComprobantes comprobante, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
             comprobante,
             reader.GetInt64Safe(NameOf_id),
             newFormaPago,
-            ComprobantePagoData.CreateFromReader(reader)) { }
+            PagoData.CreateFromReader(reader)) { }
 
         public override bool PushToDatabase(MySqlConnection conn)
         {
@@ -336,7 +336,7 @@ namespace SistemaEMMG_Alpha
                 long new_entidad_comercial_id = -1;
                 while (reader.Read())
                 {
-                    _data = ComprobantePagoData.CreateFromReader(reader);
+                    _data = PagoData.CreateFromReader(reader);
                     new_tipo_de_pago_id = reader.GetInt64Safe(NameOf_cp_fp_id);
                     new_comprobante_id = reader.GetInt64Safe(NameOf_cp_cm_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_cp_ec_id);
@@ -369,9 +369,9 @@ namespace SistemaEMMG_Alpha
                 string fechaPago = (_data.cp_fecha.HasValue) ? $"'{((DateTime)_data.cp_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_cp_fp_id} = {_formaDePago.GetID()}, 
-                                {ComprobantePagoData.NameOf_cp_importe} = {_data.cp_importe.ToString().Replace(",", ".")}, 
-                                {ComprobantePagoData.NameOf_cp_obs} = '{_data.cp_obs}', 
-                                {ComprobantePagoData.NameOf_cp_fecha} = {fechaPago} 
+                                {PagoData.NameOf_cp_importe} = {_data.cp_importe.ToString().Replace(",", ".")}, 
+                                {PagoData.NameOf_cp_obs} = '{_data.cp_obs}', 
+                                {PagoData.NameOf_cp_fecha} = {fechaPago} 
                                 WHERE {NameOf_cp_em_id} = {GetCuentaID()} AND {NameOf_cp_ec_id} = {GetEntidadComercialID()} AND {NameOf_cp_cm_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -395,9 +395,9 @@ namespace SistemaEMMG_Alpha
                                 {NameOf_cp_ec_id}, 
                                 {NameOf_cp_cm_id}, 
                                 {NameOf_cp_fp_id}, 
-                                {ComprobantePagoData.NameOf_cp_importe}, 
-                                {ComprobantePagoData.NameOf_cp_obs}, 
-                                {ComprobantePagoData.NameOf_cp_fecha}) VALUES (
+                                {PagoData.NameOf_cp_importe}, 
+                                {PagoData.NameOf_cp_obs}, 
+                                {PagoData.NameOf_cp_fecha}) VALUES (
                                 {GetCuentaID()}, 
                                 {GetEntidadComercialID()}, 
                                 {GetComprobanteID()}, 
