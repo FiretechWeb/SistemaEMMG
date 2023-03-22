@@ -339,6 +339,7 @@ namespace SistemaEMMG_Alpha
                                 WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -375,7 +376,9 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
+                    _recibo.AddPago(this);
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {
@@ -396,6 +399,7 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
+                    _recibo.RemovePago(this);
                 }
             }
             catch (Exception ex)

@@ -55,13 +55,15 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select comprobante", (x) => _CMD_SelectComprobante(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
 
-            /*
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get recibos", (x) => _CMD_GetRecibos(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print recibos", (x) => _CMD_PrintRecibos()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select recibo", (x) => _CMD_SelectRecibo(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRecibo(x)));
+
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get pagos", (x) => _CMD_GetPagos(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print pagos", (x) => _CMD_PrintPagos()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select pago", (x) => _CMD_SelectPago(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make pago", (x) => _CMD_CrearPago(x)));
-            */
-
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("go back", (x) => _CMD_GoBack()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
@@ -344,13 +346,16 @@ namespace SistemaEMMG_Alpha
                     _seleccion = comprobante.GetEntidadComercial();
                     _outputStr += $"{_seleccion}";
                     break;
-                /*
-                case DBPago pago:
-                    _outputStr = "¡Pago deseleccionada!. Ahora la seleccion es el comprobante: \n";
-                    _seleccion = pago.GetComprobante();
+                case DBRecibo recibo:
+                    _outputStr = "¡Recibo deseleccionado!. Ahora la seleccion es la entidad comercial: \n";
+                    _seleccion = recibo.GetEntidadComercial();
                     _outputStr += $"{_seleccion}";
                     break;
-                */
+               case DBPago pago:
+                        _outputStr = "¡Pago deseleccionada!. Ahora la seleccion es el recibo: \n";
+                        _seleccion = pago.GetRecibo();
+                        _outputStr += $"{_seleccion}";
+               break;
             }
         }
 
@@ -542,47 +547,139 @@ namespace SistemaEMMG_Alpha
 
         }
 
-        /*
-        private void _CMD_GetPagos(string filter)
+
+        private void _CMD_GetRecibos(string filter)
         {
-            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            if (_seleccion is null || !(_seleccion is DBEntidades))
             {
-                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
                 return;
             }
             MySqlConnection conn = DBConnection.Instance().Connection;
-            DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
-            comprobanteSeleccionado.GetAllPagos(conn);
+            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
+            entidadComercialSeleccionada.GetAllRecibos(conn);
+            _outputStr = "\t:: Recibos ::\n";
+            _outputStr += entidadComercialSeleccionada.PrintAllRecibos();
+        }
+        private void _CMD_PrintRecibos()
+        {
+            if (_seleccion is null || !(_seleccion is DBEntidades))
+            {
+                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                return;
+            }
+            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
+            _outputStr = "\t:: Recibos ::\n";
+            _outputStr += entidadComercialSeleccionada.PrintAllRecibos();
+        }
+
+        private void _CMD_CrearRecibo(string args)
+        {
+            if (_seleccion is null || !(_seleccion is DBEntidades))
+            {
+                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                return;
+            }
+            if (args.Trim().ToLower().Equals("random"))
+            {
+                _seleccion = DBRecibo.GenerateRandom((DBEntidades)_seleccion);
+            }
+            else
+            {
+                string[] parametros = args.Split(',');
+                if (parametros.Length < 3 || parametros.Length > 4)
+                {
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Recibo, Fecha del Recibo, Numero de Recibo, Observación=''";
+                    return;
+                }
+                DBTipoRecibo tipoRecibo = DBTipoRecibo.GetByID(Convert.ToInt64(parametros[0]));
+                if (tipoRecibo is null)
+                {
+                    _outputStr = "ID del tipo de recibo seleccionado inválido, vea los tipos de recibos válidos:\n";
+                    _outputStr += DBTipoRecibo.PrintAll();
+                    return;
+                }
+
+                DateTime fechaEmitido = new DateTime();
+                DateTime? fechaFinal = null;
+                if (DateTime.TryParse(parametros[1], out fechaEmitido))
+                {
+                    fechaFinal = fechaEmitido;
+                }
+
+                switch (parametros.Length)
+                {
+                    case 3:
+                        _seleccion = new DBRecibo((DBEntidades)_seleccion, tipoRecibo, fechaFinal, parametros[2]);
+                        break;
+                    case 4:
+                        _seleccion = new DBRecibo((DBEntidades)_seleccion, tipoRecibo, fechaFinal, parametros[2], parametros[3]);
+                        break;
+                }
+            }
+            _outputStr = $"Recibo creado> {_seleccion}";
+        }
+
+        private void _CMD_SelectRecibo(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBEntidades))
+            {
+                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                return;
+            }
+            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
+            DBRecibo reciboSeleccionado = entidadComercialSeleccionada.GetReciboByID(Convert.ToInt64(id.Trim()));
+
+            if (reciboSeleccionado is null)
+            {
+                _outputStr = "No existe un recibo en esta entidad comercial con el ID introducido.";
+                return;
+            }
+            _seleccion = reciboSeleccionado;
+            _outputStr = $"Recibo seleccionado> {_seleccion}";
+
+        }
+
+        private void _CMD_GetPagos(string filter)
+        {
+            if (_seleccion is null || !(_seleccion is DBRecibo))
+            {
+                _outputStr = "No hay un recibo seleccionado. Seleccione un recibo primero.";
+                return;
+            }
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
+            reciboSeleccionado.GetAllPagos(conn);
             _outputStr = "\t:: Pagos ::\n";
-            _outputStr += comprobanteSeleccionado.PrintAllPagos();
+            _outputStr += reciboSeleccionado.PrintAllPagos();
         }
 
         private void _CMD_PrintPagos()
         {
-            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            if (_seleccion is null || !(_seleccion is DBRecibo))
             {
-                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                _outputStr = "No hay un recibo seleccionado. Seleccione un recibo primero.";
                 return;
             }
-            DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
+            DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
             _outputStr = "\t:: Pagos ::\n";
-            _outputStr += comprobanteSeleccionado.PrintAllPagos();
+            _outputStr += reciboSeleccionado.PrintAllPagos();
         }
 
         private void _CMD_SelectPago(string id)
         {
-            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            if (_seleccion is null || !(_seleccion is DBRecibo))
             {
-                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                _outputStr = "No hay un recibo seleccionado. Seleccione un recibo primero.";
                 return;
             }
-            DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
+            DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
 
-            DBPago pagoSeleccionado = comprobanteSeleccionado.GetPagoByID(Convert.ToInt64(id.Trim()));
+            DBPago pagoSeleccionado = reciboSeleccionado.GetPagoByID(Convert.ToInt64(id.Trim()));
 
             if (pagoSeleccionado is null)
             {
-                _outputStr = "No existe un pago en este comprobante con el ID introducido.";
+                _outputStr = "No existe un pago en este recibo con el ID introducido.";
                 return;
             }
             _seleccion = pagoSeleccionado;
@@ -593,15 +690,15 @@ namespace SistemaEMMG_Alpha
 
         private void _CMD_CrearPago(string args)
         {
-            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            if (_seleccion is null || !(_seleccion is DBRecibo))
             {
-                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                _outputStr = "No hay un recibo seleccionado. Seleccione un recibo primero.";
                 return;
             }
 
             if (args.Trim().ToLower().Equals("random"))
             {
-                _seleccion = DBPago.GenerateRandom((DBComprobantes)_seleccion);
+                _seleccion = DBPago.GenerateRandom((DBRecibo)_seleccion);
             }
             else
             {
@@ -621,7 +718,7 @@ namespace SistemaEMMG_Alpha
                 switch (parametros.Length)
                 {
                     case 3:
-                        _seleccion = new DBPago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2]);
+                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2]);
                         break;
                     case 4:
                         DateTime fechaPago = new DateTime();
@@ -630,13 +727,13 @@ namespace SistemaEMMG_Alpha
                         {
                             fechaFinal = fechaPago;
                         }
-                        _seleccion = new DBPago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2], fechaFinal);
+                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2], fechaFinal);
                         break;
                 }
             }
             _outputStr = $"Pago creado> {_seleccion}";
         }
-        */
+ 
 
         private void _CMD_ResetDatabase()
         {

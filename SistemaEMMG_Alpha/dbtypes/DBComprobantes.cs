@@ -711,7 +711,7 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return $"ID: {GetID()} - Tipo Comprobante: {_tipoComprobante.GetName()} - {_data.ToString()}";
+            return $"ID: {GetID()} - Tipo: {_tipoComprobante.GetName()} - {_data.ToString()}";
         }
 
         public double GetTotal()

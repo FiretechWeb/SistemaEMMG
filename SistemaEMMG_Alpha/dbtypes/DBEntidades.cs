@@ -522,6 +522,15 @@ namespace SistemaEMMG_Alpha
             }
             return str;
         }
+        public string PrintAllRecibos()
+        {
+            string str = "";
+            foreach (DBRecibo comprobante in _db_recibos)
+            {
+                str += $"Recibo> {comprobante}\n";
+            }
+            return str;
+        }
 
 
         //RANDOM Generator

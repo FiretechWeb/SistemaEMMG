@@ -273,7 +273,7 @@ namespace SistemaEMMG_Alpha
             DBTipoRecibo newTipo,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             entidadComercial,
             -1,
@@ -288,7 +288,7 @@ namespace SistemaEMMG_Alpha
             long id,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             entidadComercial,
             id,
@@ -299,10 +299,9 @@ namespace SistemaEMMG_Alpha
         public DBRecibo(
             DBEntidades entidadComercial,
             long tr_id,
-            bool emitido,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             entidadComercial,
             -1,
@@ -317,7 +316,7 @@ namespace SistemaEMMG_Alpha
             long id,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             cuentaSeleccioanda,
             id,
@@ -332,7 +331,7 @@ namespace SistemaEMMG_Alpha
             DBTipoRecibo newTipo,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             cuentaSeleccioanda,
             -1,
@@ -349,7 +348,7 @@ namespace SistemaEMMG_Alpha
             long id,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             cuentaSeleccioanda,
             conn,
@@ -366,7 +365,7 @@ namespace SistemaEMMG_Alpha
             DBTipoRecibo newTipo,
             DateTime? fecha,
             string numero,
-            string obs
+            string obs=""
         ) : this(
             cuentaSeleccioanda,
             conn,
@@ -476,7 +475,7 @@ namespace SistemaEMMG_Alpha
                                 {NameOf_rc_tr_id},
                                 {ReciboData.NameOf_rc_fecha},
                                 {ReciboData.NameOf_rc_nro}, 
-                                {ReciboData.NameOf_rc_obs} 
+                                {ReciboData.NameOf_rc_obs} ) 
                                 VALUES (
                                 {_entidadComercial.GetCuentaID()},
                                 {_entidadComercial.GetID()},
@@ -563,7 +562,7 @@ namespace SistemaEMMG_Alpha
             return DBPago.GetByID(_db_pagos, this, pg_id);
         }
 
-        public bool AddNewPago(DBPago newPago)
+        public bool AddPago(DBPago newPago)
         {
             if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || GetID() != newPago.GetReciboID())
             {
@@ -576,7 +575,7 @@ namespace SistemaEMMG_Alpha
             _db_pagos.Add(newPago);
             return true;
         }
-        public void RemoveRecibo(DBPago entRemove)
+        public void RemovePago(DBPago entRemove)
         {
             _db_pagos.Remove(entRemove);
         }
@@ -667,13 +666,22 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString()
         {
-            return $"ID: {GetID()} - Tipo Recibo: {_tipoRecibo.GetName()} - {_data.ToString()}";
+            return $"ID: {GetID()} - Tipo: {_tipoRecibo.GetName()} - {_data.ToString()}";
         }
 
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
 
+        public string PrintAllPagos()
+        {
+            string str = "";
+            foreach (DBPago pago in _db_pagos)
+            {
+                str += $"Pago> {pago}\n";
+            }
+            return str;
+        }
 
         public static DBRecibo GenerateRandom(DBEntidades entidadComercial)
         {
