@@ -55,6 +55,7 @@ namespace SistemaEMMG_Alpha
     public class DBComprobantes : DBBaseClass, IDBase<DBComprobantes>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
     {
         public const string db_table = "comprobantes";
+        public const string db_relation_table = "recibos_comprobantes";
         public const string NameOf_cm_em_id = "cm_em_id";
         public const string NameOf_cm_ec_id = "cm_ec_id";
         public const string NameOf_cm_tc_id = "cm_tc_id";
@@ -80,6 +81,36 @@ namespace SistemaEMMG_Alpha
                 JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id}";
         }
         string IDBase<DBComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
+
+        public static List<DBComprobantes> GetAll(MySqlConnection conn, DBRecibo recibo)
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            try
+            {
+                string tc_table = DBTiposComprobantes.db_table;
+                string rc_table = DBRecibo.db_table;
+                string query = $@"SELECT * FROM {db_relation_table} 
+                JOIN {db_table} ON {db_relation_table}.rp_em_id = {db_table}.{NameOf_cm_em_id} AND {db_relation_table}.rp_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_relation_table}.rp_cm_id = {db_table}.{NameOf_id} 
+                JOIN {rc_table} ON {db_relation_table}.rp_em_id = {rc_table}.{DBRecibo.NameOf_rc_em_id} AND {db_relation_table}.rp_ec_id = {rc_table}.{DBRecibo.NameOf_rc_ec_id} AND {db_relation_table}.rp_rc_id = {rc_table}.{NameOf_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {db_table}.{NameOf_cm_tc_id} 
+                WHERE rp_em_id = {recibo.GetCuentaID()} AND rp_ec_id = {recibo.GetEntidadComercialID()} AND rp_rc_id = {recibo.GetID()}";
+                //string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBComprobantes(recibo.GetEntidadComercial(), new DBTiposComprobantes(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
 
         public static List<DBComprobantes> GetAll(MySqlConnection conn, DBCuenta cuenta)
         {

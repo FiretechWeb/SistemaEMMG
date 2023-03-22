@@ -39,6 +39,7 @@ namespace SistemaEMMG_Alpha
     public class DBRecibo : DBBaseClass, IDBase<DBRecibo>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
     {
         public const string db_table = "recibos";
+        public const string db_relation_table = "recibos_comprobantes";
         public const string NameOf_rc_em_id = "rc_em_id";
         public const string NameOf_rc_ec_id = "rc_ec_id";
         public const string NameOf_rc_tr_id = "rc_tr_id";
@@ -52,6 +53,7 @@ namespace SistemaEMMG_Alpha
         private ReciboData _data;
         private DBTipoRecibo _tipoRecibo = null;
         private readonly List<DBPago> _db_pagos = new List<DBPago>();
+        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -108,6 +110,35 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 MessageBox.Show("Error al tratar de obtener todos los Recibos de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static List<DBRecibo> GetAll(MySqlConnection conn, DBComprobantes comprobante)
+        {
+            List<DBRecibo> returnList = new List<DBRecibo>();
+            try
+            {
+                string tr_table = DBTipoRecibo.db_table;
+                string cm_table = DBComprobantes.db_table;
+                string query = $@"SELECT * FROM {db_relation_table} 
+                JOIN {db_table} ON {db_relation_table}.rp_em_id = {db_table}.{NameOf_rc_em_id} AND {db_relation_table}.rp_ec_id = {db_table}.{NameOf_rc_ec_id} AND {db_relation_table}.rp_rc_id = {db_table}.{NameOf_id} 
+                JOIN {cm_table} ON {db_relation_table}.rp_em_id = {cm_table}.{DBComprobantes.NameOf_cm_em_id} AND {db_relation_table}.rp_ec_id = {cm_table}.{DBComprobantes.NameOf_cm_ec_id} AND {db_relation_table}.rp_cm_id = {cm_table}.{DBComprobantes.NameOf_id} 
+                JOIN {tr_table} ON {tr_table}.{DBTipoRecibo.NameOf_id} = {db_table}.{NameOf_rc_tr_id} 
+                WHERE rp_em_id = {comprobante.GetCuentaID()} AND rp_ec_id = {comprobante.GetEntidadComercialID()} AND rp_cm_id = {comprobante.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBRecibo(comprobante.GetEntidadComercial(), new DBTipoRecibo(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los recibos de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnList;
         }
