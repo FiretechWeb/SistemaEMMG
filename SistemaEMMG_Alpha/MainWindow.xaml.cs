@@ -732,7 +732,7 @@ namespace SistemaEMMG_Alpha
             {
                 if (selectedComprobante.InsertIntoToDatabase(dbCon.Connection))
                 {
-                    DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);
+                    //DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id); //Here DBComprobantes should handle this automatically.
                     selectedComprobante.GetEntidadComercial().AddNewComprobante(selectedComprobante);
                 }
             } else
@@ -857,7 +857,7 @@ namespace SistemaEMMG_Alpha
                 if (selectedComprobante.InsertIntoToDatabase(dbCon.Connection))
                 {
                     dataUpdateDBSuccess = true;
-                    DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);
+                    //DBComprobantes.RemoveFromDB(dbCon.Connection, dbData.GetCurrentAccount(), cm_ec_id, cm_id);  //Here DBComprobantes should handle this automatically.
                     selectedComprobante.GetEntidadComercial().AddNewComprobante(selectedComprobante);
                 }
             }

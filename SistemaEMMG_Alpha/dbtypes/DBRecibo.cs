@@ -1,0 +1,584 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using MySql.Data;
+using MySql.Data.MySqlClient;
+using System.Windows;
+
+namespace SistemaEMMG_Alpha
+{
+    public struct ReciboData
+    {
+        public ReciboData(DateTime? fecha, string numero, string obs)
+        {
+            rc_fecha = fecha;
+            rc_nro = numero;
+            rc_obs = obs;
+        }
+        public DateTime? rc_fecha { get; set; }
+        public string rc_nro { get; set; }
+        public string rc_obs { get; set; }
+
+        public static readonly string NameOf_rc_fecha = nameof(rc_fecha);
+        public static readonly string NameOf_rc_nro = nameof(rc_nro);
+        public static readonly string NameOf_rc_obs = nameof(rc_obs);
+
+        public static ReciboData CreateFromReader(MySqlDataReader reader)
+        {
+            return new ReciboData(reader.GetDateTimeSafe(NameOf_rc_fecha),
+                                        reader.GetStringSafe(NameOf_rc_nro),
+                                        reader.GetStringSafe(NameOf_rc_obs));
+        }
+        public override string ToString()
+        {
+            return $"Fecha: {rc_fecha} - Número: {rc_nro} - Observación: {rc_obs}";
+        }
+    }
+    public class DBRecibo : DBBaseClass, IDBase<DBRecibo>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
+    {
+        public const string db_table = "recibos";
+        public const string NameOf_rc_em_id = "rc_em_id";
+        public const string NameOf_rc_ec_id = "rc_ec_id";
+        public const string NameOf_rc_tr_id = "rc_tr_id";
+        public const string NameOf_id = "rc_id";
+        ///<summary>
+        ///Commercial entity associated with this business receipt.
+        ///</summary>
+        private DBEntidades _entidadComercial; //this can change actually... (Maybe the DB's design it's flawed... it is what it is LOL)
+        private long _id;
+        private bool _shouldPush = false;
+        private ReciboData _data;
+        private DBTipoRecibo _tipoRecibo = null;
+
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
+        {
+            string te_table = DBTipoEntidad.db_table;
+            string ec_table = DBEntidades.db_table;
+            string tc_table = DBTipoRecibo.db_table;
+
+            return $@"SELECT {fieldsToGet} FROM {db_table} 
+                JOIN {tc_table} ON {tc_table}.{DBTipoRecibo.NameOf_id} = {db_table}.{NameOf_rc_tr_id} 
+                JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_rc_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_rc_em_id} 
+                JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id}";
+        }
+        string IDBase<DBRecibo>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
+
+        public static List<DBRecibo> GetAll(MySqlConnection conn, DBCuenta cuenta)
+        {
+            List<DBRecibo> returnList = new List<DBRecibo>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rc_em_id} = {cuenta.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBRecibo(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTipoRecibo(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los Recibos de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static List<DBRecibo> GetAll(MySqlConnection conn, DBEntidades entidadComercial)
+        {
+            List<DBRecibo> returnList = new List<DBRecibo>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rc_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {entidadComercial.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los Recibos de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static DBRecibo GetByID(MySqlConnection conn, DBEntidades entidadComercial, long id)
+        {
+            DBRecibo returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rc_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {entidadComercial.GetID()} AND {NameOf_id} = {id}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnEnt = new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los Recibos de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+        public static DBRecibo GetByID(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id)
+        {
+            return GetByID(conn, DBEntidades.GetByID(conn, cuenta, ec_id), id);
+        }
+
+        public static DBRecibo GetByID(List<DBRecibo> listaRecibos, DBCuenta cuenta, long ec_id, long id)
+        {
+            foreach (DBRecibo Recibo in listaRecibos)
+            {
+                if (Recibo.GetID() == id && Recibo.GetEntidadComercialID() == ec_id && Recibo.GetCuentaID() == cuenta.GetID())
+                {
+                    return Recibo;
+                }
+            }
+            return null;
+        }
+
+        public static DBRecibo GetByID(List<DBRecibo> listaRecibos, DBEntidades entidadComercial, long id)
+        {
+            foreach (DBRecibo Recibo in listaRecibos)
+            {
+                if (Recibo.GetID() == id && Recibo.GetEntidadComercialID() == entidadComercial.GetID() && Recibo.GetCuentaID() == entidadComercial.GetCuentaID())
+                {
+                    return Recibo;
+                }
+            }
+
+            return null;
+        }
+
+        public static bool CheckIfExistsInList(List<DBRecibo> listaRecibos, DBRecibo ent)
+        {
+            foreach (DBRecibo Recibo in listaRecibos)
+            {
+                if (Recibo.GetCuentaID() == ent.GetCuentaID() && Recibo.GetEntidadComercialID() == ent.GetEntidadComercialID() && Recibo.GetID() == ent.GetID())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public DBRecibo(DBEntidades entidadComercial, long id, DBTipoRecibo newTipo, ReciboData newData)
+        {
+            _id = id;
+            _entidadComercial = entidadComercial;
+            _tipoRecibo = newTipo;
+            _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
+
+        public DBRecibo(DBEntidades entidadComercial, long id, long tr_id, ReciboData newData)
+        {
+            _id = id;
+            _entidadComercial = entidadComercial;
+            _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
+            _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
+
+        public DBRecibo(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTipoRecibo newTipo, ReciboData newData)
+        {
+            _id = id;
+            _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
+            _tipoRecibo = newTipo;
+            _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
+
+        public DBRecibo(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tr_id, ReciboData newData)
+        {
+            _id = id;
+            _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
+            _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
+            _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
+        public DBRecibo(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tr_id, ReciboData newData)
+        {
+            _id = id;
+            _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
+            _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
+            _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
+
+        public DBRecibo(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTipoRecibo newTipo, ReciboData newData)
+        {
+            _id = id;
+            _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
+            _tipoRecibo = newTipo;
+            _data = newData;
+
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
+
+        public DBRecibo(
+            DBEntidades entidadComercial,
+            DBTipoRecibo newTipo,
+            long id,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            entidadComercial,
+            id,
+            newTipo,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+
+        public DBRecibo(
+            DBEntidades entidadComercial,
+            DBTipoRecibo newTipo,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            entidadComercial,
+            -1,
+            newTipo,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+
+        public DBRecibo(
+            DBEntidades entidadComercial,
+            long tr_id,
+            long id,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            entidadComercial,
+            id,
+            tr_id,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+        public DBRecibo(
+            DBEntidades entidadComercial,
+            long tr_id,
+            bool emitido,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            entidadComercial,
+            -1,
+            tr_id,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+        public DBRecibo(
+            DBCuenta cuentaSeleccioanda,
+            long ec_id,
+            DBTipoRecibo newTipo,
+            long id,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            cuentaSeleccioanda,
+            id,
+            ec_id,
+            newTipo,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+        public DBRecibo(
+            DBCuenta cuentaSeleccioanda,
+            long ec_id,
+            DBTipoRecibo newTipo,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            cuentaSeleccioanda,
+            -1,
+            ec_id,
+            newTipo,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+        public DBRecibo(
+            DBCuenta cuentaSeleccioanda,
+            MySqlConnection conn,
+            long ec_id,
+            DBTipoRecibo newTipo,
+            long id,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            cuentaSeleccioanda,
+            conn,
+            id,
+            ec_id,
+            newTipo,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+        public DBRecibo(
+            DBCuenta cuentaSeleccioanda,
+            MySqlConnection conn,
+            long ec_id,
+            DBTipoRecibo newTipo,
+            DateTime? fecha,
+            string numero,
+            string obs
+        ) : this(
+            cuentaSeleccioanda,
+            conn,
+            -1,
+            ec_id,
+            newTipo,
+            new ReciboData(fecha, numero, obs)
+        )
+        { }
+        public DBRecibo(DBEntidades entidadComercial, DBTipoRecibo newTipo, MySqlDataReader reader) : this(
+            entidadComercial,
+            reader.GetInt64Safe(NameOf_id),
+            newTipo,
+            ReciboData.CreateFromReader(reader))
+        { }
+
+        public override bool PushToDatabase(MySqlConnection conn)
+        {
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
+            if (existsInDB is null) //error with DB...
+            {
+                return false;
+            }
+
+            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
+
+        public override bool PullFromDatabase(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+
+            bool wasAbleToPull = false;
+            try
+            {
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND {NameOf_rc_ec_id} = {GetEntidadComercialID()} AND {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                long new_tipo_recibo_id = -1;
+                long new_entidad_comercial_id = -1;
+                while (reader.Read())
+                {
+                    _data = ReciboData.CreateFromReader(reader);
+                    new_tipo_recibo_id = reader.GetInt64Safe(NameOf_rc_tr_id);
+                    new_entidad_comercial_id = reader.GetInt64Safe(NameOf_rc_ec_id);
+                    _shouldPush = false;
+                }
+                reader.Close();
+
+                if (new_tipo_recibo_id != -1)
+                {
+                    _tipoRecibo = DBTipoRecibo.GetByID(new_tipo_recibo_id, conn);
+                }
+                if (new_entidad_comercial_id != -1)
+                {
+                    _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), new_entidad_comercial_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                wasAbleToPull = false;
+                MessageBox.Show("Error en DBCuenta::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToPull;
+        }
+
+        public override bool UpdateToDatabase(MySqlConnection conn)
+        {
+            bool wasAbleToUpdate = false;
+            try
+            {
+                string fechaEmitido = (_data.rc_fecha.HasValue) ? $"'{((DateTime)_data.rc_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
+                string query = $@"UPDATE {db_table} SET 
+                                {NameOf_rc_tr_id} = {_tipoRecibo.GetID()}, 
+                                {ReciboData.NameOf_rc_fecha} = {fechaEmitido}, 
+                                {ReciboData.NameOf_rc_nro} = '{_data.rc_nro}', 
+                                {ReciboData.NameOf_rc_obs} = '{_data.rc_obs}' 
+                                WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                wasAbleToUpdate = false;
+                MessageBox.Show("Error en DBRecibo::UpdateToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToUpdate;
+        }
+
+        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        {
+            bool wasAbleToInsert = false;
+            try
+            {
+                string fechaEmitido = (_data.rc_fecha.HasValue) ? $"'{((DateTime)_data.rc_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
+
+                string query = $@"INSERT INTO {db_table} (
+                                {NameOf_rc_em_id},
+                                {NameOf_rc_ec_id},
+                                {NameOf_rc_tr_id},
+                                {ReciboData.NameOf_rc_fecha},
+                                {ReciboData.NameOf_rc_nro}, 
+                                {ReciboData.NameOf_rc_obs} 
+                                VALUES (
+                                {_entidadComercial.GetCuentaID()},
+                                {_entidadComercial.GetID()},
+                                {_tipoRecibo.GetID()},
+                                {fechaEmitido},
+                                '{_data.rc_nro}',
+                                '{_data.rc_obs}')";
+
+                var cmd = new MySqlCommand(query, conn);
+                wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
+                if (wasAbleToInsert)
+                {
+                    ChangeID(cmd.LastInsertedId);
+                    //_entidadComercial.AddNewRecibo(this); //safe to add to since now it belongs to de DB.
+                }
+            }
+            catch (Exception ex)
+            {
+                wasAbleToInsert = false;
+                MessageBox.Show("Error DBRecibo::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return wasAbleToInsert;
+        }
+
+        public override bool DeleteFromDatabase(MySqlConnection conn)
+        {
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    MakeLocal();
+                    //_entidadComercial.RemoveRecibo(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRecibo: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return deletedCorrectly;
+        }
+        public override bool? ExistsInDatabase(MySqlConnection conn)
+        {
+            bool? existsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBRecibo::ExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                existsInDB = null;
+            }
+            return existsInDB;
+        }
+        public override bool ShouldPush() => _shouldPush;
+        public override bool IsLocal() => _id < 0;
+        protected override void ChangeID(long id) => _id = id;
+        public override long GetID() => _id;
+        public long GetEntidadComercialID() => _entidadComercial.GetID();
+
+        ///<summary>
+        ///Returns a reference to the Bussiness Entity that contains this business receipt.
+        ///</summary>
+        public DBEntidades GetEntidadComercial() => _entidadComercial;
+        public long GetCuentaID() => _entidadComercial.GetCuentaID();
+
+        public DBCuenta GetCuenta() => _entidadComercial.GetCuenta();
+
+        public void SetEntidadComercial(DBEntidades newEntidadComercial) => _entidadComercial = newEntidadComercial;
+        public void SetEntidadComercial(long ec_id) => _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
+        public void SetEntidadComercial(long ec_id, MySqlConnection conn) => _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
+        public void SetTipoRecibo(DBTipoRecibo newType) => _tipoRecibo = newType;
+        public void SetTipoRecibo(long tr_id) => _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
+        public void SetTipoRecibo(long tr_id, MySqlConnection conn) => _tipoRecibo = DBTipoRecibo.GetByID(tr_id, conn);
+
+        public DateTime? GetFecha() => _data.rc_fecha;
+
+        protected override void MakeLocal()
+        {
+            if (GetID() >= 0)
+            {
+                ChangeID(-1);
+            }
+        }
+
+        public override DBBaseClass GetLocalCopy()
+        {
+            return new DBRecibo(_entidadComercial, -1, _tipoRecibo, _data);
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {GetID()} - Tipo Recibo: {_tipoRecibo.GetName()} - {_data.ToString()}";
+        }
+
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+
+    }
+}

@@ -81,24 +81,6 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static bool RemoveFromDB(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id)
-        {
-            bool deletedCorrectly = false;
-            try
-            {
-                string query = $"DELETE FROM {db_table}  WHERE {NameOf_cm_em_id} = {cuenta.GetID()} AND {NameOf_cm_ec_id} = {ec_id} AND {NameOf_id} = {id}";
-                var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                deletedCorrectly = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("<static> Error tratando de eliminar una fila de la base de datos en DBComprobantes: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return deletedCorrectly;
-        }
-
         public static List<DBComprobantes> GetAll(MySqlConnection conn, DBCuenta cuenta)
         {
             List<DBComprobantes> returnList = new List<DBComprobantes>();
@@ -519,6 +501,7 @@ namespace SistemaEMMG_Alpha
                                 WHERE {NameOf_cm_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -565,6 +548,7 @@ namespace SistemaEMMG_Alpha
                     ChangeID(cmd.LastInsertedId);
                     _entidadComercial.AddNewComprobante(this); //safe to add to since now it belongs to de DB.
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {
@@ -612,7 +596,11 @@ namespace SistemaEMMG_Alpha
         }
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
-        protected override void ChangeID(long id) => _id = id;
+        protected override void ChangeID(long id)
+        {
+            _shouldPush = _shouldPush || (_id != id);
+            _id = id;
+        }
         public override long GetID() => _id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
@@ -642,19 +630,71 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         public bool IsEmitido() => _data.cm_emitido;
 
-        public void SetEntidadComercial(DBEntidades newEntidadComercial) => _entidadComercial = newEntidadComercial;
-        public void SetEntidadComercial(long ec_id) => _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
-        public void SetEntidadComercial(long ec_id, MySqlConnection conn) => _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
-        public void SetTipoComprobante(DBTiposComprobantes newType) => _tipoComprobante = newType;
-        public void SetTipoComprobante(long tc_id) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
-        public void SetTipoComprobante(long tc_id, MySqlConnection conn) => _tipoComprobante = DBTiposComprobantes.GetByID(tc_id, conn);
-        public void SetNumeroComprobante(string numeroCom) => _data.cm_numero = numeroCom;
-        public void SetFechaEmitido(DateTime? newFecha) => _data.cm_fecha = newFecha;
-        public void SetGravado(double gravado) => _data.cm_gravado = gravado;
-        public void SetIVA(double IVA) => _data.cm_iva = IVA;
-        public void SetNoGravado(double no_gravado) => _data.cm_no_gravado = no_gravado;
-        public void SetPercepcion(double percepcion) => _data.cm_percepcion = percepcion;
-        public void SetEmitido(bool esEmitido) => _data.cm_emitido = esEmitido;
+        public void SetEntidadComercial(DBEntidades newEntidadComercial)
+        {
+            _shouldPush = _shouldPush || (_entidadComercial != newEntidadComercial);
+            _entidadComercial = newEntidadComercial;
+        }
+        public void SetEntidadComercial(long ec_id)
+        {
+            _shouldPush = _shouldPush || (ec_id != GetEntidadComercialID());
+            _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
+        }
+        public void SetEntidadComercial(long ec_id, MySqlConnection conn)
+        {
+            _shouldPush = _shouldPush || (ec_id != GetEntidadComercialID());
+            _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
+        }
+        public void SetTipoComprobante(DBTiposComprobantes newType)
+        {
+            _shouldPush = _shouldPush || (_tipoComprobante != newType);
+            _tipoComprobante = newType;
+        }
+        public void SetTipoComprobante(long tc_id)
+        {
+            _shouldPush = _shouldPush || (tc_id != _tipoComprobante.GetID());
+            _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
+        }
+        public void SetTipoComprobante(long tc_id, MySqlConnection conn)
+        {
+            _shouldPush = _shouldPush || (tc_id != _tipoComprobante.GetID());
+            _tipoComprobante = DBTiposComprobantes.GetByID(tc_id, conn);
+        }
+        public void SetNumeroComprobante(string numeroCom)
+        {
+            _shouldPush = _shouldPush || !_data.cm_numero.Equals(numeroCom);
+            _data.cm_numero = numeroCom;
+        }
+        public void SetFechaEmitido(DateTime? newFecha)
+        {
+            _shouldPush = _shouldPush || (newFecha != _data.cm_fecha);
+            _data.cm_fecha = newFecha;
+        }
+        public void SetGravado(double gravado)
+        {
+            _shouldPush = _shouldPush || (gravado != _data.cm_gravado);
+            _data.cm_gravado = gravado;
+        }
+        public void SetIVA(double IVA)
+        {
+            _shouldPush = _shouldPush || (IVA != _data.cm_iva);
+            _data.cm_iva = IVA;
+        }
+        public void SetNoGravado(double no_gravado)
+        {
+            _shouldPush = _shouldPush || (no_gravado != _data.cm_no_gravado);
+            _data.cm_no_gravado = no_gravado;
+        }
+        public void SetPercepcion(double percepcion)
+        {
+            _shouldPush = _shouldPush || (percepcion != _data.cm_percepcion);
+            _data.cm_percepcion = percepcion;
+        }
+        public void SetEmitido(bool esEmitido)
+        {
+            _shouldPush = _shouldPush || (esEmitido != _data.cm_emitido);
+            _data.cm_emitido = esEmitido;
+        }
 
         protected override void MakeLocal()
         {

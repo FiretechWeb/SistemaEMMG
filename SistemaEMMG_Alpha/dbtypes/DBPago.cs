@@ -69,24 +69,6 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBPago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static bool RemoveFromDB(MySqlConnection conn, DBCuenta cuenta, long ec_id, long cm_id, long id)
-        {
-            bool deletedCorrectly = false;
-            try
-            {
-                string query = $"DELETE FROM {db_table}  WHERE {NameOf_pg_em_id} = {cuenta.GetID()} AND {NameOf_pg_ec_id} = {ec_id} AND {NameOf_pg_rc_id} = {cm_id} AND {NameOf_id} = {id}";
-                var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                deletedCorrectly = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("<static> Error tratando de eliminar una fila de la base de datos en DBPago: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return deletedCorrectly;
-        }
-
         public static List<DBPago> GetAll(MySqlConnection conn, DBComprobantes comprobante)
         {
             List<DBPago> returnList = new List<DBPago>();

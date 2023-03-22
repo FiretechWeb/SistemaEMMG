@@ -69,7 +69,7 @@ namespace SistemaEMMG_Alpha
         }
         ///<summary>
         ///Process an input string and retrieves the result.
-        ///</summary
+        ///</summary>
         public string ProcessInput(string input)
         {
             bool commandNotFound = true;
