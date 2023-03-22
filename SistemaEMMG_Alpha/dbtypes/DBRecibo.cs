@@ -707,6 +707,10 @@ namespace SistemaEMMG_Alpha
 
         public bool AddComprobante(DBComprobantes newComprobante)
         {
+            if (newComprobante is null)
+            {
+                return false;
+            }
             if (newComprobante.GetCuentaID() != GetCuentaID() || newComprobante.GetEntidadComercialID() != GetEntidadComercialID())
             {
                 return false; //Cannot add an payament from another account or entity like this...
@@ -717,6 +721,33 @@ namespace SistemaEMMG_Alpha
             }
             _db_comprobantes.Add(newComprobante);
             return true;
+        }
+
+        public bool AddComprobante(MySqlConnection conn, long cm_id)
+        {
+            DBComprobantes comprobante = DBComprobantes.GetByID(conn, GetEntidadComercial(), cm_id);
+            if (comprobante is null)
+            {
+                return false;
+            }
+            for (int i=0; i < _db_comprobantes.Count; i++)
+            {
+                if (_db_comprobantes[i].GetCuentaID() == comprobante.GetCuentaID() && _db_comprobantes[i].GetEntidadComercialID() == comprobante.GetEntidadComercialID() &&  _db_comprobantes[i].GetID() == comprobante.GetID())
+                {
+                    _db_comprobantes[i] = comprobante;
+                    return false;
+                }
+            }
+            return AddComprobante(comprobante);
+        }
+        public void RemoveComprobante(long cm_id)
+        {
+            List<DBComprobantes> filteredList = _db_comprobantes.Where(x => x.GetID() != cm_id).ToList();
+            _db_comprobantes.Clear();
+            foreach(DBComprobantes comprobante in filteredList)
+            {
+                _db_comprobantes.Add(comprobante);
+            }
         }
         public void RemoveComprobante(DBComprobantes entRemove)
         {
@@ -749,6 +780,10 @@ namespace SistemaEMMG_Alpha
 
         public bool AddPago(DBPago newPago)
         {
+            if (newPago is null)
+            {
+                return false;
+            }
             if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || GetID() != newPago.GetReciboID())
             {
                 return false; //Cannot add an payament from another account or entity like this...

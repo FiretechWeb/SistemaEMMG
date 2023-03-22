@@ -765,6 +765,10 @@ namespace SistemaEMMG_Alpha
 
         public bool AddRecibo(DBRecibo newRecibo)
         {
+            if (newRecibo is null)
+            {
+                return false;
+            }
             if (newRecibo.GetCuentaID() != GetCuentaID() || newRecibo.GetEntidadComercialID() != GetEntidadComercialID())
             {
                 return false; //Cannot add an payament from another account or entity like this...
@@ -775,6 +779,33 @@ namespace SistemaEMMG_Alpha
             }
             _db_recibos.Add(newRecibo);
             return true;
+        }
+        public bool AddRecibo(MySqlConnection conn, long rc_id)
+        {
+            DBRecibo recibo = DBRecibo.GetByID(conn, GetEntidadComercial(), rc_id);
+            if (recibo is null)
+            {
+                return false;
+            }
+            for (int i = 0; i < _db_recibos.Count; i++)
+            {
+                if (_db_recibos[i].GetCuentaID() == recibo.GetCuentaID() && _db_recibos[i].GetEntidadComercialID() == recibo.GetEntidadComercialID() && _db_recibos[i].GetID() == recibo.GetID())
+                {
+                    _db_recibos[i] = recibo;
+                    return false;
+                }
+            }
+            return AddRecibo(recibo);
+        }
+
+        public void RemoveRecibo(long rc_id)
+        {
+            List<DBRecibo> filteredList = _db_recibos.Where(x => x.GetID() != rc_id).ToList();
+            _db_recibos.Clear();
+            foreach (DBRecibo recibo in filteredList)
+            {
+                _db_recibos.Add(recibo);
+            }
         }
         public void RemoveRecibo(DBRecibo entRemove)
         {

@@ -370,6 +370,10 @@ namespace SistemaEMMG_Alpha
 
         public bool AddNewComprobante(DBComprobantes newComprobante)
         {
+            if (newComprobante is null)
+            {
+                return false;
+            }
             if (newComprobante.GetCuentaID() != GetCuentaID() || newComprobante.GetEntidadComercialID() != GetID())
             {
                 return false; //Cannot add an receipt from another account or entity like this...
@@ -412,6 +416,10 @@ namespace SistemaEMMG_Alpha
 
         public bool AddNewRecibo(DBRecibo newRecibo)
         {
+            if (newRecibo is null)
+            {
+                return false;
+            }
             if (newRecibo.GetCuentaID() != GetCuentaID() || newRecibo.GetEntidadComercialID() != GetID())
             {
                 return false; //Cannot add an receipt from another account or entity like this...
