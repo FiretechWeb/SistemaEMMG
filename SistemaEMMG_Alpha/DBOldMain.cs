@@ -36,7 +36,7 @@ namespace SistemaEMMG_Alpha
         public List<DBFormasPago> formas_pago;
         private DBComprobantes _comprobanteSeleccionado = null;
         private DBEntidades _entidadSeleccionada = null;
-        private DBComprobantePago _pagoSelected = null;
+        private DBPago _pagoSelected = null;
 
         public void ReadTiposEntidadesFromDB(MySqlConnection conn)
         {
@@ -137,8 +137,8 @@ namespace SistemaEMMG_Alpha
             return true;
         }
 
-        public void SetPagoSelected(DBComprobantePago pagoSelected) => _pagoSelected = pagoSelected;
-        public DBComprobantePago GetPagoSelected() => _pagoSelected;
+        public void SetPagoSelected(DBPago pagoSelected) => _pagoSelected = pagoSelected;
+        public DBPago GetPagoSelected() => _pagoSelected;
         public void DeselectPago() => _pagoSelected = null;
         public void SetComprobanteSelected(DBComprobantes comprobanteSelected) => _comprobanteSeleccionado = comprobanteSelected;
 

@@ -111,7 +111,7 @@
     <Compile Include="DBMain.cs" />
     <Compile Include="DBBaseClass.cs" />
     <Compile Include="DBExtensions.cs" />
-    <Compile Include="dbtypes\DBComprobantePago.cs" />
+    <Compile Include="dbtypes\DBPago.cs" />
     <Compile Include="dbtypes\DBComprobantes.cs" />
     <Compile Include="dbtypes\DBCuenta.cs" />
     <Compile Include="dbtypes\DBEntidades.cs" />

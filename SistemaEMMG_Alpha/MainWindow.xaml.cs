@@ -241,7 +241,7 @@ namespace SistemaEMMG_Alpha
                 return;
             }
 
-            List<DBComprobantePago> pagos;
+            List<DBPago> pagos;
             if (refreshDatabase)
             {
                 pagos = dbData.GetComprobanteSelected().GetAllPagos(dbCon.Connection);
@@ -252,7 +252,7 @@ namespace SistemaEMMG_Alpha
 
             lbxCMPagos.SelectedValuePath = "Key";
             lbxCMPagos.DisplayMemberPath = "Value";
-            foreach (DBComprobantePago pago in pagos)
+            foreach (DBPago pago in pagos)
             {
                 lbxCMPagos.Items.Add(new KeyValuePair<long, string>(pago.GetID(), pago.GetObservacion()));
             }
@@ -872,7 +872,7 @@ namespace SistemaEMMG_Alpha
                 }
             }
 
-            DBComprobantePago newPago = new DBComprobantePago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, 0.0, txtCMPagoObservacion.Text);
+            DBPago newPago = new DBPago(dbData.GetComprobanteSelected(), -1, ((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key, 0.0, txtCMPagoObservacion.Text);
             if (!dbData.GetComprobanteSelected().IsLocal())
             {
                 if (newPago.PushToDatabase(dbCon.Connection))
@@ -911,7 +911,7 @@ namespace SistemaEMMG_Alpha
                 return;
             }
 
-            DBComprobantePago pagoModificado = dbData.GetPagoSelected();
+            DBPago pagoModificado = dbData.GetPagoSelected();
             pagoModificado.SetFormaDePago(((KeyValuePair<long, string>)cbxCMTiposPagos.SelectedItem).Key);
             pagoModificado.SetObservacion(txtCMPagoObservacion.Text);
 
@@ -945,7 +945,7 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Contactar al programador: El pago seleccionado no pertenece al comprobante seleccionado en btnCMEliminarPago_Click. ", "Exception sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            DBComprobantePago pagoEliminar = dbData.GetPagoSelected();
+            DBPago pagoEliminar = dbData.GetPagoSelected();
 
             if (dbData.GetComprobanteSelected().ExistsInDatabase(dbCon.Connection) == false || pagoEliminar.DeleteFromDatabase(dbCon.Connection))
             {
@@ -1081,9 +1081,9 @@ namespace SistemaEMMG_Alpha
                 dbData.GetCurrentAccount().GetEntidadByID(entidadComercial_id).AddNewComprobante(newComprobante);
                 dbData.SetComprobanteSelected(newComprobante);
 
-                List<DBComprobantePago> listaPagosToAdd = dbData.GetComprobanteSelected().GetAllPagos();
+                List<DBPago> listaPagosToAdd = dbData.GetComprobanteSelected().GetAllPagos();
 
-                foreach (DBComprobantePago pago in listaPagosToAdd)
+                foreach (DBPago pago in listaPagosToAdd)
                 {
                     Console.WriteLine("Agregando pago...");
                     if (pago.PushToDatabase(dbCon.Connection))

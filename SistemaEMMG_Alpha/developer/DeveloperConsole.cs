@@ -337,7 +337,7 @@ namespace SistemaEMMG_Alpha
                     _seleccion = comprobante.GetEntidadComercial();
                     _outputStr += $"{_seleccion}";
                     break;
-                case DBComprobantePago pago:
+                case DBPago pago:
                     _outputStr = "¡Pago deseleccionada!. Ahora la seleccion es el comprobante: \n";
                     _seleccion = pago.GetComprobante();
                     _outputStr += $"{_seleccion}";
@@ -568,7 +568,7 @@ namespace SistemaEMMG_Alpha
             }
             DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
 
-            DBComprobantePago pagoSeleccionado = comprobanteSeleccionado.GetPagoByID(Convert.ToInt64(id.Trim()));
+            DBPago pagoSeleccionado = comprobanteSeleccionado.GetPagoByID(Convert.ToInt64(id.Trim()));
 
             if (pagoSeleccionado is null)
             {
@@ -591,7 +591,7 @@ namespace SistemaEMMG_Alpha
 
             if (args.Trim().ToLower().Equals("random"))
             {
-                _seleccion = DBComprobantePago.GenerateRandom((DBComprobantes)_seleccion);
+                _seleccion = DBPago.GenerateRandom((DBComprobantes)_seleccion);
             }
             else
             {
@@ -611,7 +611,7 @@ namespace SistemaEMMG_Alpha
                 switch (parametros.Length)
                 {
                     case 3:
-                        _seleccion = new DBComprobantePago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2]);
+                        _seleccion = new DBPago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2]);
                         break;
                     case 4:
                         DateTime fechaPago = new DateTime();
@@ -620,7 +620,7 @@ namespace SistemaEMMG_Alpha
                         {
                             fechaFinal = fechaPago;
                         }
-                        _seleccion = new DBComprobantePago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2], fechaFinal);
+                        _seleccion = new DBPago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2], fechaFinal);
                         break;
                 }
             }
@@ -648,10 +648,10 @@ namespace SistemaEMMG_Alpha
                 cmd.ExecuteNonQuery();
 
                 //Deleting comprobantes_pagos
-                query = $"DELETE FROM {DBComprobantePago.db_table}";
+                query = $"DELETE FROM {DBPago.db_table}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBComprobantePago.db_table} AUTO_INCREMENT = 1";
+                query = $"ALTER TABLE {DBPago.db_table} AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 

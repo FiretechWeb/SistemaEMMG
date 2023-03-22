@@ -67,7 +67,7 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush = false;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
-        private readonly List<DBComprobantePago> _db_pagos = new List<DBComprobantePago>();
+        private readonly List<DBPago> _db_pagos = new List<DBPago>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -612,31 +612,31 @@ namespace SistemaEMMG_Alpha
             return existsInDB;
         }
 
-        public List<DBComprobantePago> GetAllPagos(MySqlConnection conn) //Get directly from database
+        public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
         {
-            List<DBComprobantePago> returnList = DBComprobantePago.GetAll(conn, this);
+            List<DBPago> returnList = DBPago.GetAll(conn, this);
             _db_pagos.Clear();
-            foreach (DBComprobantePago pago in returnList)
+            foreach (DBPago pago in returnList)
             {
                 _db_pagos.Add(pago);
             }
             return returnList;
         }
-        public List<DBComprobantePago> GetAllPagos() //Get CACHE
+        public List<DBPago> GetAllPagos() //Get CACHE
         {
-            List<DBComprobantePago> returnList = new List<DBComprobantePago>();
-            foreach (DBComprobantePago pago in _db_pagos)
+            List<DBPago> returnList = new List<DBPago>();
+            foreach (DBPago pago in _db_pagos)
             {
                 returnList.Add(pago);
             }
             return returnList;
         }
-        public DBComprobantePago GetPagoByID(long cp_id)
+        public DBPago GetPagoByID(long cp_id)
         {
-            return DBComprobantePago.GetByID(_db_pagos, this, cp_id);
+            return DBPago.GetByID(_db_pagos, this, cp_id);
         }
 
-        public bool AddPago(DBComprobantePago newPago)
+        public bool AddPago(DBPago newPago)
         {
             if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || newPago.GetComprobanteID() != GetID())
             {
@@ -651,7 +651,7 @@ namespace SistemaEMMG_Alpha
             return true;
         }
 
-        public void RemovePago(DBComprobantePago entRemove)
+        public void RemovePago(DBPago entRemove)
         {
             _db_pagos.Remove(entRemove);
         }
@@ -731,7 +731,7 @@ namespace SistemaEMMG_Alpha
         public string PrintAllPagos()
         {
             string str = "";
-            foreach (DBComprobantePago pago in _db_pagos)
+            foreach (DBPago pago in _db_pagos)
             {
                 str += $"Pago> {pago}\n";
             }
