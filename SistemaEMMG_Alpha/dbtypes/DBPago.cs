@@ -49,7 +49,7 @@ namespace SistemaEMMG_Alpha
         private long _id;
         private bool _shouldPush = false;
         private PagoData _data;
-        private DBComprobantes _comprobante;
+        private DBComprobantes _comprobante; //ESTO VUELA DESPUES
         private DBFormasPago _formaDePago;
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)

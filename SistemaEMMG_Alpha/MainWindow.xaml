@@ -132,9 +132,6 @@
                         </Grid>
                     </Grid>
             </TabItem>
-            <TabItem x:Name="tabBancos" Header="Bancos" FontWeight="Bold">
-
-            </TabItem>
             <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold">
                     <Grid>
                         <Grid x:Name="winCMMain" Visibility="Collapsed">

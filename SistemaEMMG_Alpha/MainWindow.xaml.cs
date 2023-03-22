@@ -29,7 +29,6 @@ namespace SistemaEMMG_Alpha
         {
             TI_CUENTAS,
             TI_ENTIDADES,
-            TI_BANCOS,
             TI_COMPROBANTES
         };
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
@@ -557,10 +556,7 @@ namespace SistemaEMMG_Alpha
             if(e.Source is TabControl)
             {
                 short newTabItemSelection = oldTabItemSelection;
-                if(tabBancos.IsSelected)
-                {
-                    newTabItemSelection = (short)TabItemsSelections.TI_BANCOS;
-                } else if (tabComprobantes.IsSelected)
+                if (tabComprobantes.IsSelected)
                 {
                     newTabItemSelection = (short)TabItemsSelections.TI_COMPROBANTES;
                 } else if (tabCuentas.IsSelected)
@@ -584,9 +580,6 @@ namespace SistemaEMMG_Alpha
                     case TabItemsSelections.TI_CUENTAS:
                         guiCuentasRefresh(true);
                         Console.WriteLine("TI_CUENTAS");
-                        break;
-                    case TabItemsSelections.TI_BANCOS:
-                        Console.WriteLine("TI_BANCOS");
                         break;
                     case TabItemsSelections.TI_ENTIDADES:
                         Console.WriteLine("TI_ENTIDADES");

@@ -671,19 +671,6 @@ namespace SistemaEMMG_Alpha
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
-                //Deleting entidades_bancos
-                query = $"DELETE FROM entidades_bancos";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-
-                //Deleting cuentas_bancos
-                query = $"DELETE FROM cuentas_bancos";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE cuentas_bancos AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-
                 //Deleting ent_comerciales
                 query = $"DELETE FROM {DBEntidades.db_table}";
                 cmd = new MySqlCommand(query, conn);
@@ -705,14 +692,6 @@ namespace SistemaEMMG_Alpha
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 query = $"ALTER TABLE tipos_remitos AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-
-                //Deleting bancos
-                query = $"DELETE FROM bancos";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE bancos AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
