@@ -344,11 +344,13 @@ namespace SistemaEMMG_Alpha
                     _seleccion = comprobante.GetEntidadComercial();
                     _outputStr += $"{_seleccion}";
                     break;
+                /*
                 case DBPago pago:
                     _outputStr = "¡Pago deseleccionada!. Ahora la seleccion es el comprobante: \n";
                     _seleccion = pago.GetComprobante();
                     _outputStr += $"{_seleccion}";
                     break;
+                */
             }
         }
 

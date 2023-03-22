@@ -51,6 +51,7 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush = false;
         private ReciboData _data;
         private DBTipoRecibo _tipoRecibo = null;
+        private readonly List<DBPago> _db_pagos = new List<DBPago>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -489,7 +490,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
-                    //_entidadComercial.AddNewRecibo(this); //safe to add to since now it belongs to de DB.
+                    _entidadComercial.AddNewRecibo(this);
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
             }
@@ -512,7 +513,7 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
-                    //_entidadComercial.RemoveRecibo(this);
+                    _entidadComercial.RemoveRecibo(this);
                 }
             }
             catch (Exception ex)
@@ -537,6 +538,49 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
+
+        public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
+        {
+            List<DBPago> returnList = DBPago.GetAll(conn, this);
+            _db_pagos.Clear();
+            foreach (DBPago pago in returnList)
+            {
+                _db_pagos.Add(pago);
+            }
+            return returnList;
+        }
+        public List<DBPago> GetAllPagos() //Get CACHE
+        {
+            List<DBPago> returnList = new List<DBPago>();
+            foreach (DBPago pago in _db_pagos)
+            {
+                returnList.Add(pago);
+            }
+            return returnList;
+        }
+        public DBPago GetPagoByID(long pg_id)
+        {
+            return DBPago.GetByID(_db_pagos, this, pg_id);
+        }
+
+        public bool AddNewPago(DBPago newPago)
+        {
+            if (newPago.GetCuentaID() != GetCuentaID() || newPago.GetEntidadComercialID() != GetEntidadComercialID() || GetID() != newPago.GetReciboID())
+            {
+                return false; //Cannot add an payament from another account or entity like this...
+            }
+            if (_db_pagos.Contains(newPago))
+            {
+                return false;
+            }
+            _db_pagos.Add(newPago);
+            return true;
+        }
+        public void RemoveRecibo(DBPago entRemove)
+        {
+            _db_pagos.Remove(entRemove);
+        }
+
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
         protected override void ChangeID(long id)
@@ -588,6 +632,26 @@ namespace SistemaEMMG_Alpha
 
         public DateTime? GetFecha() => _data.rc_fecha;
 
+        public string GetNumero() => _data.rc_nro;
+
+        public string GetObservacion() => _data.rc_obs;
+
+        public void SetFecha(DateTime? fecha)
+        {
+            _shouldPush = _shouldPush || (fecha != _data.rc_fecha);
+            _data.rc_fecha = fecha;
+        }
+        public void SetNumero(string numero)
+        {
+            _shouldPush = _shouldPush || !_data.rc_nro.Equals(numero);
+            _data.rc_nro = numero;
+        }
+        public void SetObservacion(string obs)
+        {
+            _shouldPush = _shouldPush || !_data.rc_obs.Equals(obs);
+            _data.rc_obs = obs;
+        }
+
         protected override void MakeLocal()
         {
             if (GetID() >= 0)
@@ -609,6 +673,21 @@ namespace SistemaEMMG_Alpha
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
+
+
+        public static DBRecibo GenerateRandom(DBEntidades entidadComercial)
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            DateTime fechaEmitido = new DateTime();
+            DateTime? fechaFinal = null;
+            string randomDateSTR = $"{r.Next(1, 28)}/{r.Next(1, 13)}/{r.Next(2010, 2024)}";
+            if (DateTime.TryParse(randomDateSTR, out fechaEmitido))
+            {
+                fechaFinal = fechaEmitido;
+            }
+
+            return new DBRecibo(entidadComercial, DBTipoRecibo.GetRandom(), fechaFinal, $"{r.Next(10000, 99999)}", "Sin información");
+        }
 
     }
 }

@@ -146,7 +146,7 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush = false;
         private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
-        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>(); //Useless, TO REMOVE in future.
+        private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>(); //Useless, TO REMOVE in future. 
         public DBCuenta(long id, CuentaData newData)
         {
             _id = id;
@@ -321,12 +321,12 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBComprobantes GetComprobanteByID(long ec_id, long cm_id)
+        public DBComprobantes GetComprobanteByID(long ec_id, long cm_id)  //Delete in future
         {
             return DBComprobantes.GetByID(_db_comprobantes, this, ec_id, cm_id);
         }
 
-        public DBComprobantes GetComprobanteByIndex(int index)
+        public DBComprobantes GetComprobanteByIndex(int index)  //Delete in future
         {
             if (index < 0 || index >= _db_comprobantes.Count)
             {
@@ -335,7 +335,7 @@ namespace SistemaEMMG_Alpha
             return _db_comprobantes[index];
         }
 
-        public DBComprobantes GetComprobanteByID(DBEntidades entidadComercial, long cm_id)
+        public DBComprobantes GetComprobanteByID(DBEntidades entidadComercial, long cm_id) //Delete in future
         {
             return entidadComercial.GetComprobanteByID(cm_id);
         }

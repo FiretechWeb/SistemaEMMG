@@ -62,6 +62,7 @@ namespace SistemaEMMG_Alpha
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
+        private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -383,6 +384,48 @@ namespace SistemaEMMG_Alpha
         public void RemoveComprobante(DBComprobantes entRemove)
         {
             _db_comprobantes.Remove(entRemove);
+        }
+
+        public List<DBRecibo> GetAllRecibos(MySqlConnection conn) //Get directly from database
+        {
+            List<DBRecibo> returnList = DBRecibo.GetAll(conn, this);
+            _db_recibos.Clear();
+            foreach (DBRecibo recibo in returnList)
+            {
+                _db_recibos.Add(recibo);
+            }
+            return returnList;
+        }
+        public List<DBRecibo> GetAllRecibos() //Get CACHE
+        {
+            List<DBRecibo> returnList = new List<DBRecibo>();
+            foreach (DBRecibo recibo in _db_recibos)
+            {
+                returnList.Add(recibo);
+            }
+            return returnList;
+        }
+        public DBRecibo GetReciboByID(long rc_id)
+        {
+            return DBRecibo.GetByID(_db_recibos, this, rc_id);
+        }
+
+        public bool AddNewRecibo(DBRecibo newRecibo)
+        {
+            if (newRecibo.GetCuentaID() != GetCuentaID() || newRecibo.GetEntidadComercialID() != GetID())
+            {
+                return false; //Cannot add an receipt from another account or entity like this...
+            }
+            if (_db_recibos.Contains(newRecibo))
+            {
+                return false;
+            }
+            _db_recibos.Add(newRecibo);
+            return true;
+        }
+        public void RemoveRecibo(DBRecibo entRemove)
+        {
+            _db_recibos.Remove(entRemove);
         }
 
         public override bool ShouldPush() => _shouldPush;

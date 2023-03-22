@@ -38,7 +38,7 @@ namespace SistemaEMMG_Alpha
         }
     }
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBPago y PagoData
-    public class DBPago : DBBaseClass, IDBase<DBPago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBComprobante<DBComprobantes>
+    public class DBPago : DBBaseClass, IDBase<DBPago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBRecibo<DBRecibo>
     {
         public const string db_table = "pagos";
         public const string NameOf_pg_em_id = "pg_em_id";
@@ -49,44 +49,44 @@ namespace SistemaEMMG_Alpha
         private long _id;
         private bool _shouldPush = false;
         private PagoData _data;
-        private DBComprobantes _comprobante; //ESTO Luego se cambia por DBRecibo
+        private DBRecibo _recibo; //ESTO Luego se cambia por DBRecibo
         private DBFormasPago _formaDePago;
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
             string te_table = DBTipoEntidad.db_table;
             string ec_table = DBEntidades.db_table;
-            string tc_table = DBTiposComprobantes.db_table;
+            string tc_table = DBTipoRecibo.db_table;
             string fp_table = DBFormasPago.db_table;
-            string cm_table = DBComprobantes.db_table;
+            string cm_table = DBRecibo.db_table;
 
             return $@"SELECT {fieldsToGet} FROM {db_table} 
                 JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_pg_fp_id} 
-                JOIN {cm_table} ON {cm_table}.{DBComprobantes.NameOf_id} = {db_table}.{NameOf_pg_rc_id} AND {cm_table}.{DBComprobantes.NameOf_cm_ec_id} = {db_table}.{NameOf_pg_ec_id} AND {cm_table}.{DBComprobantes.NameOf_cm_em_id} = {db_table}.{NameOf_pg_em_id} 
-                JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {cm_table}.{DBComprobantes.NameOf_cm_tc_id} 
+                JOIN {cm_table} ON {cm_table}.{DBRecibo.NameOf_id} = {db_table}.{NameOf_pg_rc_id} AND {cm_table}.{DBRecibo.NameOf_rc_ec_id} = {db_table}.{NameOf_pg_ec_id} AND {cm_table}.{DBRecibo.NameOf_rc_em_id} = {db_table}.{NameOf_pg_em_id} 
+                JOIN {tc_table} ON {tc_table}.{DBTipoRecibo.NameOf_id} = {cm_table}.{DBRecibo.NameOf_rc_tr_id} 
                 JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_pg_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_pg_em_id} 
                 JOIN {te_table} ON {te_table}.{DBTipoEntidad.NameOf_id} = {ec_table}.{DBEntidades.NameOf_ec_te_id} ";
         }
         string IDBase<DBPago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public static List<DBPago> GetAll(MySqlConnection conn, DBComprobantes comprobante)
+        public static List<DBPago> GetAll(MySqlConnection conn, DBRecibo Recibo)
         {
             List<DBPago> returnList = new List<DBPago>();
             try
             {
-                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_pg_em_id} = {comprobante.GetCuentaID()} AND {NameOf_pg_ec_id} = {comprobante.GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {comprobante.GetID()}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_pg_em_id} = {Recibo.GetCuentaID()} AND {NameOf_pg_ec_id} = {Recibo.GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {Recibo.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBPago(comprobante, new DBFormasPago(reader), reader));
+                    returnList.Add(new DBPago(Recibo, new DBFormasPago(reader), reader));
                 }
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de obtener todos los pagos de un comprobante. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener todos los pagos de un Recibo. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnList;
         }
@@ -102,7 +102,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBPago(new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), reader), new DBFormasPago(reader), reader));
+                    returnList.Add(new DBPago(new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader), new DBFormasPago(reader), reader));
                 }
                 reader.Close();
             }
@@ -118,14 +118,14 @@ namespace SistemaEMMG_Alpha
             List<DBPago> returnList = new List<DBPago>();
             try
             {
-                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE pg_em_id = {cuenta.GetID()}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_pg_em_id} = {cuenta.GetID()}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBPago(new DBComprobantes(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTiposComprobantes(reader), reader), new DBFormasPago(reader), reader));
+                    returnList.Add(new DBPago(new DBRecibo(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTipoRecibo(reader), reader), new DBFormasPago(reader), reader));
                 }
                 reader.Close();
             }
@@ -136,43 +136,43 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static DBPago GetByID(MySqlConnection conn, DBComprobantes comprobante, long pg_id)
+        public static DBPago GetByID(MySqlConnection conn, DBRecibo Recibo, long pg_id)
         {
             DBPago returnEnt = null;
             try
             {
-                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE pg_em_id = {comprobante.GetCuentaID()} AND pg_ec_id = {comprobante.GetEntidadComercialID()} AND pg_rc_id = {comprobante.GetID()} AND pg_id = {pg_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_pg_em_id} = {Recibo.GetCuentaID()} AND {NameOf_pg_ec_id} = {Recibo.GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {Recibo.GetID()} AND {NameOf_id} = {pg_id}";
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    returnEnt = new DBPago(comprobante, new DBFormasPago(reader), reader);
+                    returnEnt = new DBPago(Recibo, new DBFormasPago(reader), reader);
                 }
                 reader.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de obtener un pago de un comprobante en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener un pago de un Recibo en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnEnt;
         }
         public static DBPago GetByID(MySqlConnection conn, DBCuenta cuenta, long pg_ec_id, long pg_rc_id, long pg_id)
         {
-            return GetByID(conn, DBComprobantes.GetByID(conn, cuenta, pg_ec_id, pg_rc_id), pg_id);
+            return GetByID(conn, DBRecibo.GetByID(conn, cuenta, pg_ec_id, pg_rc_id), pg_id);
         }
 
         public static DBPago GetByID(MySqlConnection conn, DBEntidades entidadComercial, long pg_rc_id, long pg_id)
         {
-            return GetByID(conn, DBComprobantes.GetByID(conn, entidadComercial, pg_rc_id), pg_id);
+            return GetByID(conn, DBRecibo.GetByID(conn, entidadComercial, pg_rc_id), pg_id);
         }
 
         public static DBPago GetByID(List<DBPago> listaPagos, DBCuenta cuenta, long pg_ec_id, long pg_rc_id, long pg_id)
         {
             foreach (DBPago pago in listaPagos)
             {
-                if (pago.GetID() == pg_id && pago.GetComprobanteID() == pg_rc_id && pago.GetEntidadComercialID() == pg_ec_id && pago.GetCuentaID() == cuenta.GetID())
+                if (pago.GetID() == pg_id && pago.GetReciboID() == pg_rc_id && pago.GetEntidadComercialID() == pg_ec_id && pago.GetCuentaID() == cuenta.GetID())
                 {
                     return pago;
                 }
@@ -186,16 +186,16 @@ namespace SistemaEMMG_Alpha
             return GetByID(listaPagos, entidadComercial.GetCuenta(), entidadComercial.GetID(), pg_rc_id, id);
         }
 
-        public static DBPago GetByID(List<DBPago> listaPagos, DBComprobantes comprobante, long id)
+        public static DBPago GetByID(List<DBPago> listaPagos, DBRecibo Recibo, long id)
         {
-            return GetByID(listaPagos, comprobante.GetCuenta(), comprobante.GetEntidadComercialID(), comprobante.GetID(), id);
+            return GetByID(listaPagos, Recibo.GetCuenta(), Recibo.GetEntidadComercialID(), Recibo.GetID(), id);
         }
 
-        public static bool CheckIfExistsInList(List<DBPago> listaPagsComprobantes, DBPago ent)
+        public static bool CheckIfExistsInList(List<DBPago> listaPagsRecibos, DBPago ent)
         {
-            foreach (DBPago pagoComprobante in listaPagsComprobantes)
+            foreach (DBPago pagoRecibo in listaPagsRecibos)
             {
-                if (pagoComprobante.GetCuentaID() == ent.GetCuentaID() && pagoComprobante.GetEntidadComercialID() == ent.GetEntidadComercialID() && pagoComprobante.GetComprobanteID() == ent.GetComprobanteID() && pagoComprobante.GetID() == ent.GetID())
+                if (pagoRecibo.GetCuentaID() == ent.GetCuentaID() && pagoRecibo.GetEntidadComercialID() == ent.GetEntidadComercialID() && pagoRecibo.GetReciboID() == ent.GetReciboID() && pagoRecibo.GetID() == ent.GetID())
                 {
                     return true;
                 }
@@ -203,7 +203,7 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBPago(DBComprobantes comprobante, long id, DBFormasPago formaDePago, PagoData newData)
+        public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, PagoData newData)
         {
             _id = id;
             if (formaDePago is null)
@@ -211,7 +211,7 @@ namespace SistemaEMMG_Alpha
                 throw new Exception("Error here");
             }
             _formaDePago = formaDePago;
-            _comprobante = comprobante;
+            _recibo = Recibo;
             _data = newData;
 
             if (IsLocal())
@@ -220,7 +220,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBPago(DBComprobantes comprobante, long id, long fp_id, PagoData newData)
+        public DBPago(DBRecibo Recibo, long id, long fp_id, PagoData newData)
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
@@ -228,23 +228,7 @@ namespace SistemaEMMG_Alpha
             {
                 throw new Exception("Error here");
             }
-            _comprobante = comprobante;
-            _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
-        }
-        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, PagoData newData)
-        {
-            _id = id;
-            _formaDePago = DBFormasPago.GetByID(fp_id);
-            if (_formaDePago is null)
-            {
-                throw new Exception("Error here");
-            }
-            _comprobante = cuenta.GetComprobanteByID(ec_id, cm_id);
+            _recibo = Recibo;
             _data = newData;
 
             if (IsLocal())
@@ -253,7 +237,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, PagoData newData) //Directly from DB
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, PagoData newData) //Directly from DB
         {
             _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id, conn);
@@ -261,7 +245,7 @@ namespace SistemaEMMG_Alpha
             {
                 throw new Exception("Error here");
             }
-            _comprobante = DBComprobantes.GetByID(conn, cuenta, ec_id, cm_id);
+            _recibo = DBRecibo.GetByID(conn, cuenta, ec_id, rc_id);
             _data = newData;
 
             if (IsLocal())
@@ -270,17 +254,15 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public DBPago(DBComprobantes comprobante, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(comprobante, -1, formaPago, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBComprobantes comprobante, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, -1, fp_id,  importe, obs, fecha) { }
+        public DBPago(DBRecibo Recibo, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(Recibo, -1, formaPago, new PagoData(importe, obs, fecha)) { }
+        public DBPago(DBRecibo Recibo, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(Recibo, id, fp_id, new PagoData(importe, obs, fecha)) { }
+        public DBPago(DBRecibo Recibo, long fp_id, double importe, string obs, DateTime? fecha = null) : this(Recibo, -1, fp_id,  importe, obs, fecha) { }
 
-        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, id, fp_id, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBCuenta cuenta, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, cm_id, fp_id, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long cm_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, cm_id, -1, fp_id, importe, obs, fecha) { }
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, rc_id, fp_id, new PagoData(importe, obs, fecha)) { }
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, rc_id, -1, fp_id, importe, obs, fecha) { }
         
-        public DBPago(DBComprobantes comprobante, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
-            comprobante,
+        public DBPago(DBRecibo Recibo, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
+            Recibo,
             reader.GetInt64Safe(NameOf_id),
             newFormaPago,
             PagoData.CreateFromReader(reader)) { }
@@ -310,17 +292,17 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToPull = false;
             try
             {
-                string query = $"SELECT * FROM {db_table} WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
+                string query = $"SELECT * FROM {db_table} WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 long new_tipo_de_pago_id = -1;
-                long new_comprobante_id = -1;
+                long new_recibo_id = -1;
                 long new_entidad_comercial_id = -1;
                 while (reader.Read())
                 {
                     _data = PagoData.CreateFromReader(reader);
                     new_tipo_de_pago_id = reader.GetInt64Safe(NameOf_pg_fp_id);
-                    new_comprobante_id = reader.GetInt64Safe(NameOf_pg_rc_id);
+                    new_recibo_id = reader.GetInt64Safe(NameOf_pg_rc_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_pg_ec_id);
                     _shouldPush = false;
                 }
@@ -330,9 +312,9 @@ namespace SistemaEMMG_Alpha
                 {
                     _formaDePago = DBFormasPago.GetByID(new_tipo_de_pago_id, conn);
                 }
-                if (new_entidad_comercial_id !=-1 && new_comprobante_id != -1)
+                if (new_entidad_comercial_id !=-1 && new_recibo_id != -1)
                 {
-                    _comprobante = DBComprobantes.GetByID(conn, DBEntidades.GetByID(conn, GetCuenta(), new_entidad_comercial_id), new_comprobante_id);
+                    _recibo = DBRecibo.GetByID(conn, DBEntidades.GetByID(conn, GetCuenta(), new_entidad_comercial_id), new_recibo_id);
                 }
             }
             catch (Exception ex)
@@ -354,7 +336,7 @@ namespace SistemaEMMG_Alpha
                                 {PagoData.NameOf_pg_importe} = {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 {PagoData.NameOf_pg_obs} = '{_data.pg_obs}', 
                                 {PagoData.NameOf_pg_fecha} = {fechaPago} 
-                                WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
+                                WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
             }
@@ -382,7 +364,7 @@ namespace SistemaEMMG_Alpha
                                 {PagoData.NameOf_pg_fecha}) VALUES (
                                 {GetCuentaID()}, 
                                 {GetEntidadComercialID()}, 
-                                {GetComprobanteID()}, 
+                                {GetReciboID()}, 
                                 {_formaDePago.GetID()}, 
                                 {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 '{_data.pg_obs}', 
@@ -408,7 +390,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_table} WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
+                string query = $"DELETE FROM {db_table} WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
                 if (deletedCorrectly)
@@ -428,7 +410,7 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetComprobanteID()} AND {NameOf_id} = {GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
@@ -446,16 +428,16 @@ namespace SistemaEMMG_Alpha
         protected override void ChangeID(long id) => _id = id;
         public override long GetID() => _id;
 
-        public long GetCuentaID() => _comprobante.GetCuentaID();
-        public DBCuenta GetCuenta() => _comprobante.GetCuenta();
+        public long GetCuentaID() => _recibo.GetCuentaID();
+        public DBCuenta GetCuenta() => _recibo.GetCuenta();
 
-        public long GetEntidadComercialID() => _comprobante.GetEntidadComercialID();
+        public long GetEntidadComercialID() => _recibo.GetEntidadComercialID();
 
-        public DBEntidades GetEntidadComercial() => _comprobante.GetEntidadComercial();
+        public DBEntidades GetEntidadComercial() => _recibo.GetEntidadComercial();
 
-        public long GetComprobanteID() => _comprobante.GetID();
+        public long GetReciboID() => _recibo.GetID();
 
-        public DBComprobantes GetComprobante() => _comprobante;
+        public DBRecibo GetRecibo() => _recibo;
 
         public DBFormasPago GetFormaDePago() => _formaDePago;
 
@@ -475,7 +457,7 @@ namespace SistemaEMMG_Alpha
         }
         public override DBBaseClass GetLocalCopy()
         {
-            return new DBPago(_comprobante, -1, _formaDePago, _data);
+            return new DBPago(_recibo, -1, _formaDePago, _data);
         }
 
         public override string ToString()
@@ -488,7 +470,7 @@ namespace SistemaEMMG_Alpha
          * ********************/
 
 
-        public static DBPago GenerateRandom(DBComprobantes comprobante)
+        public static DBPago GenerateRandom(DBRecibo Recibo)
         {
             Random r = new Random(Guid.NewGuid().GetHashCode());
             DBFormasPago formaPago = DBFormasPago.GetRandom();
@@ -500,7 +482,7 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaPago;
             }
 
-            return new DBPago(comprobante, DBFormasPago.GetRandom(), Math.Truncate(100.0*comprobante.GetTotal()*r.NextDouble())/100.0, "Sin información", fechaFinal);
+            return new DBPago(Recibo, DBFormasPago.GetRandom(), Math.Truncate(100000.0*r.NextDouble())/100.0, "Sin información", fechaFinal);
         }
         
     }
