@@ -452,6 +452,7 @@ namespace SistemaEMMG_Alpha
                                 WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
+                _shouldPush = _shouldPush && !wasAbleToUpdate;
             }
             catch (Exception ex)
             {
@@ -490,6 +491,7 @@ namespace SistemaEMMG_Alpha
                     ChangeID(cmd.LastInsertedId);
                     //_entidadComercial.AddNewRecibo(this); //safe to add to since now it belongs to de DB.
                 }
+                _shouldPush = _shouldPush && !wasAbleToInsert;
             }
             catch (Exception ex)
             {
@@ -537,7 +539,11 @@ namespace SistemaEMMG_Alpha
         }
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
-        protected override void ChangeID(long id) => _id = id;
+        protected override void ChangeID(long id)
+        {
+            _shouldPush = _shouldPush || (_id != id);
+            _id = id;
+        }
         public override long GetID() => _id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
@@ -549,12 +555,36 @@ namespace SistemaEMMG_Alpha
 
         public DBCuenta GetCuenta() => _entidadComercial.GetCuenta();
 
-        public void SetEntidadComercial(DBEntidades newEntidadComercial) => _entidadComercial = newEntidadComercial;
-        public void SetEntidadComercial(long ec_id) => _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
-        public void SetEntidadComercial(long ec_id, MySqlConnection conn) => _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
-        public void SetTipoRecibo(DBTipoRecibo newType) => _tipoRecibo = newType;
-        public void SetTipoRecibo(long tr_id) => _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
-        public void SetTipoRecibo(long tr_id, MySqlConnection conn) => _tipoRecibo = DBTipoRecibo.GetByID(tr_id, conn);
+        public void SetEntidadComercial(DBEntidades newEntidadComercial)
+        {
+            _shouldPush = _shouldPush || (_entidadComercial != newEntidadComercial);
+            _entidadComercial = newEntidadComercial;
+        }
+        public void SetEntidadComercial(long ec_id)
+        {
+            _shouldPush = _shouldPush || (ec_id != GetEntidadComercialID());
+            _entidadComercial = GetCuenta().GetEntidadByID(ec_id);
+        }
+        public void SetEntidadComercial(long ec_id, MySqlConnection conn)
+        {
+            _shouldPush = _shouldPush || (ec_id != GetEntidadComercialID());
+            _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
+        }
+        public void SetTipoRecibo(DBTipoRecibo newType)
+        {
+            _shouldPush = _shouldPush || (_tipoRecibo != newType);
+            _tipoRecibo = newType;
+        }
+        public void SetTipoRecibo(long tc_id)
+        {
+            _shouldPush = _shouldPush || (tc_id != _tipoRecibo.GetID());
+            _tipoRecibo = DBTipoRecibo.GetByID(tc_id);
+        }
+        public void SetTipoRecibo(long tc_id, MySqlConnection conn)
+        {
+            _shouldPush = _shouldPush || (tc_id != _tipoRecibo.GetID());
+            _tipoRecibo = DBTipoRecibo.GetByID(tc_id, conn);
+        }
 
         public DateTime? GetFecha() => _data.rc_fecha;
 
