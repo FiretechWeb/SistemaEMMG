@@ -464,39 +464,46 @@ namespace SistemaEMMG_Alpha
                 _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
                 return;
             }
-            string[] parametros = args.Split(',');
-            if (parametros.Length < 6 || parametros.Length > 8)
+            if (args.Trim().ToLower().Equals("random"))
             {
-                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Comprobante, Emitido, Fecha, Numero, Gravado, IVA, No Gravado='0', Percepción='0'";
-                return;
+                _seleccion = DBComprobantes.GenerateRandom((DBEntidades)_seleccion);
             }
-            DBTiposComprobantes tipoComprobante = DBTiposComprobantes.GetByID(Convert.ToInt64(parametros[0]));
-            if (tipoComprobante is null)
+            else
             {
-                _outputStr = "ID del tipo de comprobante seleccionado inválido, vea los tipos de comprobantes válidos:\n";
-                _outputStr += DBTiposComprobantes.PrintAll();
-                return;
-            }
+                string[] parametros = args.Split(',');
+                if (parametros.Length < 6 || parametros.Length > 8)
+                {
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Comprobante, Emitido, Fecha, Numero, Gravado, IVA, No Gravado='0', Percepción='0'";
+                    return;
+                }
+                DBTiposComprobantes tipoComprobante = DBTiposComprobantes.GetByID(Convert.ToInt64(parametros[0]));
+                if (tipoComprobante is null)
+                {
+                    _outputStr = "ID del tipo de comprobante seleccionado inválido, vea los tipos de comprobantes válidos:\n";
+                    _outputStr += DBTiposComprobantes.PrintAll();
+                    return;
+                }
 
-            DateTime fechaEmitido = new DateTime();
-            DateTime? fechaFinal = null;
-            if (DateTime.TryParse(parametros[2], out fechaEmitido))
-            {
-                fechaFinal = fechaEmitido;
-            }
+                DateTime fechaEmitido = new DateTime();
+                DateTime? fechaFinal = null;
+                if (DateTime.TryParse(parametros[2], out fechaEmitido))
+                {
+                    fechaFinal = fechaEmitido;
+                }
 
-            switch (parametros.Length)
-            {
-                case 6:
-                    _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
-                    break;
-                case 7:
-                    _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
+                switch (parametros.Length)
+                {
+                    case 6:
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
+                        break;
+                    case 7:
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
 
-                    break;
-                case 8:
-                    _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
-                    break;
+                        break;
+                    case 8:
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
+                        break;
+                }
             }
             _outputStr = $"Comprobante creado> {_seleccion}";
         }

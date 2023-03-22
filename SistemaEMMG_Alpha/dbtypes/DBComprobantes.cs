@@ -719,6 +719,11 @@ namespace SistemaEMMG_Alpha
             return $"ID: {GetID()} - Tipo Comprobante: {_tipoComprobante.GetName()} - {_data.ToString()}";
         }
 
+        public double GetTotal()
+        {
+            return _data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion;
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
@@ -732,5 +737,27 @@ namespace SistemaEMMG_Alpha
             }
             return str;
         }
+
+        private static string[] randomFacturaCodigos =
+        {
+            "A",
+            "B",
+            "C"
+        };
+
+        public static DBComprobantes GenerateRandom(DBEntidades entidadComercial)
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            DateTime fechaEmitido = new DateTime();
+            DateTime? fechaFinal = null;
+            string randomDateSTR = $"{r.Next(1, 28)}/{r.Next(1, 13)}/{r.Next(2010, 2024)}";
+            if (DateTime.TryParse(randomDateSTR, out fechaEmitido))
+            {
+                fechaFinal = fechaEmitido;
+            }
+
+            return new DBComprobantes(entidadComercial, DBTiposComprobantes.GetRandom(), Convert.ToBoolean(r.Next(0, 2)), fechaFinal, $"{randomFacturaCodigos[r.Next(0, randomFacturaCodigos.Length)]}{r.Next(1, 10)}-{r.Next(100000, 999999)}", 100000.0*r.NextDouble(), 21000.0*r.NextDouble(), 50000.0*r.NextDouble(), 500.0*r.NextDouble());
+        }
+        
     }
 }

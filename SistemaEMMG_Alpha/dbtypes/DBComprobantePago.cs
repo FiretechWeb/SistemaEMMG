@@ -288,6 +288,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        public DBComprobantePago(DBComprobantes comprobante, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(comprobante, -1, formaPago, new ComprobantePagoData(importe, obs, fecha)) { }
         public DBComprobantePago(DBComprobantes comprobante, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, id, fp_id, new ComprobantePagoData(importe, obs, fecha)) { }
         public DBComprobantePago(DBComprobantes comprobante, long fp_id, double importe, string obs, DateTime? fecha = null) : this(comprobante, -1, fp_id,  importe, obs, fecha) { }
 
@@ -501,5 +502,26 @@ namespace SistemaEMMG_Alpha
         {
             return $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - {_data.ToString()}";
         }
+
+        /**********************
+         * DEBUG STUFF ONLY
+         * ********************/
+
+
+        public static DBComprobantePago GenerateRandom(DBComprobantes comprobante)
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            DBFormasPago formaPago = DBFormasPago.GetRandom();
+            DateTime fechaPago = new DateTime();
+            DateTime? fechaFinal = null;
+            string randomDateSTR = $"{r.Next(1, 28)}/{r.Next(1, 13)}/{r.Next(2010, 2024)}";
+            if (DateTime.TryParse(randomDateSTR, out fechaPago))
+            {
+                fechaFinal = fechaPago;
+            }
+
+            return new DBComprobantePago(comprobante, DBFormasPago.GetRandom(), comprobante.GetTotal()*r.NextDouble(), "Sin información", fechaFinal);
+        }
+        
     }
 }
