@@ -631,9 +631,9 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBPago GetPagoByID(long cp_id)
+        public DBPago GetPagoByID(long pg_id)
         {
-            return DBPago.GetByID(_db_pagos, this, cp_id);
+            return DBPago.GetByID(_db_pagos, this, pg_id);
         }
 
         public bool AddPago(DBPago newPago)
