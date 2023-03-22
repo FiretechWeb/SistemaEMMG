@@ -569,6 +569,117 @@ namespace SistemaEMMG_Alpha
             return existsInDB;
         }
 
+        private bool? CheckIfRelatioshipWithComprobanteExistsDB(MySqlConnection conn, DBComprobantes comprobante)
+        {
+            bool? existsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {comprobante.GetID()} AND rp_rc_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBRecibo::CheckIfRelatioshipWithComprobanteExistsDB: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                existsInDB = null;
+            }
+            return existsInDB;
+        }
+        public bool PushRelationshipComprobanteDB(MySqlConnection conn, DBComprobantes comprobante)
+        {
+            if (comprobante.GetEntidadComercialID() != GetEntidadComercialID() || comprobante.GetCuentaID() != GetCuentaID())
+            {
+                MessageBox.Show("Error en el método DBRecibo::PushRelationshipComprobanteDB.\nImposible relacionar un comprobante de otra entidad comercial a la del recibo.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if ((comprobante.ExistsInDatabase(conn) != true) || (ExistsInDatabase(conn) != true))
+            {
+                MessageBox.Show("Error en el método DBComprobantes::PushRelationshipReciboDB.\n Parece que uno de los datos a relacionar no existe en la base de datos.\nRecuerde llamar esta función solo si los datos están en la base de datos.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (CheckIfRelatioshipWithComprobanteExistsDB(conn, comprobante) != false)
+            {
+                return false;
+            }
+
+            bool wasAbleToInsertRelation = false;
+            try
+            {
+                string query = $@"INSERT INTO {db_relation_table} (
+                                'rp_em_id',
+                                'rp_ec_id',
+                                'rp_rc_id',
+                                'rp_cm_id'
+                                VALUES (
+                                {_entidadComercial.GetCuentaID()},
+                                {_entidadComercial.GetID()},
+                                {GetID()},
+                                {comprobante.GetID()})";
+
+                var cmd = new MySqlCommand(query, conn);
+                wasAbleToInsertRelation = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                wasAbleToInsertRelation = false;
+                MessageBox.Show("Error DBRecibo::PushRelationshipComprobanteDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return wasAbleToInsertRelation;
+        }
+        public bool RemoveRelationshipComprobanteDB(MySqlConnection conn, DBComprobantes comprobante)
+        {
+            if (comprobante.GetEntidadComercialID() != GetEntidadComercialID() || comprobante.GetCuentaID() != GetCuentaID())
+            {
+                MessageBox.Show("Error en el método DBRecibo::RemoveRelationshipComprobanteDB.\nImposible relacionar un comprobante de otra entidad comercial a la del recibo.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {comprobante.GetID()} AND rp_rc_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    RemoveComprobante(comprobante);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRecibo::RemoveRelationshipComprobanteDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                deletedCorrectly = false;
+            }
+            return deletedCorrectly;
+        }
+        public bool RemoveAllRelationshipsWithComprobantesDB(MySqlConnection conn)
+        {
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_rc_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    _db_comprobantes.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRecibo::RemoveAllRelationshipsWithComprobantesDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                deletedCorrectly = false;
+            }
+            return deletedCorrectly;
+        }
+        public void PushAllRelationshipsWithComprobantesDB(MySqlConnection conn)
+        {
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                PushRelationshipComprobanteDB(conn, comprobante);
+            }
+        }
+
         public List<DBComprobantes> GetAllComprobantes(MySqlConnection conn)
         {
             List<DBComprobantes> returnList = DBComprobantes.GetAll(conn, this);
@@ -578,6 +689,37 @@ namespace SistemaEMMG_Alpha
                 _db_comprobantes.Add(comprobante);
             }
             return returnList;
+        }
+        public List<DBComprobantes> GetAllComprobantes() //Get CACHE
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                returnList.Add(comprobante);
+            }
+            return returnList;
+        }
+        public DBComprobantes GetComprobanteByID(long cm_id)
+        {
+            return DBComprobantes.GetByID(_db_comprobantes, GetEntidadComercial(), cm_id);
+        }
+
+        public bool AddComprobante(DBComprobantes newComprobante)
+        {
+            if (newComprobante.GetCuentaID() != GetCuentaID() || newComprobante.GetEntidadComercialID() != GetEntidadComercialID())
+            {
+                return false; //Cannot add an payament from another account or entity like this...
+            }
+            if (_db_comprobantes.Contains(newComprobante))
+            {
+                return false;
+            }
+            _db_comprobantes.Add(newComprobante);
+            return true;
+        }
+        public void RemoveComprobante(DBComprobantes entRemove)
+        {
+            _db_comprobantes.Remove(entRemove);
         }
 
         public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
