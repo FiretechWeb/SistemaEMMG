@@ -534,6 +534,7 @@ namespace SistemaEMMG_Alpha
 
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
+            RemoveAllRelationshipsWithComprobantesDB(conn);
             bool deletedCorrectly = false;
             try
             {

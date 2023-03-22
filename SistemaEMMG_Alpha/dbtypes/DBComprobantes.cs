@@ -592,6 +592,7 @@ namespace SistemaEMMG_Alpha
 
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
+            RemoveAllRelationshipsWithRecibosDB(conn);
             bool deletedCorrectly = false;
             try
             {
