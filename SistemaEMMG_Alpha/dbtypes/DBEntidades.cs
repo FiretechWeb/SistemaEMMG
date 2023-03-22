@@ -479,5 +479,79 @@ namespace SistemaEMMG_Alpha
             }
             return str;
         }
+
+
+        //RANDOM Generator
+        private static string[] randomRS_A =
+        {
+            "Industrias",
+            "Maquinaria",
+            "Club",
+            "Sociedad",
+            "Pararrayos",
+            "Diseño",
+            "Telecomunicaciones",
+            "Armeria",
+            "Ferroviaria",
+            "Motores"
+        };
+        private static string[] randomRS_B =
+        {
+            "Argentino",
+            "Garcia y Hermanos",
+            "Fernandez e Hijos",
+            "Performance",
+            "Profesional",
+            "Atila",
+            "Zhukov",
+            "Viamonte",
+            "Pucará"
+        };
+        private static string[] randomRS_C =
+        {
+            "SA",
+            "SRL",
+            "Tech",
+            ""
+        };
+        private static string[] randomEmail_A =
+        {
+            "administracion",
+            "info",
+            "comercio",
+            "contacto"
+        };
+        private static string[] randomEmail_B =
+        {
+            "argentino",
+            "garciahnos",
+            "fernandez_e_hijos",
+            "performance",
+            "profesional",
+            "atila",
+            "gzhukov",
+            "viamonte94",
+            "pucaramalvinas"
+        };
+        private static string[] randomEmail_C =
+        {
+            ".com",
+            ".com.ar",
+            ".gov.ar"
+        };
+
+        private static long[] randomCUITMinMax = { 20100000001, 22420000003 };
+
+        public static DBEntidades GenerateRandom(DBCuenta cuenta)
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            //DBTipoEntidad tipEntidad = DBTipoEntidad.G
+            long randomCuit = randomCUITMinMax[0] + Convert.ToInt64(Convert.ToDouble(randomCUITMinMax[1] - randomCUITMinMax[0]) * r.NextDouble() + 0.5);
+            int randB = r.Next(0, randomRS_B.Length);
+            string randomRs = $"{randomRS_A[r.Next(0, randomRS_A.Length)]} {randomRS_B[randB]} {randomRS_C[r.Next(0, randomRS_C.Length)]}";
+            string randomEmail = $"{randomEmail_A[r.Next(0, randomEmail_A.Length)]}@{randomEmail_B[randB]}{randomEmail_C[r.Next(0, randomEmail_C.Length)]}";
+
+            return new DBEntidades(cuenta, DBTipoEntidad.GetRandom(), randomCuit, randomRs, randomEmail, $"{r.Next(100, 9999)}-{r.Next(1000, 9999)}", $"11{r.Next(10000000, 99999999)}");
+        }
     }
 }

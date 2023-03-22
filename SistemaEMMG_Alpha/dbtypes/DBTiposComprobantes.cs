@@ -346,5 +346,10 @@ namespace SistemaEMMG_Alpha
             }
             return str;
         }
+        public static DBTiposComprobantes GetRandom()
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            return _db_tipos_comprobantes[r.Next(0, _db_tipos_comprobantes.Count)];
+        }
     }
 }

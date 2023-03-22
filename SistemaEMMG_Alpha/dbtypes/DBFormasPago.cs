@@ -335,6 +335,11 @@ namespace SistemaEMMG_Alpha
             }
             return str;
         }
+        public static DBFormasPago GetRandom()
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            return _db_formas_pago[r.Next(0, _db_formas_pago.Count)];
+        }
         public override string ToString()
         {
             return $"ID: {GetID()} - {_data.ToString()}";

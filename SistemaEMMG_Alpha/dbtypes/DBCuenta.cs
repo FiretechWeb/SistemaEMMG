@@ -25,6 +25,7 @@ namespace SistemaEMMG_Alpha
         {
             return new CuentaData(reader.GetInt64Safe(NameOf_em_cuit), reader.GetStringSafe(NameOf_em_rs));
         }
+
         public override string ToString()
         {
             return $"Razón Social: {em_rs} - CUIT: {em_cuit}";
@@ -474,6 +475,49 @@ namespace SistemaEMMG_Alpha
                 str += $"Entidad comercial> {entidadComercial}\n";
             }
             return str;
+        }
+
+        //RANDOM Generator
+        private static string[] randomRS_A =
+        {
+            "Industrias",
+            "Maquinaria",
+            "Club",
+            "Sociedad",
+            "Pararrayos",
+            "Diseño",
+            "Telecomunicaciones",
+            "Armeria",
+            "Ferroviaria"
+        };
+        private static string[] randomRS_B =
+        {
+            "Argentino",
+            "Garcia y Hermanos",
+            "Fernandez e Hijos",
+            "Performance",
+            "Profesional",
+            "Atila",
+            "Zhukov",
+            "Viamonte"
+        };
+        private static string[] randomRS_C =
+        {
+            "SA",
+            "SRL",
+            "Tech",
+            ""
+        };
+
+        private static long[] randomCUITMinMax = { 20100000001, 22420000003 };
+
+        public static DBCuenta GenerateRandom()
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            long randomCuit = randomCUITMinMax[0] + Convert.ToInt64(Convert.ToDouble(randomCUITMinMax[1]- randomCUITMinMax[0]) *r.NextDouble()+0.5);
+            string randomRs = $"{randomRS_A[r.Next(0, randomRS_A.Length)]} {randomRS_B[r.Next(0, randomRS_B.Length)]} {randomRS_C[r.Next(0, randomRS_C.Length)]}";
+
+            return new DBCuenta(randomCuit, randomRs);
         }
     }
 }

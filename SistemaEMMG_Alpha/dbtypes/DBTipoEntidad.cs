@@ -342,6 +342,11 @@ namespace SistemaEMMG_Alpha
             }
             return str;
         }
+        public static DBTipoEntidad GetRandom()
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            return _db_tipos_entidades[r.Next(0, _db_tipos_entidades.Count)];
+        }
         ~DBTipoEntidad()
         {
         }
