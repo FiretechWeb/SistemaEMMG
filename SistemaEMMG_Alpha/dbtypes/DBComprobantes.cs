@@ -68,6 +68,7 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush = false;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
+        private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -457,6 +458,17 @@ namespace SistemaEMMG_Alpha
             reader.GetInt64Safe(NameOf_id),
             newTipo,
             ComprobantesData.CreateFromReader(reader)) { }
+
+        public List<DBRecibo> GetAllRecibos(MySqlConnection conn)
+        {
+            List<DBRecibo> returnList = DBRecibo.GetAll(conn, this);
+            _db_recibos.Clear();
+            foreach (DBRecibo recibo in returnList)
+            {
+                _db_recibos.Add(recibo);
+            }
+            return returnList;
+        }
 
         public override bool PushToDatabase(MySqlConnection conn)
         {

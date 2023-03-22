@@ -569,6 +569,17 @@ namespace SistemaEMMG_Alpha
             return existsInDB;
         }
 
+        public List<DBComprobantes> GetAllComprobantes(MySqlConnection conn)
+        {
+            List<DBComprobantes> returnList = DBComprobantes.GetAll(conn, this);
+            _db_comprobantes.Clear();
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                _db_comprobantes.Add(comprobante);
+            }
+            return returnList;
+        }
+
         public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
         {
             List<DBPago> returnList = DBPago.GetAll(conn, this);
