@@ -756,7 +756,7 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaEmitido;
             }
 
-            return new DBComprobantes(entidadComercial, DBTiposComprobantes.GetRandom(), Convert.ToBoolean(r.Next(0, 2)), fechaFinal, $"{randomFacturaCodigos[r.Next(0, randomFacturaCodigos.Length)]}{r.Next(1, 10)}-{r.Next(100000, 999999)}", 100000.0*r.NextDouble(), 21000.0*r.NextDouble(), 50000.0*r.NextDouble(), 500.0*r.NextDouble());
+            return new DBComprobantes(entidadComercial, DBTiposComprobantes.GetRandom(), Convert.ToBoolean(r.Next(0, 2)), fechaFinal, $"{randomFacturaCodigos[r.Next(0, randomFacturaCodigos.Length)]}{r.Next(1, 10)}-{r.Next(100000, 999999)}", Math.Truncate(10000000.0*r.NextDouble())/100.0, Math.Truncate(2100000.0 *r.NextDouble())/100.0, Math.Truncate(5000000.0 *r.NextDouble())/100.0, Math.Truncate(50000.0 *r.NextDouble())/100.0);
         }
         
     }

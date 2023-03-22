@@ -520,7 +520,7 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaPago;
             }
 
-            return new DBComprobantePago(comprobante, DBFormasPago.GetRandom(), comprobante.GetTotal()*r.NextDouble(), "Sin información", fechaFinal);
+            return new DBComprobantePago(comprobante, DBFormasPago.GetRandom(), Math.Truncate(100.0*comprobante.GetTotal()*r.NextDouble())/100.0, "Sin información", fechaFinal);
         }
         
     }

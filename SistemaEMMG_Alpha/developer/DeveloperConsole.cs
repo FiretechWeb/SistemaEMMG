@@ -37,7 +37,7 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print data", (x) => _CMD_PrintBasicDataDB()));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("crear cuenta", (x) => _CMD_CrearCuenta(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make cuenta", (x) => _CMD_CrearCuenta(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("selected", (x) => _CMD_PrintSelected()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("delete", (x) => _CMD_DeleteSelected()));
@@ -48,12 +48,17 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get entidades", (x) => _CMD_GetEntidades(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print entidades", (x) => _CMD_PrintEntidades()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select entidad", (x) => _CMD_SelectEntidad(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("crear entidad", (x) => _CMD_CrearEntidad(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make entidad", (x) => _CMD_CrearEntidad(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get comprobantes", (x) => _CMD_GetComprobantes(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print comprobantes", (x) => _CMD_PrintComprobantes()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select comprobante", (x) => _CMD_SelectComprobante(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("crear comprobante", (x) => _CMD_CrearComprobante(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get pagos", (x) => _CMD_GetPagos(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print pagos", (x) => _CMD_PrintPagos()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select pago", (x) => _CMD_SelectPago(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make pago", (x) => _CMD_CrearPago(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("go back", (x) => _CMD_GoBack()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
@@ -451,7 +456,6 @@ namespace SistemaEMMG_Alpha
                 _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
                 return;
             }
-            MySqlConnection conn = DBConnection.Instance().Connection;
             DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
             _outputStr = "\t:: Comprobantes ::\n";
             _outputStr += entidadComercialSeleccionada.PrintAllComprobantes();
@@ -528,7 +532,102 @@ namespace SistemaEMMG_Alpha
             _outputStr = $"Comprobante seleccionado> {_seleccion}";
 
         }
-        
+
+        private void _CMD_GetPagos(string filter)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                return;
+            }
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
+            comprobanteSeleccionado.GetAllPagos(conn);
+            _outputStr = "\t:: Pagos ::\n";
+            _outputStr += comprobanteSeleccionado.PrintAllPagos();
+        }
+
+        private void _CMD_PrintPagos()
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                return;
+            }
+            DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
+            _outputStr = "\t:: Pagos ::\n";
+            _outputStr += comprobanteSeleccionado.PrintAllPagos();
+        }
+
+        private void _CMD_SelectPago(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                return;
+            }
+            DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
+
+            DBComprobantePago pagoSeleccionado = comprobanteSeleccionado.GetPagoByID(Convert.ToInt64(id.Trim()));
+
+            if (pagoSeleccionado is null)
+            {
+                _outputStr = "No existe un pago en este comprobante con el ID introducido.";
+                return;
+            }
+            _seleccion = pagoSeleccionado;
+            _outputStr = $"Pago seleccionado> {_seleccion}";
+
+        }
+
+
+        private void _CMD_CrearPago(string args)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado. Seleccione un comprobante primero.";
+                return;
+            }
+
+            if (args.Trim().ToLower().Equals("random"))
+            {
+                _seleccion = DBComprobantePago.GenerateRandom((DBComprobantes)_seleccion);
+            }
+            else
+            {
+                string[] parametros = args.Split(',');
+                if (parametros.Length < 3 || parametros.Length > 4)
+                {
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear entidad ID Forma de Pago, Importe, Observación, Fecha=''";
+                    return;
+                }
+                DBFormasPago formasPago = DBFormasPago.GetByID(Convert.ToInt64(parametros[0]));
+                if (formasPago is null)
+                {
+                    _outputStr = "ID de la forma de pago no es válido, vea las formas de pago válidas:\n";
+                    _outputStr += DBFormasPago.PrintAll();
+                    return;
+                }
+                switch (parametros.Length)
+                {
+                    case 3:
+                        _seleccion = new DBComprobantePago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2]);
+                        break;
+                    case 4:
+                        DateTime fechaPago = new DateTime();
+                        DateTime? fechaFinal = null;
+                        if (DateTime.TryParse(parametros[3], out fechaPago))
+                        {
+                            fechaFinal = fechaPago;
+                        }
+                        _seleccion = new DBComprobantePago((DBComprobantes)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2], fechaFinal);
+                        break;
+                }
+            }
+            _outputStr = $"Pago creado> {_seleccion}";
+        }
+
+
         private void _CMD_ResetDatabase()
         {
             if (_inputRegister.Count < 2 || !_inputRegister[_inputRegister.Count-2].ToLower().Contains("reset database"))
