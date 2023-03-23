@@ -108,6 +108,8 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("reset database", (x) => _CMD_ResetDatabase()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
         }
         ///<summary>
         ///Process an input string and retrieves the result.
@@ -1604,6 +1606,30 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 _outputStr += $"SQL error: {ex.ToString()}";
+            }
+        }
+        private void _CMD_MakeExcel(string fileName)
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay selección.";
+                return;
+            }
+            if (_seleccion is DBCuenta cuenta)
+            {
+
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                ExcelExport.ExportToFile(cuenta.GetAllComprobantes(conn), fileName);
+                _outputStr = "Exportado todos los comprobantes de esta cuenta.";
+            }
+            else if (_seleccion is DBEntidades entidadComercial)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                ExcelExport.ExportToFile(entidadComercial.GetAllComprobantes(conn), fileName);
+                _outputStr = "Exportado todos los comprobantes de esta entidad comercial.";
+            } else
+            {
+                _outputStr = "Es necesario seleccionar una cuenta o entidad comercial para exportar un excel de los comprobantes.";
             }
         }
     }
