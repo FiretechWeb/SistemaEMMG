@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
@@ -352,6 +353,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            {
+                return false;
+            }
             bool wasAbleToInsert = false;
             try
             {

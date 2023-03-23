@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
@@ -214,7 +215,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET te_nombre = '{_data.te_nombre}' WHERE {NameOf_id} = {GetID()}";
+                string query = $"UPDATE {db_table} SET te_nombre = '{Regex.Replace(_data.te_nombre.Trim(), @"\s+", " ")}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 _shouldPush = _shouldPush && !wasAbleToUpdate;
@@ -229,10 +230,14 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            {
+                return false;
+            }
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({TiposEntidadesData.NameOf_te_nombre}) VALUES ('{_data.te_nombre}')";
+                string query = $"INSERT INTO {db_table} ({TiposEntidadesData.NameOf_te_nombre}) VALUES ('{Regex.Replace(_data.te_nombre.Trim(), @"\s+", " ")}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -279,7 +284,7 @@ namespace SistemaEMMG_Alpha
             bool? duplicatedExistsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE UPPER({TiposEntidadesData.NameOf_te_nombre}) = '{_data.te_nombre.ToUpper()}'";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE UPPER({TiposEntidadesData.NameOf_te_nombre}) = '{Regex.Replace(_data.te_nombre.Trim().ToUpper(), @"\s+", " ")}'";
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
@@ -232,7 +233,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{_data.em_rs.Trim()}' WHERE {NameOf_id} = {GetID()}";
+                string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{Regex.Replace(_data.em_rs.Trim(), @"\s+", " ")}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 _shouldPush = _shouldPush && !wasAbleToUpdate;
@@ -247,10 +248,14 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            {
+                return false;
+            }
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({CuentaData.NameOf_em_cuit}, {CuentaData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs.Trim()}')";
+                string query = $"INSERT INTO {db_table} ({CuentaData.NameOf_em_cuit}, {CuentaData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{Regex.Replace(_data.em_rs.Trim(), @"\s+", " ")}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -297,7 +302,7 @@ namespace SistemaEMMG_Alpha
             bool? duplicatedExistsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {CuentaData.NameOf_em_cuit} = {_data.em_cuit} AND UPPER({CuentaData.NameOf_em_rs}) = '{_data.em_rs}'";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {CuentaData.NameOf_em_cuit} = {_data.em_cuit} AND UPPER({CuentaData.NameOf_em_rs}) = '{Regex.Replace(_data.em_rs.Trim().ToUpper(), @"\s+", " ")}'";
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }

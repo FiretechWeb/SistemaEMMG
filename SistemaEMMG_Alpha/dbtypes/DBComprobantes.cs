@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
@@ -525,7 +526,7 @@ namespace SistemaEMMG_Alpha
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_cm_tc_id} = {_tipoComprobante.GetID()}, 
                                 {ComprobantesData.NameOf_cm_fecha} = {fechaEmitido}, 
-                                {ComprobantesData.NameOf_cm_numero} = '{_data.cm_numero.Trim()}', 
+                                {ComprobantesData.NameOf_cm_numero} = '{Regex.Replace(_data.cm_numero.Trim(), @"\s+", " ")}', 
                                 {ComprobantesData.NameOf_cm_gravado} = {_data.cm_gravado.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_iva} = {_data.cm_iva.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_no_gravado} = {_data.cm_no_gravado.ToString().Replace(",", ".")}, 
@@ -546,6 +547,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            {
+                return false;
+            }
             bool wasAbleToInsert = false;
             try
             {
@@ -567,7 +572,7 @@ namespace SistemaEMMG_Alpha
                                 {_entidadComercial.GetID()},
                                 {_tipoComprobante.GetID()},
                                 {fechaEmitido},
-                                '{_data.cm_numero.Trim()}',
+                                '{Regex.Replace(_data.cm_numero.Trim(), @"\s+", " ")}',
                                 {_data.cm_gravado.ToString().Replace(",", ".")},
                                 {_data.cm_iva.ToString().Replace(",", ".")},
                                 {_data.cm_no_gravado.ToString().Replace(",", ".")},
@@ -620,11 +625,11 @@ namespace SistemaEMMG_Alpha
                 string query = "";
                 if (_data.cm_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
                 {
-                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{_data.cm_numero.Trim().ToUpper()}'";
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{Regex.Replace(_data.cm_numero.Trim().ToUpper(), @"\s+", " ")}'";
                 }
                 else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
                 {
-                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND {NameOf_cm_ec_id} = {GetEntidadComercialID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{_data.cm_numero.Trim().ToUpper()}'";
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND {NameOf_cm_ec_id} = {GetEntidadComercialID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{Regex.Replace(_data.cm_numero.Trim().ToUpper(), @"\s+", " ")}'";
                 }
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;

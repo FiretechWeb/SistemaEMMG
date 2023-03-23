@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
@@ -254,7 +255,7 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $@"UPDATE {db_table} SET {NameOf_ec_te_id} = {_tipoEntidad.GetID()}, 
                                 {EntidadesComercialesData.NameOf_ec_cuit} = {_data.ec_cuit}, 
-                                {EntidadesComercialesData.NameOf_ec_rs} = '{_data.ec_rs.Trim()}', 
+                                {EntidadesComercialesData.NameOf_ec_rs} = '{Regex.Replace(_data.ec_rs.Trim(), @"\s+", " ")}', 
                                 {EntidadesComercialesData.NameOf_ec_email} = '{_data.ec_email.Trim()}', 
                                 {EntidadesComercialesData.NameOf_ec_telefono} ='{_data.ec_telefono.Trim()}', 
                                 {EntidadesComercialesData.NameOf_ec_celular} ='{_data.ec_celular.Trim()}' 
@@ -273,6 +274,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            {
+                return false;
+            }
             bool wasAbleToInsert = false;
             try
             {
@@ -286,7 +291,7 @@ namespace SistemaEMMG_Alpha
                                 VALUES ({_cuenta.GetID()}, 
                                         {_tipoEntidad.GetID()}, 
                                         {_data.ec_cuit}, 
-                                        '{_data.ec_rs.Trim()}', 
+                                        '{Regex.Replace(_data.ec_rs.Trim(), @"\s+", " ")}', 
                                         '{_data.ec_email.Trim()}', 
                                         '{_data.ec_telefono.Trim()}', 
                                         '{_data.ec_celular.Trim()}')";
@@ -333,7 +338,7 @@ namespace SistemaEMMG_Alpha
             bool? duplicatedExistsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_ec_em_id} = {GetCuentaID()} AND {EntidadesComercialesData.NameOf_ec_cuit} = {_data.ec_cuit} AND UPPER({EntidadesComercialesData.NameOf_ec_rs}) = '{_data.ec_rs.ToUpper()}'";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_ec_em_id} = {GetCuentaID()} AND {EntidadesComercialesData.NameOf_ec_cuit} = {_data.ec_cuit} AND UPPER({EntidadesComercialesData.NameOf_ec_rs}) = '{Regex.Replace(_data.ec_rs.Trim().ToUpper(), @"\s+", " ")}'";
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }

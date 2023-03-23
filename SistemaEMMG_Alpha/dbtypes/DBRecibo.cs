@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
@@ -492,7 +493,7 @@ namespace SistemaEMMG_Alpha
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_rc_tr_id} = {_tipoRecibo.GetID()}, 
                                 {ReciboData.NameOf_rc_fecha} = {fechaEmitido}, 
-                                {ReciboData.NameOf_rc_nro} = '{_data.rc_nro.Trim()}', 
+                                {ReciboData.NameOf_rc_nro} = '{Regex.Replace(_data.rc_nro.Trim(), @"\s+", " ")}', 
                                 {ReciboData.NameOf_rc_obs} = '{_data.rc_obs}', 
                                 {ReciboData.NameOf_rc_emitido} = {Convert.ToInt32(_data.rc_emitido)}, 
                                 WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
@@ -510,6 +511,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            {
+                return false;
+            }
             bool wasAbleToInsert = false;
             try
             {
@@ -528,7 +533,7 @@ namespace SistemaEMMG_Alpha
                                 {_entidadComercial.GetID()},
                                 {_tipoRecibo.GetID()},
                                 {fechaEmitido},
-                                '{_data.rc_nro.Trim()}',
+                                '{Regex.Replace(_data.rc_nro.Trim(), @"\s+", " ")}',
                                 '{_data.rc_obs}', 
                                 {Convert.ToInt32(_data.rc_emitido)} )";
 
@@ -578,7 +583,7 @@ namespace SistemaEMMG_Alpha
                 string query = "";
                 if (_data.rc_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
                 {
-                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND UPPER({ReciboData.NameOf_rc_nro}) = '{_data.rc_nro.Trim().ToUpper()}'";
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND UPPER({ReciboData.NameOf_rc_nro}) = '{Regex.Replace(_data.rc_nro.Trim().ToUpper(), @"\s+", " ")}'";
                 } else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
                 {
                     query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND {NameOf_rc_ec_id} = {GetEntidadComercialID()} AND UPPER({ReciboData.NameOf_rc_nro}) = '{_data.rc_nro.Trim().ToUpper()}'";
