@@ -40,6 +40,26 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get data", (x) => _CMD_RefreshBasicDataDB()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print data", (x) => _CMD_PrintBasicDataDB()));
 
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo comprobante", (x) => _CMD_SelectTipoComprobante(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo comprobante", (x) => _CMD_CrearTipoComprobante(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo comprobante set name", (x) => _CMD_TipoComprobanteSetName(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo recibo", (x) => _CMD_SelectTipoRecibo(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo recibo", (x) => _CMD_CrearTipoRecibo(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo recibo set name", (x) => _CMD_TipoReciboSetName(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo remito", (x) => _CMD_SelectTipoRemito(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo remito", (x) => _CMD_CrearTipoRemito(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo remito set name", (x) => _CMD_TipoRemitoSetName(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo entidad", (x) => _CMD_SelectTipoEntidad(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo entidad", (x) => _CMD_CrearTipoEntidad(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo entidad set name", (x) => _CMD_TipoEntidadSetName(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select forma pago", (x) => _CMD_SelectFormaPago(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make forma pago", (x) => _CMD_CrearFormaDePago(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("forma pago set name", (x) => _CMD_FormaPagoSetName(x))); 
+
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make cuenta", (x) => _CMD_CrearCuenta(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set name", (x) => _CMD_CuentaSetRazonSocial(x)));
@@ -229,6 +249,56 @@ namespace SistemaEMMG_Alpha
             _outputStr += "\t:: Tipos de Recibos ::\n";
             _outputStr += DBTipoRecibo.PrintAll();
         }
+        private void _CMD_SelectTipoComprobante(string id)
+        {
+            _seleccion = DBTiposComprobantes.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No exise un tipo de comprobante con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Tipo de comprobante seleccionado> {_seleccion}";
+        }
+        private void _CMD_SelectTipoRemito(string id)
+        {
+            _seleccion = DBTipoRemito.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No exise un tipo de remito con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Tipo de remito seleccionado> {_seleccion}";
+        }
+        private void _CMD_SelectTipoRecibo(string id)
+        {
+            _seleccion = DBTipoRecibo.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No exise un tipo de recibo con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Tipo de recibo seleccionado> {_seleccion}";
+        }
+        private void _CMD_SelectTipoEntidad(string id)
+        {
+            _seleccion = DBTipoEntidad.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No exise un tipo de entidad con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Tipo de entidad seleccionada> {_seleccion}";
+        }
+        private void _CMD_SelectFormaPago(string id)
+        {
+            _seleccion = DBFormasPago.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No exise una forma de pago con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Forma de pago seleccionada> {_seleccion}";
+        }
         private void _CMD_SelectCuenta(string id)
         {
             _seleccion = DBCuenta.GetByID(SafeConvert.ToInt64(id.Trim()));
@@ -250,12 +320,67 @@ namespace SistemaEMMG_Alpha
                 string[] parametros = args.Split(',');
                 if (parametros.Length != 2)
                 {
-                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear cuenta CUIT, Razón Social";
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make cuenta CUIT, Razón Social";
                     return;
                 }
                 _seleccion = new DBCuenta(SafeConvert.ToInt64(parametros[0]), parametros[1]);
             }
             _outputStr = $"Cuenta creada> {_seleccion}";
+        }
+        private void _CMD_CrearTipoComprobante(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 1)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make tipo comprobante Nombre";
+                return;
+            }
+            _seleccion = new DBTiposComprobantes(parametros[0]);
+            _outputStr = $"Tipo de comprobante creado> {_seleccion}";
+        }
+        private void _CMD_CrearTipoRemito(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 1)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make tipo remito Nombre";
+                return;
+            }
+            _seleccion = new DBTipoRemito(parametros[0]);
+            _outputStr = $"Tipo de remito creado> {_seleccion}";
+        }
+        private void _CMD_CrearTipoRecibo(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 1)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make tipo recibo Nombre";
+                return;
+            }
+            _seleccion = new DBTipoRecibo(parametros[0]);
+            _outputStr = $"Tipo de remito creado> {_seleccion}";
+        }
+        private void _CMD_CrearTipoEntidad(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 1)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make tipo entidad Nombre";
+                return;
+            }
+            _seleccion = new DBTipoEntidad(parametros[0]);
+            _outputStr = $"Tipo de entidad creada> {_seleccion}";
+        }
+        private void _CMD_CrearFormaDePago(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 1)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make forma pago Nombre";
+                return;
+            }
+            _seleccion = new DBFormasPago(parametros[0]);
+            _outputStr = $"Forma de pago creada> {_seleccion}";
         }
 
         private void _CMD_CuentaSetRazonSocial(string rs)
@@ -285,6 +410,62 @@ namespace SistemaEMMG_Alpha
             DBCuenta cuentaSeleccionada = (DBCuenta)_seleccion;
             cuentaSeleccionada.SetCUIT(cuit);
             _outputStr = $"CUIT de la cuenta cambiada.";
+        }
+
+        private void _CMD_TipoComprobanteSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBTiposComprobantes))
+            {
+                _outputStr = "No hay un tipo de comprobante seleccionado.";
+                return;
+            }
+            DBTiposComprobantes tipoComprobanteSeleccionado = (DBTiposComprobantes)_seleccion;
+            tipoComprobanteSeleccionado.SetName(name.Trim());
+            _outputStr = $"Nombre del tipo de comprobante cambiado.";
+        }
+        private void _CMD_TipoRemitoSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBTipoRemito))
+            {
+                _outputStr = "No hay un tipo de remito seleccionado.";
+                return;
+            }
+            DBTipoRemito tipoRemitoSeleccionado = (DBTipoRemito)_seleccion;
+            tipoRemitoSeleccionado.SetName(name.Trim());
+            _outputStr = $"Nombre del tipo de remito cambiado.";
+        }
+        private void _CMD_TipoReciboSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBTipoRecibo))
+            {
+                _outputStr = "No hay un tipo de recibo seleccionado.";
+                return;
+            }
+            DBTipoRecibo tipoReciboSeleccionado = (DBTipoRecibo)_seleccion;
+            tipoReciboSeleccionado.SetName(name.Trim());
+            _outputStr = $"Nombre del tipo de recibo cambiado.";
+        }
+        private void _CMD_TipoEntidadSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBTipoEntidad))
+            {
+                _outputStr = "No hay un tipo de entidad seleccionado.";
+                return;
+            }
+            DBTipoEntidad tipoEntidadSeleccionado = (DBTipoEntidad)_seleccion;
+            tipoEntidadSeleccionado.SetName(name.Trim());
+            _outputStr = $"Nombre del tipo de entidad cambiado.";
+        }
+        private void _CMD_FormaPagoSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBFormasPago))
+            {
+                _outputStr = "No hay un tipo de entidad seleccionado.";
+                return;
+            }
+            DBFormasPago formaPagoSeleccionada = (DBFormasPago)_seleccion;
+            formaPagoSeleccionada.SetName(name.Trim());
+            _outputStr = $"Nombre de la forma de pago cambiada.";
         }
 
         private void _CMD_PrintSelected()
