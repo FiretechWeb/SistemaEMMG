@@ -685,7 +685,7 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_recibos_relation_table} WHERE rt_em_id = {_entidadComercial.GetCuentaID()} AND rt_ec_id = {_entidadComercial.GetID()} AND rt_cm_id = {GetID()} AND rt_rc_id = {remito.GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_remitos_relation_table} WHERE rt_em_id = {_entidadComercial.GetCuentaID()} AND rt_ec_id = {_entidadComercial.GetID()} AND rt_cm_id = {GetID()} AND rt_rm_id = {remito.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
@@ -1194,6 +1194,15 @@ namespace SistemaEMMG_Alpha
             foreach (DBRecibo recibo in _db_recibos)
             {
                 str += $"Recibo relacionado> {recibo}\n";
+            }
+            return str;
+        }
+        public string PrintAllRemitos()
+        {
+            string str = "";
+            foreach (DBRemito remito in _db_remitos)
+            {
+                str += $"Remito relacionado> {remito}\n";
             }
             return str;
         }
