@@ -183,6 +183,7 @@ namespace SistemaEMMG_Alpha
                 {
                     _data = TipoRemitoData.CreateFromReader(reader);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
             }

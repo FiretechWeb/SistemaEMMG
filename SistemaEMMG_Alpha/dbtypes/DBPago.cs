@@ -305,6 +305,7 @@ namespace SistemaEMMG_Alpha
                     new_recibo_id = reader.GetInt64Safe(NameOf_pg_rc_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_pg_ec_id);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
 

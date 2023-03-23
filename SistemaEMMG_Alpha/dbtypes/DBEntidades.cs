@@ -215,6 +215,7 @@ namespace SistemaEMMG_Alpha
                 {
                     _data = EntidadesComercialesData.CreateFromReader(reader);
                     new_tipo_entidad_id = reader.GetInt64Safe(NameOf_ec_te_id);
+                    wasAbleToPull = true;
                     _shouldPush = false;
                 }
                 reader.Close();

@@ -215,6 +215,7 @@ namespace SistemaEMMG_Alpha
                 {
                     _data = CuentaData.CreateFromReader(reader);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
             }

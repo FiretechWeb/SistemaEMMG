@@ -183,6 +183,7 @@ namespace SistemaEMMG_Alpha
                 {
                     _data = TiposEntidadesData.CreateFromReader(reader);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
             }

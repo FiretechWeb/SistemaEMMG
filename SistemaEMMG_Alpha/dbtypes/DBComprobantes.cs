@@ -92,7 +92,7 @@ namespace SistemaEMMG_Alpha
                 string rc_table = DBRecibo.db_table;
                 string query = $@"SELECT * FROM {db_relation_table} 
                 JOIN {db_table} ON {db_relation_table}.rp_em_id = {db_table}.{NameOf_cm_em_id} AND {db_relation_table}.rp_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_relation_table}.rp_cm_id = {db_table}.{NameOf_id} 
-                JOIN {rc_table} ON {db_relation_table}.rp_em_id = {rc_table}.{DBRecibo.NameOf_rc_em_id} AND {db_relation_table}.rp_ec_id = {rc_table}.{DBRecibo.NameOf_rc_ec_id} AND {db_relation_table}.rp_rc_id = {rc_table}.{NameOf_id} 
+                JOIN {rc_table} ON {db_relation_table}.rp_em_id = {rc_table}.{DBRecibo.NameOf_rc_em_id} AND {db_relation_table}.rp_ec_id = {rc_table}.{DBRecibo.NameOf_rc_ec_id} AND {db_relation_table}.rp_rc_id = {rc_table}.{DBRecibo.NameOf_id} 
                 JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {db_table}.{NameOf_cm_tc_id} 
                 WHERE rp_em_id = {recibo.GetCuentaID()} AND rp_ec_id = {recibo.GetEntidadComercialID()} AND rp_rc_id = {recibo.GetID()}";
                 //string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()}";
@@ -495,6 +495,7 @@ namespace SistemaEMMG_Alpha
                     new_tipo_comprobante_id = reader.GetInt64Safe(NameOf_cm_tc_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_cm_ec_id);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
 
@@ -665,10 +666,10 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string query = $@"INSERT INTO {db_relation_table} (
-                                'rp_em_id',
-                                'rp_ec_id',
-                                'rp_rc_id',
-                                'rp_cm_id'
+                                rp_em_id,
+                                rp_ec_id,
+                                rp_rc_id,
+                                rp_cm_id) 
                                 VALUES (
                                 {_entidadComercial.GetCuentaID()},
                                 {_entidadComercial.GetID()},
@@ -686,23 +687,14 @@ namespace SistemaEMMG_Alpha
 
             return wasAbleToInsertRelation;
         }
-        public bool RemoveRelationshipReciboDB(MySqlConnection conn, DBRecibo recibo)
+        public bool RemoveRelationshipReciboDB(MySqlConnection conn, long rc_id)
         {
-            if (recibo.GetEntidadComercialID() != GetEntidadComercialID() || recibo.GetCuentaID() != GetCuentaID())
-            {
-                MessageBox.Show("Error en el método DBComprobantes::RemoveRelationshipReciboDB.\nImposible relacionar un recibo de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()} AND rp_rc_id = {recibo.GetID()}";
+                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()} AND rp_rc_id = {rc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
-                if (deletedCorrectly)
-                {
-                    RemoveRecibo(recibo);
-                }
             }
             catch (Exception ex)
             {
@@ -711,6 +703,21 @@ namespace SistemaEMMG_Alpha
             }
             return deletedCorrectly;
         }
+        public bool RemoveRelationshipReciboDB(MySqlConnection conn, DBRecibo recibo)
+        {
+            if (recibo.GetEntidadComercialID() != GetEntidadComercialID() || recibo.GetCuentaID() != GetCuentaID())
+            {
+                MessageBox.Show("Error en el método DBComprobantes::RemoveRelationshipReciboDB.\nImposible relacionar un recibo de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            bool deletedCorrectly = RemoveRelationshipReciboDB(conn, recibo.GetID());
+            if (deletedCorrectly)
+            {
+                RemoveRecibo(recibo);
+            }
+            return deletedCorrectly;
+        }
+
         public bool RemoveAllRelationshipsWithRecibosDB(MySqlConnection conn)
         {
             bool deletedCorrectly = false;
@@ -940,6 +947,16 @@ namespace SistemaEMMG_Alpha
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
+
+        public string PrintAllRecibos()
+        {
+            string str = "";
+            foreach (DBRecibo recibo in _db_recibos)
+            {
+                str += $"Recibo relacionado> {recibo}\n";
+            }
+            return str;
+        }
 
         private static string[] randomFacturaCodigos =
         {

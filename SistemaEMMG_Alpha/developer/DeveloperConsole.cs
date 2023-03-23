@@ -44,6 +44,7 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("push", (x) => _CMD_PushSelected()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("pull", (x) => _CMD_PullSelected()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("duplicate", (x) => _CMD_MakeLocalSelected()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink all", (x) => _CMD_UnlinkAll()));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get entidades", (x) => _CMD_GetEntidades(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print entidades", (x) => _CMD_PrintEntidades()));
@@ -54,11 +55,15 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print comprobantes", (x) => _CMD_PrintComprobantes()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select comprobante", (x) => _CMD_SelectComprobante(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("link recibo", (x) => _CMD_LinkRecibo(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink recibo", (x) => _CMD_UnlinkRecibo(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get recibos", (x) => _CMD_GetRecibos(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print recibos", (x) => _CMD_PrintRecibos()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select recibo", (x) => _CMD_SelectRecibo(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRecibo(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("link comprobante", (x) => _CMD_LinkComprobante(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink comprobante", (x) => _CMD_UnlinkComprobante(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get pagos", (x) => _CMD_GetPagos(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print pagos", (x) => _CMD_PrintPagos()));
@@ -220,7 +225,7 @@ namespace SistemaEMMG_Alpha
         }
         private void _CMD_SelectCuenta(string id)
         {
-            _seleccion = DBCuenta.GetByID(Convert.ToInt64(id.Trim()));
+            _seleccion = DBCuenta.GetByID(SafeConvert.ToInt64(id.Trim()));
             if (_seleccion is null)
             {
                 _outputStr = "No exise una cuenta con el ID introducido.";
@@ -242,7 +247,7 @@ namespace SistemaEMMG_Alpha
                     _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear cuenta CUIT, Razón Social";
                     return;
                 }
-                _seleccion = new DBCuenta(Convert.ToInt64(parametros[0]), parametros[1]);
+                _seleccion = new DBCuenta(SafeConvert.ToInt64(parametros[0]), parametros[1]);
             }
             _outputStr = $"Cuenta creada> {_seleccion}";
         }
@@ -322,6 +327,28 @@ namespace SistemaEMMG_Alpha
             _seleccion = _seleccion.GetLocalCopy();
             _outputStr = "Has creado una copia local de la entidad.";
         }
+        private void _CMD_UnlinkAll()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay entidad seleccionada.";
+                return;
+            }
+            MySqlConnection conn = DBConnection.Instance().Connection;
+
+            if (_seleccion is DBComprobantes)
+            {
+                DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
+                comprobanteSeleccionado.RemoveAllRelationshipsWithRecibosDB(conn);
+            } else if (_seleccion is DBRecibo)
+            {
+                DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
+                reciboSeleccionado.RemoveAllRelationshipsWithComprobantesDB(conn);
+            } else
+            {
+                _outputStr = "No hay entidad seleccionada válida. Tiene que ser un comprobnate o un recibo.";
+            }
+        }
 
         private void _CMD_GoBack()
         {
@@ -393,7 +420,7 @@ namespace SistemaEMMG_Alpha
                 return;
             }
             DBCuenta cuentaSeleccionada = (DBCuenta)_seleccion;
-            DBEntidades entidadSeleccionada = cuentaSeleccionada.GetEntidadByID(Convert.ToInt64(id.Trim()));
+            DBEntidades entidadSeleccionada = cuentaSeleccionada.GetEntidadByID(SafeConvert.ToInt64(id.Trim()));
 
             if (entidadSeleccionada is null)
             {
@@ -424,7 +451,7 @@ namespace SistemaEMMG_Alpha
                     _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear entidad ID Tipo Entidad, CUIT, Razón Social, Email='', Teléfono='', Celular=''";
                     return;
                 }
-                DBTipoEntidad tipoEntidad = DBTipoEntidad.GetByID(Convert.ToInt64(parametros[0]));
+                DBTipoEntidad tipoEntidad = DBTipoEntidad.GetByID(SafeConvert.ToInt64(parametros[0]));
                 if (tipoEntidad is null)
                 {
                     _outputStr = "ID del tipo de entidad seleccionada invalido, vea los tipos de entidades válidos:\n";
@@ -452,27 +479,50 @@ namespace SistemaEMMG_Alpha
 
         private void _CMD_GetComprobantes(string filter)
         {
-            if (_seleccion is null || !(_seleccion is DBEntidades))
+            if (_seleccion is null)
             {
-                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o recibo primero.";
                 return;
             }
-            MySqlConnection conn = DBConnection.Instance().Connection;
-            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
-            entidadComercialSeleccionada.GetAllComprobantes(conn);
-            _outputStr = "\t:: Comprobantes ::\n";
-            _outputStr += entidadComercialSeleccionada.PrintAllComprobantes();
+            if (_seleccion is DBEntidades)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
+                entidadComercialSeleccionada.GetAllComprobantes(conn);
+                _outputStr = "\t:: Comprobantes ::\n";
+                _outputStr += entidadComercialSeleccionada.PrintAllComprobantes();
+            } else if (_seleccion is DBRecibo)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
+                reciboSeleccionado.GetAllComprobantes(conn);
+                _outputStr = "\t:: Comprobantes Relacionados ::\n";
+                _outputStr += reciboSeleccionado.PrintAllComprobantes();
+            } else
+            {
+                _outputStr = "No hay una entidad comercial o recibo seleccionado. Seleccione una entidad comercial o un recibo primero.";
+            }
         }
         private void _CMD_PrintComprobantes()
         {
-            if (_seleccion is null || !(_seleccion is DBEntidades))
+            if (_seleccion is null)
             {
-                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o recibo primero.";
                 return;
             }
-            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
-            _outputStr = "\t:: Comprobantes ::\n";
-            _outputStr += entidadComercialSeleccionada.PrintAllComprobantes();
+            if (_seleccion is DBEntidades)
+            {
+                DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
+                _outputStr = "\t:: Comprobantes ::\n";
+                _outputStr += entidadComercialSeleccionada.PrintAllComprobantes();
+            } else if (_seleccion is DBRecibo)
+            {
+                DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
+                _outputStr = "\t:: Comprobantes relacionados ::\n";
+                _outputStr += reciboSeleccionado.PrintAllComprobantes();
+            } else {
+                _outputStr = "No hay una entidad comercial o recibo seleccionado. Seleccione una entidad comercial o un recibo primero.";
+            }
         }
 
         private void _CMD_CrearComprobante(string args)
@@ -494,7 +544,7 @@ namespace SistemaEMMG_Alpha
                     _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Comprobante, Emitido, Fecha, Numero, Gravado, IVA, No Gravado='0', Percepción='0'";
                     return;
                 }
-                DBTiposComprobantes tipoComprobante = DBTiposComprobantes.GetByID(Convert.ToInt64(parametros[0]));
+                DBTiposComprobantes tipoComprobante = DBTiposComprobantes.GetByID(SafeConvert.ToInt64(parametros[0]));
                 if (tipoComprobante is null)
                 {
                     _outputStr = "ID del tipo de comprobante seleccionado inválido, vea los tipos de comprobantes válidos:\n";
@@ -535,7 +585,7 @@ namespace SistemaEMMG_Alpha
             }
             DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
 
-            DBComprobantes comprobanteSeleccionado = entidadComercialSeleccionada.GetComprobanteByID(Convert.ToInt64(id.Trim()));
+            DBComprobantes comprobanteSeleccionado = entidadComercialSeleccionada.GetComprobanteByID(SafeConvert.ToInt64(id.Trim()));
 
             if (comprobanteSeleccionado is null)
             {
@@ -546,31 +596,88 @@ namespace SistemaEMMG_Alpha
             _outputStr = $"Comprobante seleccionado> {_seleccion}";
 
         }
+        private void _CMD_LinkRecibo(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado, seleccione un comprobante primero.";
+                return;
+            }
+            DBComprobantes comprobante = (DBComprobantes)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBRecibo recibo = DBRecibo.GetByID(conn, comprobante.GetEntidadComercial(), SafeConvert.ToInt64(id.Trim()));
+            if (recibo is null)
+            {
+                _outputStr = "No existe un recibo con el ID seleccionado.";
+                return;
+            }
+            comprobante.AddRecibo(recibo);
+            comprobante.PushAllRelationshipsWithRecibosDB(conn);
+            _outputStr = "Recibo relacionado al comprobante.";
+        }
 
+        private void _CMD_UnlinkRecibo(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado, seleccione un comprobante primero.";
+                return;
+            }
+            DBComprobantes comprobante = (DBComprobantes)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (comprobante.RemoveRelationshipReciboDB(conn, SafeConvert.ToInt64(id.Trim())))
+            {
+                _outputStr = "Recibo removido de la relación con el comprobante exitosamente.";
+            }
+            else
+            {
+                _outputStr = "Error, no se pudo eliminar la relación entre el comprobnate y el recibo.";
+            }
+        }
 
         private void _CMD_GetRecibos(string filter)
         {
-            if (_seleccion is null || !(_seleccion is DBEntidades))
+            if (_seleccion is null)
             {
-                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o comprobante primero.";
                 return;
             }
-            MySqlConnection conn = DBConnection.Instance().Connection;
-            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
-            entidadComercialSeleccionada.GetAllRecibos(conn);
-            _outputStr = "\t:: Recibos ::\n";
-            _outputStr += entidadComercialSeleccionada.PrintAllRecibos();
+            if (_seleccion is DBEntidades entidadComercialSeleccionada)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                entidadComercialSeleccionada.GetAllRecibos(conn);
+                _outputStr = "\t:: Recibos ::\n";
+                _outputStr += entidadComercialSeleccionada.PrintAllRecibos();
+            } else if (_seleccion is DBComprobantes comprobanteSeleccionado) {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                comprobanteSeleccionado.GetAllRecibos(conn);
+                _outputStr = "\t:: Recibos Relacionados ::\n";
+                _outputStr += comprobanteSeleccionado.PrintAllRecibos();
+            } else
+            {
+                _outputStr = "La entidad seleccionada no es válida para esta operación. Seleccione una entidad comercial o un comprobante.";
+            }
         }
         private void _CMD_PrintRecibos()
         {
-            if (_seleccion is null || !(_seleccion is DBEntidades))
+            if (_seleccion is null)
             {
-                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o comprobante primero.";
                 return;
             }
-            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
-            _outputStr = "\t:: Recibos ::\n";
-            _outputStr += entidadComercialSeleccionada.PrintAllRecibos();
+            if (_seleccion is DBEntidades entidadComercialSeleccionada)
+            {
+                _outputStr = "\t:: Recibos ::\n";
+                _outputStr += entidadComercialSeleccionada.PrintAllRecibos();
+            }
+            else if (_seleccion is DBComprobantes comprobanteSeleccionado)
+            {
+                _outputStr = "\t:: Recibos Relacionados ::\n";
+                _outputStr += comprobanteSeleccionado.PrintAllRecibos();
+            } else
+            {
+                _outputStr = "La entidad seleccionada no es válida para esta operación. Seleccione una entidad comercial o un comprobante.";
+            }
         }
 
         private void _CMD_CrearRecibo(string args)
@@ -592,7 +699,7 @@ namespace SistemaEMMG_Alpha
                     _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Recibo, Fecha del Recibo, Numero de Recibo, Observación=''";
                     return;
                 }
-                DBTipoRecibo tipoRecibo = DBTipoRecibo.GetByID(Convert.ToInt64(parametros[0]));
+                DBTipoRecibo tipoRecibo = DBTipoRecibo.GetByID(SafeConvert.ToInt64(parametros[0]));
                 if (tipoRecibo is null)
                 {
                     _outputStr = "ID del tipo de recibo seleccionado inválido, vea los tipos de recibos válidos:\n";
@@ -628,7 +735,7 @@ namespace SistemaEMMG_Alpha
                 return;
             }
             DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
-            DBRecibo reciboSeleccionado = entidadComercialSeleccionada.GetReciboByID(Convert.ToInt64(id.Trim()));
+            DBRecibo reciboSeleccionado = entidadComercialSeleccionada.GetReciboByID(SafeConvert.ToInt64(id.Trim()));
 
             if (reciboSeleccionado is null)
             {
@@ -638,6 +745,44 @@ namespace SistemaEMMG_Alpha
             _seleccion = reciboSeleccionado;
             _outputStr = $"Recibo seleccionado> {_seleccion}";
 
+        }
+
+        private void _CMD_LinkComprobante(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBRecibo))
+            {
+                _outputStr = "No hay un recibo seleccionado, seleccione un recibo primero.";
+                return;
+            }
+            DBRecibo recibo = (DBRecibo)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBComprobantes comprobantes = DBComprobantes.GetByID(conn, recibo.GetEntidadComercial(), SafeConvert.ToInt64(id.Trim()));
+            if (comprobantes is null)
+            {
+                _outputStr = "No existe un comprobante con el ID seleccionado.";
+                return;
+            }
+            recibo.AddComprobante(comprobantes);
+            recibo.PushAllRelationshipsWithComprobantesDB(conn);
+            _outputStr = "Comprobante relacionado al recibo.";
+        }
+
+        private void _CMD_UnlinkComprobante(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBRecibo))
+            {
+                _outputStr = "No hay un recibo seleccionado, seleccione un recibo primero.";
+                return;
+            }
+            DBRecibo recibo = (DBRecibo)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (recibo.RemoveRelationshipComprobanteDB(conn, SafeConvert.ToInt64(id.Trim())))
+            {
+                _outputStr = "Comprobante removido de la relación con el recibo exitosamente.";
+            } else
+            {
+                _outputStr = "Error, no se pudo eliminar la relación entre el comprobnate y el recibo.";
+            }
         }
 
         private void _CMD_GetPagos(string filter)
@@ -675,7 +820,7 @@ namespace SistemaEMMG_Alpha
             }
             DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
 
-            DBPago pagoSeleccionado = reciboSeleccionado.GetPagoByID(Convert.ToInt64(id.Trim()));
+            DBPago pagoSeleccionado = reciboSeleccionado.GetPagoByID(SafeConvert.ToInt64(id.Trim()));
 
             if (pagoSeleccionado is null)
             {
@@ -686,7 +831,6 @@ namespace SistemaEMMG_Alpha
             _outputStr = $"Pago seleccionado> {_seleccion}";
 
         }
-
 
         private void _CMD_CrearPago(string args)
         {
@@ -708,7 +852,7 @@ namespace SistemaEMMG_Alpha
                     _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear entidad ID Forma de Pago, Importe, Observación, Fecha=''";
                     return;
                 }
-                DBFormasPago formasPago = DBFormasPago.GetByID(Convert.ToInt64(parametros[0]));
+                DBFormasPago formasPago = DBFormasPago.GetByID(SafeConvert.ToInt64(parametros[0]));
                 if (formasPago is null)
                 {
                     _outputStr = "ID de la forma de pago no es válido, vea las formas de pago válidas:\n";
@@ -746,11 +890,13 @@ namespace SistemaEMMG_Alpha
             MySqlConnection conn = DBConnection.Instance().Connection;
             try
             {
-                //Deleting recibos
-                string query = "DELETE FROM recibos";
+                //Deleting recibos_comprobantes
+                string query = $"DELETE FROM {DBRecibo.db_relation_table}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = "ALTER TABLE recibos AUTO_INCREMENT = 1";
+
+                //Deleting remitos_comprobantes
+                query = $"DELETE FROM remitos_comprobantes";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
@@ -759,6 +905,14 @@ namespace SistemaEMMG_Alpha
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
                 query = $"ALTER TABLE {DBPago.db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                //Deleting recibos
+                query = "DELETE FROM recibos";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = "ALTER TABLE recibos AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 

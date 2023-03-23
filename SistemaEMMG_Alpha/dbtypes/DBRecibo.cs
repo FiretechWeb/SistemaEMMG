@@ -449,6 +449,7 @@ namespace SistemaEMMG_Alpha
                     new_tipo_recibo_id = reader.GetInt64Safe(NameOf_rc_tr_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_rc_ec_id);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
 
@@ -607,10 +608,10 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string query = $@"INSERT INTO {db_relation_table} (
-                                'rp_em_id',
-                                'rp_ec_id',
-                                'rp_rc_id',
-                                'rp_cm_id'
+                                rp_em_id,
+                                rp_ec_id,
+                                rp_rc_id,
+                                rp_cm_id) 
                                 VALUES (
                                 {_entidadComercial.GetCuentaID()},
                                 {_entidadComercial.GetID()},
@@ -628,6 +629,24 @@ namespace SistemaEMMG_Alpha
 
             return wasAbleToInsertRelation;
         }
+
+        public bool RemoveRelationshipComprobanteDB(MySqlConnection conn, long cm_id)
+        {
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {cm_id} AND rp_rc_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRecibo::RemoveRelationshipComprobanteDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                deletedCorrectly = false;
+            }
+            return deletedCorrectly;
+        }
+
         public bool RemoveRelationshipComprobanteDB(MySqlConnection conn, DBComprobantes comprobante)
         {
             if (comprobante.GetEntidadComercialID() != GetEntidadComercialID() || comprobante.GetCuentaID() != GetCuentaID())
@@ -635,21 +654,10 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el método DBRecibo::RemoveRelationshipComprobanteDB.\nImposible relacionar un comprobante de otra entidad comercial a la del recibo.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
-            bool deletedCorrectly = false;
-            try
+            bool deletedCorrectly = RemoveRelationshipComprobanteDB(conn, comprobante.GetID());
+            if (deletedCorrectly)
             {
-                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {comprobante.GetID()} AND rp_rc_id = {GetID()}";
-                var cmd = new MySqlCommand(query, conn);
-                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
-                if (deletedCorrectly)
-                {
-                    RemoveComprobante(comprobante);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRecibo::RemoveRelationshipComprobanteDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
-                deletedCorrectly = false;
+                RemoveComprobante(comprobante);
             }
             return deletedCorrectly;
         }
@@ -899,6 +907,15 @@ namespace SistemaEMMG_Alpha
             foreach (DBPago pago in _db_pagos)
             {
                 str += $"Pago> {pago}\n";
+            }
+            return str;
+        }
+        public string PrintAllComprobantes()
+        {
+            string str = "";
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                str += $"Comprobante relacionado> {comprobante}\n";
             }
             return str;
         }

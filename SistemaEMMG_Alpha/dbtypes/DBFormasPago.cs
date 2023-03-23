@@ -176,6 +176,7 @@ namespace SistemaEMMG_Alpha
                 {
                     _data = FormasPagoData.CreateFromReader(reader);
                     _shouldPush = false;
+                    wasAbleToPull = true;
                 }
                 reader.Close();
             }
