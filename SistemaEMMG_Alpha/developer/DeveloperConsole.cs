@@ -1127,10 +1127,10 @@ namespace SistemaEMMG_Alpha
                 cmd.ExecuteNonQuery();
 
                 //Deleting recibos
-                query = "DELETE FROM recibos";
+                query = $"DELETE FROM {DBRecibo.db_table}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
-                query = "ALTER TABLE recibos AUTO_INCREMENT = 1";
+                query = $"ALTER TABLE {DBRecibo.db_table} AUTO_INCREMENT = 1";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 

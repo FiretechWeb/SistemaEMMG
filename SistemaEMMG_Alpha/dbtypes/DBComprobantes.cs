@@ -600,13 +600,45 @@ namespace SistemaEMMG_Alpha
             return wasAbleToInsert;
         }
 
+        private bool DeleteAllRelatedData(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {GetCuentaID()} AND rp_ec_id = {GetEntidadComercialID()} AND rp_cm_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                query = $"DELETE FROM remitos_comprobantes WHERE rt_em_id = {GetCuentaID()} AND rt_ec_id = {GetEntidadComercialID()} AND rt_cm_id = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                deletedCorrectly = true;
+            }
+            catch (Exception ex)
+            {
+                deletedCorrectly = false;
+                MessageBox.Show("Error tratando de eliminar información relacionada a un comprobante en DBComprobante: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return deletedCorrectly;
+        }
+
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())
             {
                 return false;
             }
-            RemoveAllRelationshipsWithRecibosDB(conn);
+
+            if (!DeleteAllRelatedData(conn))
+            {
+                return false;
+            }
+
             bool deletedCorrectly = false;
             try
             {

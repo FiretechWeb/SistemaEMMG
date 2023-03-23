@@ -293,6 +293,30 @@ namespace SistemaEMMG_Alpha
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
+                query = $"DELETE FROM remitos_comprobantes WHERE rt_em_id = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                query = $"DELETE FROM {DBPago.db_table} WHERE {DBPago.NameOf_pg_em_id} = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                query = $"DELETE FROM {DBRecibo.db_table} WHERE {DBRecibo.NameOf_rc_em_id} = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                query = $"DELETE FROM remitos WHERE rm_em_id = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                query = $"DELETE FROM {DBComprobantes.db_table} WHERE {DBComprobantes.NameOf_cm_em_id} = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                query = $"DELETE FROM {DBEntidades.db_table} WHERE {DBEntidades.NameOf_ec_em_id} = {GetID()}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
                 deletedCorrectly = true;
             }
             catch (Exception ex)
