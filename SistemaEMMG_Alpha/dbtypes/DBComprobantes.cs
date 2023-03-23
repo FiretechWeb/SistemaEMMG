@@ -519,6 +519,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool UpdateToDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool wasAbleToUpdate = false;
             try
             {
@@ -598,6 +602,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             RemoveAllRelationshipsWithRecibosDB(conn);
             bool deletedCorrectly = false;
             try
@@ -643,6 +651,10 @@ namespace SistemaEMMG_Alpha
         }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool? existsInDB = null;
             try
             {
@@ -660,6 +672,10 @@ namespace SistemaEMMG_Alpha
 
         private bool? CheckIfRelatioshipWithReciboExistsDB(MySqlConnection conn, DBRecibo newRecibo)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool? existsInDB = null;
             try
             {
@@ -676,6 +692,10 @@ namespace SistemaEMMG_Alpha
         }
         public bool PushRelationshipReciboDB(MySqlConnection conn, DBRecibo newRecibo)
         {
+            if (IsLocal() || newRecibo.IsLocal())
+            {
+                return false;
+            }
             if (newRecibo.GetEntidadComercialID() != GetEntidadComercialID() || newRecibo.GetCuentaID() != GetCuentaID())
             {
                 MessageBox.Show("Error en el método DBComprobantes::PushRelationshipReciboDB.\nImposible relacionar un recibo de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -718,6 +738,10 @@ namespace SistemaEMMG_Alpha
         }
         public bool RemoveRelationshipReciboDB(MySqlConnection conn, long rc_id)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool deletedCorrectly = false;
             try
             {
@@ -734,6 +758,10 @@ namespace SistemaEMMG_Alpha
         }
         public bool RemoveRelationshipReciboDB(MySqlConnection conn, DBRecibo recibo)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             if (recibo.GetEntidadComercialID() != GetEntidadComercialID() || recibo.GetCuentaID() != GetCuentaID())
             {
                 MessageBox.Show("Error en el método DBComprobantes::RemoveRelationshipReciboDB.\nImposible relacionar un recibo de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -749,6 +777,10 @@ namespace SistemaEMMG_Alpha
 
         public bool RemoveAllRelationshipsWithRecibosDB(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool deletedCorrectly = false;
             try
             {

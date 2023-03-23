@@ -230,6 +230,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool UpdateToDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool wasAbleToUpdate = false;
             try
             {
@@ -276,9 +280,39 @@ namespace SistemaEMMG_Alpha
             return wasAbleToInsert;
         }
 
+        private bool DeleteAllRelatedData(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {DBRecibo.db_relation_table} WHERE rp_em_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                deletedCorrectly = true;
+            }
+            catch (Exception ex)
+            {
+                deletedCorrectly = false;
+                MessageBox.Show("Error tratando de eliminar información relacionada a una cuenta en DBCuenta: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return deletedCorrectly;
+        }
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool deletedCorrectly = false;
+            if (!DeleteAllRelatedData(conn)) //remove all related data first...
+            {
+                return false;
+            }
             try
             {
                 string query = $"DELETE FROM {db_table} WHERE {NameOf_id} = {GetID()}";
@@ -315,6 +349,10 @@ namespace SistemaEMMG_Alpha
         }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool? existsInDB = null;
             try
             {

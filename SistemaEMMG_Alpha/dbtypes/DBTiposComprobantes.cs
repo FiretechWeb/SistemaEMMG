@@ -208,6 +208,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool UpdateToDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool wasAbleToUpdate = false;
 
             try
@@ -257,6 +261,10 @@ namespace SistemaEMMG_Alpha
 
         public override bool DeleteFromDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool deletedCorrectly = false;
             try
             {
@@ -294,6 +302,10 @@ namespace SistemaEMMG_Alpha
         }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
+            if (IsLocal())
+            {
+                return false;
+            }
             bool? existsInDB = null;
             try
             {
