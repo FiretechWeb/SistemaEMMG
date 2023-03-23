@@ -38,8 +38,6 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         public const string db_table = "tipos_entidades";
         public const string NameOf_id = "te_id";
-        private long _id;
-        private bool _shouldPush = false;
         private TiposEntidadesData _data;
         private static readonly List<DBTipoEntidad> _db_tipos_entidades = new List<DBTipoEntidad>();
 
@@ -333,23 +331,6 @@ namespace SistemaEMMG_Alpha
 
         public string GetName() => _data.te_nombre;
 
-        public override long GetID() => _id;
-
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (_id != id);
-            _id = id;
-        }
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
-        }
         public override string ToString()
         {
             return $"ID: {GetID()} - {_data.ToString()}";

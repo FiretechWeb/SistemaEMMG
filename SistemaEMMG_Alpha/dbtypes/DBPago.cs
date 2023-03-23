@@ -44,8 +44,6 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_pg_rc_id = "pg_rc_id";
         public const string NameOf_id = "pg_id";
         public const string NameOf_pg_fp_id = "pg_fp_id";
-        private long _id;
-        private bool _shouldPush = false;
         private PagoData _data;
         private DBRecibo _recibo; //ESTO Luego se cambia por DBRecibo
         private DBFormasPago _formaDePago;
@@ -431,12 +429,6 @@ namespace SistemaEMMG_Alpha
             return existsInDB;
         }
 
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-
-        protected override void ChangeID(long id) => _id = id;
-        public override long GetID() => _id;
-
         public long GetCuentaID() => _recibo.GetCuentaID();
         public DBCuenta GetCuenta() => _recibo.GetCuenta();
 
@@ -457,13 +449,6 @@ namespace SistemaEMMG_Alpha
         public void SetFormaDePago(long fp_id) => _formaDePago = DBFormasPago.GetByID(fp_id);
         public void SetObservacion(string obs) => _data.pg_obs = obs;
 
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
-        }
         public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _data);
 
         public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - {_data.ToString()}";

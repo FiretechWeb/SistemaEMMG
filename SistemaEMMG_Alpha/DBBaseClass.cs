@@ -10,10 +10,8 @@ namespace SistemaEMMG_Alpha
 {
     public abstract class DBBaseClass
     {
-        ///<summary>
-        ///Change the ID of the element (private method only, for security reasons)
-        ///</summary>
-        abstract protected void ChangeID(long id);
+        protected long _id=-1;
+        protected bool _shouldPush = false;
         ///<summary>
         ///Check if element with same data exists in DB. This checks for data, and not ID. For checking if an element with the same ID exists in database, use ExistsInDatabase method.
         ///</summary>
@@ -22,10 +20,6 @@ namespace SistemaEMMG_Alpha
         ///Check if element exists in the database or not. If it returns null, it means there was an error connecting with the DB.
         ///</summary>
         abstract public bool? ExistsInDatabase(MySqlConnection conn);
-        ///<summary>
-        ///Get the ID of the element as it is stored in the Database
-        ///</summary>
-        abstract public long GetID();
         ///<summary>
         ///Update this element into the database.
         ///</summary>
@@ -47,24 +41,41 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         abstract public bool DeleteFromDatabase(MySqlConnection conn);
         ///<summary>
+        ///Returns a Local copy of this element.
+        ///</summary>
+        abstract public DBBaseClass GetLocalCopy();
+        ///<summary>
+        ///Get the ID of the element as it is stored in the Database
+        ///</summary>
+        virtual public long GetID() => _id;
+        ///<summary>
+        ///Change the ID of the element (private method only, for security reasons)
+        ///</summary>
+        virtual protected void ChangeID(long id)
+        {
+            _shouldPush = _shouldPush || (id != _id);
+            _id = id;
+        }
+        ///<summary>
         ///Returns true if the entity changed after being read from the DB (or being created in general)
         ///</summary>
-        abstract public bool ShouldPush();
+        virtual public bool ShouldPush() => _shouldPush;
         ///<summary>
         ///Returns true if the data was locally created and not present originally in the DB.
         ///</summary>
-        abstract public bool IsLocal();
+        virtual public bool IsLocal() => _id < 0;
 
         ///<summary>
         ///If this element was retrieved from DB, it makes it now local so it can be pushed into the DB as a new element. 
         ///(private method only, for security reasons)
         ///</summary>
-        abstract protected void MakeLocal();
-
-        ///<summary>
-        ///Returns a Local copy of this element.
-        ///</summary>
-        abstract public DBBaseClass GetLocalCopy();
+        virtual protected void MakeLocal()
+        {
+            if (GetID() >= 0)
+            {
+                ChangeID(-1);
+            }
+        }
     }
 
 }

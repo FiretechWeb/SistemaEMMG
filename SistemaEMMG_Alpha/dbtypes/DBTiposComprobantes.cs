@@ -33,8 +33,6 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         public const string db_table = "tipos_comprobantes";
         public const string NameOf_id = "tc_id";
-        private long _id;
-        private bool _shouldPush=false;
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
@@ -310,15 +308,6 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (id != _id);
-            _id = id;
-        }
-        public override long GetID() => _id;
-
         public void SetName(string newName)
         {
             _shouldPush = _shouldPush || !_data.tc_nombre.Equals(newName);
@@ -326,14 +315,6 @@ namespace SistemaEMMG_Alpha
         }
 
         public string GetName() => _data.tc_nombre;
-
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
-        }
 
         public override DBBaseClass GetLocalCopy() => new DBTiposComprobantes(-1, _data);
 

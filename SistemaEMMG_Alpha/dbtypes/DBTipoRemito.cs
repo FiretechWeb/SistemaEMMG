@@ -31,8 +31,6 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         public const string db_table = "tipos_remitos";
         public const string NameOf_id = "ts_id";
-        private long _id;
-        private bool _shouldPush = false;
         private TipoRemitoData _data;
         private static readonly List<DBTipoRemito> _db_tipos_remitos = new List<DBTipoRemito>();
 
@@ -323,23 +321,6 @@ namespace SistemaEMMG_Alpha
         }
 
         public string GetName() => _data.ts_nombre;
-
-        public override long GetID() => _id;
-
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (_id != id);
-            _id = id;
-        }
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
-        }
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
 
         public override string ToString() => $"ID: {GetID()} - {_data}";
 

@@ -30,8 +30,6 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         public const string db_table = "formas_pago";
         public const string NameOf_id = "fp_id";
-        private long _id;
-        private bool _shouldPush = false;
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
 
@@ -309,14 +307,7 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
-        public override long GetID() => _id;
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (_id != id);
-            _id = id;
-        }
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
+
         public string GetName() => _data.fp_nombre;
 
         public void SetName(string newName)
@@ -330,13 +321,6 @@ namespace SistemaEMMG_Alpha
             return new DBFormasPago(-1, _data);
         }
 
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
-        }
         public override string ToString() => $"ID: {GetID()} - {_data}";
 
         /**********************

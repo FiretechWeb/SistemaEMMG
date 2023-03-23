@@ -135,8 +135,6 @@ namespace SistemaEMMG_Alpha
          * Local STUFF *
          ***************/
 
-        private long _id;
-        private bool _shouldPush = false;
         private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>(); //Useless, TO REMOVE in future. 
@@ -476,9 +474,6 @@ namespace SistemaEMMG_Alpha
         }
         public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
 
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-
         public void SetRazonSocial(string name)
         {
             _shouldPush = _shouldPush || !_data.em_rs.Equals(name);
@@ -490,15 +485,6 @@ namespace SistemaEMMG_Alpha
             _data.em_cuit = cuit;
         }
 
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (id != _id);
-            _id = id;
-        }
-        public override long GetID()
-        {
-            return _id;
-        }
         public long GetCUIT()
         {
             return _data.em_cuit;
@@ -506,14 +492,6 @@ namespace SistemaEMMG_Alpha
         public string GetRazonSocial()
         {
             return _data.em_rs;
-        }
-
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
         }
 
         public override DBBaseClass GetLocalCopy() => new DBCuenta(-1, _data);

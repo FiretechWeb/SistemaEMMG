@@ -55,8 +55,6 @@ namespace SistemaEMMG_Alpha
         ///Business Account associated with this commercial entity.
         ///</summary>
         private readonly DBCuenta _cuenta;
-        private long _id;
-        private bool _shouldPush = false;
         private EntidadesComercialesData _data;
         private DBTipoEntidad _tipoEntidad = null;
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
@@ -503,15 +501,6 @@ namespace SistemaEMMG_Alpha
         }
         public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
 
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (_id != id);
-            _id = id;
-        }
-        public override long GetID() => _id;
-
         public long GetCuentaID() => _cuenta.GetID();
 
         public DBCuenta GetCuenta() => _cuenta;
@@ -567,13 +556,6 @@ namespace SistemaEMMG_Alpha
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
         }
 
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
-        }
         public override DBBaseClass GetLocalCopy() => new DBEntidades(_cuenta, -1, _tipoEntidad, _data);
 
         public override string ToString() => $"ID: {GetID()} - Tipo Entidad: {_tipoEntidad.GetName()} - {_data}";

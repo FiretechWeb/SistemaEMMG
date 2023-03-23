@@ -65,8 +65,6 @@ namespace SistemaEMMG_Alpha
         ///Commercial entity associated with this business receipt.
         ///</summary>
         private DBEntidades _entidadComercial; //this can change actually... (Maybe the DB's design it's flawed... it is what it is LOL)
-        private long _id;
-        private bool _shouldPush = false;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
         private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
@@ -903,14 +901,6 @@ namespace SistemaEMMG_Alpha
         }
         public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
 
-        public override bool ShouldPush() => _shouldPush;
-        public override bool IsLocal() => _id < 0;
-        protected override void ChangeID(long id)
-        {
-            _shouldPush = _shouldPush || (_id != id);
-            _id = id;
-        }
-        public override long GetID() => _id;
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
         ///<summary>
@@ -1003,14 +993,6 @@ namespace SistemaEMMG_Alpha
         {
             _shouldPush = _shouldPush || (esEmitido != _data.cm_emitido);
             _data.cm_emitido = esEmitido;
-        }
-
-        protected override void MakeLocal()
-        {
-            if (GetID() >= 0)
-            {
-                ChangeID(-1);
-            }
         }
 
         public override DBBaseClass GetLocalCopy() => new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _data);
