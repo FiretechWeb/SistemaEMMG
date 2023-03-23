@@ -237,6 +237,10 @@ namespace SistemaEMMG_Alpha
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
                 {
+                    if (!_db_tipos_entidades.Contains(this))
+                    {
+                        _db_tipos_entidades.Add(this);
+                    }
                     ChangeID(cmd.LastInsertedId);
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
@@ -259,6 +263,7 @@ namespace SistemaEMMG_Alpha
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
                 if (deletedCorrectly)
                 {
+                    _db_tipos_entidades.Remove(this);
                     MakeLocal();
                 }
             }
