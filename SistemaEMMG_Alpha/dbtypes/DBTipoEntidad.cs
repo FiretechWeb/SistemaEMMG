@@ -74,15 +74,7 @@ namespace SistemaEMMG_Alpha
         }
         List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
-        public static List<DBTipoEntidad> GetAll()
-        {
-            List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();
-            foreach (DBTipoEntidad tipoEntidad in _db_tipos_entidades)
-            {
-                returnList.Add(tipoEntidad);
-            }
-            return returnList;
-        }
+        public static List<DBTipoEntidad> GetAll() => new List<DBTipoEntidad>(_db_tipos_entidades);
 
         List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAll() => GetAll();
 
@@ -92,17 +84,7 @@ namespace SistemaEMMG_Alpha
         }
         IReadOnlyCollection<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GetAllLocal() => GetAllLocal();
 
-        public static DBTipoEntidad GetByID(long te_id)
-        {
-            foreach (DBTipoEntidad tmpTipo in _db_tipos_entidades)
-            {
-                if (tmpTipo.GetID() == te_id)
-                {
-                    return tmpTipo;
-                }
-            }
-            return null;
-        }
+        public static DBTipoEntidad GetByID(long te_id) => _db_tipos_entidades.Find(x => x.GetID() == te_id);
 
         public static DBTipoEntidad GetByID(long te_id, MySqlConnection conn)
         {

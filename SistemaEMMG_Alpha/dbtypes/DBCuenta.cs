@@ -67,15 +67,8 @@ namespace SistemaEMMG_Alpha
         }
         List<DBCuenta> IDBDataType<DBCuenta>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
-        public static List<DBCuenta> GetAll()
-        {
-            List<DBCuenta> returnList = new List<DBCuenta>();
-            foreach (DBCuenta cuenta in _db_cuentas)
-            {
-                returnList.Add(cuenta);
-            }
-            return returnList;
-        }
+        public static List<DBCuenta> GetAll() => new List<DBCuenta>(_db_cuentas);
+
         List<DBCuenta> IDBDataType<DBCuenta>.GetAll() => GetAll();
 
         public static IReadOnlyCollection<DBCuenta> GetAllLocal()
@@ -84,17 +77,7 @@ namespace SistemaEMMG_Alpha
         }
         IReadOnlyCollection<DBCuenta> IDBDataType<DBCuenta>.GetAllLocal() => GetAllLocal();
 
-        public static DBCuenta GetByID(long tc_id)
-        {
-            foreach (DBCuenta cuenta in _db_cuentas)
-            {
-                if (cuenta.GetID() == tc_id)
-                {
-                    return cuenta;
-                }
-            }
-            return null;
-        }
+        public static DBCuenta GetByID(long tc_id) => _db_cuentas.Find(x => x.GetID() == tc_id);
 
         public static DBCuenta GetByID(long tc_id, MySqlConnection conn)
         {

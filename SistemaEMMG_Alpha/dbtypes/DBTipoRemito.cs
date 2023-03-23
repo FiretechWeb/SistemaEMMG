@@ -65,15 +65,7 @@ namespace SistemaEMMG_Alpha
         }
         List<DBTipoRemito> IDBDataType<DBTipoRemito>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
-        public static List<DBTipoRemito> GetAll()
-        {
-            List<DBTipoRemito> returnList = new List<DBTipoRemito>();
-            foreach (DBTipoRemito tipoRemito in _db_tipos_remitos)
-            {
-                returnList.Add(tipoRemito);
-            }
-            return returnList;
-        }
+        public static List<DBTipoRemito> GetAll() => new List<DBTipoRemito>(_db_tipos_remitos);
 
         List<DBTipoRemito> IDBDataType<DBTipoRemito>.GetAll() => GetAll();
 
@@ -81,24 +73,14 @@ namespace SistemaEMMG_Alpha
 
         IReadOnlyCollection<DBTipoRemito> IDBDataType<DBTipoRemito>.GetAllLocal() => GetAllLocal();
 
-        public static DBTipoRemito GetByID(long te_id)
-        {
-            foreach (DBTipoRemito tmpTipo in _db_tipos_remitos)
-            {
-                if (tmpTipo.GetID() == te_id)
-                {
-                    return tmpTipo;
-                }
-            }
-            return null;
-        }
+        public static DBTipoRemito GetByID(long ts_id) => _db_tipos_remitos.Find(x => x.GetID() == ts_id);
 
-        public static DBTipoRemito GetByID(long te_id, MySqlConnection conn)
+        public static DBTipoRemito GetByID(long ts_id, MySqlConnection conn)
         {
             DBTipoRemito returnTipoRemito = null;
             try
             {
-                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {te_id}";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_id} = {ts_id}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 

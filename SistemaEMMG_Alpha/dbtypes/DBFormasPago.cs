@@ -64,32 +64,14 @@ namespace SistemaEMMG_Alpha
 
         List<DBFormasPago> IDBDataType<DBFormasPago>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
-        public static List<DBFormasPago> GetAll()
-        {
-            List<DBFormasPago> returnList = new List<DBFormasPago>();
-            foreach (DBFormasPago formaPago in _db_formas_pago)
-            {
-                returnList.Add(formaPago);
-            }
-            return returnList;
-        }
+        public static List<DBFormasPago> GetAll() => new List<DBFormasPago>(_db_formas_pago);
 
         List<DBFormasPago> IDBDataType<DBFormasPago>.GetAll() => GetAll();
 
         public static IReadOnlyCollection<DBFormasPago> GetAllLocal() => _db_formas_pago.Where(x => x.IsLocal()).ToList().AsReadOnly();
 
         IReadOnlyCollection<DBFormasPago> IDBDataType<DBFormasPago>.GetAllLocal() => GetAllLocal();
-        public static DBFormasPago GetByID(long fp_id)
-        {
-            foreach (DBFormasPago formaPago in _db_formas_pago)
-            {
-                if (formaPago.GetID() == fp_id)
-                {
-                    return formaPago;
-                }
-            }
-            return null;
-        }
+        public static DBFormasPago GetByID(long fp_id) => _db_formas_pago.Find(x => x.GetID() == fp_id);
 
         public static DBFormasPago GetByID(long fp_id, MySqlConnection conn)
         {

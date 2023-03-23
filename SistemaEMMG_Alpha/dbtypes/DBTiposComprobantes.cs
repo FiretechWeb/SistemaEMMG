@@ -65,31 +65,14 @@ namespace SistemaEMMG_Alpha
         }
         List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
-        public static List<DBTiposComprobantes> GetAll()
-        {
-            List<DBTiposComprobantes> returnList = new List<DBTiposComprobantes>();
-            foreach (DBTiposComprobantes tiposComprobantes in _db_tipos_comprobantes)
-            {
-                returnList.Add(tiposComprobantes);
-            }
-            return returnList;
-        }
+        public static List<DBTiposComprobantes> GetAll() => new List<DBTiposComprobantes>(_db_tipos_comprobantes);
+
         List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAll() => GetAll();
 
         public static IReadOnlyCollection<DBTiposComprobantes> GetAllLocal() => _db_tipos_comprobantes.Where(x => x.IsLocal()).ToList().AsReadOnly();
         IReadOnlyCollection<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAllLocal() => GetAllLocal();
 
-        public static DBTiposComprobantes GetByID(long tc_id)
-        {
-            foreach (DBTiposComprobantes tipoComprobante in _db_tipos_comprobantes)
-            {
-                if (tipoComprobante.GetID() == tc_id)
-                {
-                    return tipoComprobante;
-                }
-            }
-            return null;
-        }
+        public static DBTiposComprobantes GetByID(long tc_id) => _db_tipos_comprobantes.Find(x => x.GetID() == tc_id);
 
         public static DBTiposComprobantes GetByID(long tc_id, MySqlConnection conn)
         {

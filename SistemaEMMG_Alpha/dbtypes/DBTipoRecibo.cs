@@ -65,32 +65,14 @@ namespace SistemaEMMG_Alpha
         }
         List<DBTipoRecibo> IDBDataType<DBTipoRecibo>.UpdateAll(MySqlConnection conn) => UpdateAll(conn);
 
-        public static List<DBTipoRecibo> GetAll()
-        {
-            List<DBTipoRecibo> returnList = new List<DBTipoRecibo>();
-            foreach (DBTipoRecibo tipoRecibo in _db_tipos_recibos)
-            {
-                returnList.Add(tipoRecibo);
-            }
-            return returnList;
-        }
+        public static List<DBTipoRecibo> GetAll() => new List<DBTipoRecibo>(_db_tipos_recibos);
 
         List<DBTipoRecibo> IDBDataType<DBTipoRecibo>.GetAll() => GetAll();
 
         public static IReadOnlyCollection<DBTipoRecibo> GetAllLocal() => _db_tipos_recibos.Where(x => x.IsLocal()).ToList().AsReadOnly();
         IReadOnlyCollection<DBTipoRecibo> IDBDataType<DBTipoRecibo>.GetAllLocal() => GetAllLocal();
 
-        public static DBTipoRecibo GetByID(long te_id)
-        {
-            foreach (DBTipoRecibo tmpTipo in _db_tipos_recibos)
-            {
-                if (tmpTipo.GetID() == te_id)
-                {
-                    return tmpTipo;
-                }
-            }
-            return null;
-        }
+        public static DBTipoRecibo GetByID(long tr_id) => _db_tipos_recibos.Find(x => x.GetID() == tr_id);
 
         public static DBTipoRecibo GetByID(long te_id, MySqlConnection conn)
         {

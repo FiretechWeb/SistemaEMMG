@@ -13,7 +13,6 @@ namespace SistemaEMMG_Alpha
         protected long _id=-1;
         protected bool _shouldPush = false;
 
-
         protected DBBaseClass(long id)
         {
             _id = id;
@@ -69,7 +68,7 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         abstract public DBBaseClass GetLocalCopy();
         ///<summary>
-        ///Get the ID of the element as it is stored in the Database
+        ///Get the ID of the element as it is stored in the Database. Negative values means it is local data not stored in the database.
         ///</summary>
         virtual public long GetID() => _id;
         ///<summary>
