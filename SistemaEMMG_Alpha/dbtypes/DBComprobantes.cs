@@ -56,7 +56,8 @@ namespace SistemaEMMG_Alpha
     public class DBComprobantes : DBBaseClass, IDBase<DBComprobantes>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
     {
         public const string db_table = "comprobantes";
-        public const string db_relation_table = "recibos_comprobantes";
+        public const string db_recibos_relation_table = "recibos_comprobantes";
+        public const string db_remitos_relation_table = "remitos_comprobantes";
         public const string NameOf_cm_em_id = "cm_em_id";
         public const string NameOf_cm_ec_id = "cm_ec_id";
         public const string NameOf_cm_tc_id = "cm_tc_id";
@@ -68,6 +69,7 @@ namespace SistemaEMMG_Alpha
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
         private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
+        private readonly List<DBRemito> _db_remitos = new List<DBRemito>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -89,9 +91,9 @@ namespace SistemaEMMG_Alpha
             {
                 string tc_table = DBTiposComprobantes.db_table;
                 string rc_table = DBRecibo.db_table;
-                string query = $@"SELECT * FROM {db_relation_table} 
-                JOIN {db_table} ON {db_relation_table}.rp_em_id = {db_table}.{NameOf_cm_em_id} AND {db_relation_table}.rp_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_relation_table}.rp_cm_id = {db_table}.{NameOf_id} 
-                JOIN {rc_table} ON {db_relation_table}.rp_em_id = {rc_table}.{DBRecibo.NameOf_rc_em_id} AND {db_relation_table}.rp_ec_id = {rc_table}.{DBRecibo.NameOf_rc_ec_id} AND {db_relation_table}.rp_rc_id = {rc_table}.{DBRecibo.NameOf_id} 
+                string query = $@"SELECT * FROM {db_recibos_relation_table} 
+                JOIN {db_table} ON {db_recibos_relation_table}.rp_em_id = {db_table}.{NameOf_cm_em_id} AND {db_recibos_relation_table}.rp_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_recibos_relation_table}.rp_cm_id = {db_table}.{NameOf_id} 
+                JOIN {rc_table} ON {db_recibos_relation_table}.rp_em_id = {rc_table}.{DBRecibo.NameOf_rc_em_id} AND {db_recibos_relation_table}.rp_ec_id = {rc_table}.{DBRecibo.NameOf_rc_ec_id} AND {db_recibos_relation_table}.rp_rc_id = {rc_table}.{DBRecibo.NameOf_id} 
                 JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {db_table}.{NameOf_cm_tc_id} 
                 WHERE rp_em_id = {recibo.GetCuentaID()} AND rp_ec_id = {recibo.GetEntidadComercialID()} AND rp_rc_id = {recibo.GetID()}";
                 //string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()}";
@@ -119,9 +121,9 @@ namespace SistemaEMMG_Alpha
             {
                 string tc_table = DBTiposComprobantes.db_table;
                 string rm_table = DBRemito.db_table;
-                string query = $@"SELECT * FROM {db_relation_table} 
-                JOIN {db_table} ON {db_relation_table}.rt_em_id = {db_table}.{NameOf_cm_em_id} AND {db_relation_table}.rt_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_relation_table}.rt_cm_id = {db_table}.{NameOf_id} 
-                JOIN {rm_table} ON {db_relation_table}.rt_em_id = {rm_table}.{DBRemito.NameOf_rm_em_id} AND {db_relation_table}.rt_ec_id = {rm_table}.{DBRemito.NameOf_rm_ec_id} AND {db_relation_table}.rt_rm_id = {rm_table}.{DBRemito.NameOf_id} 
+                string query = $@"SELECT * FROM {db_recibos_relation_table} 
+                JOIN {db_table} ON {db_recibos_relation_table}.rt_em_id = {db_table}.{NameOf_cm_em_id} AND {db_recibos_relation_table}.rt_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_recibos_relation_table}.rt_cm_id = {db_table}.{NameOf_id} 
+                JOIN {rm_table} ON {db_recibos_relation_table}.rt_em_id = {rm_table}.{DBRemito.NameOf_rm_em_id} AND {db_recibos_relation_table}.rt_ec_id = {rm_table}.{DBRemito.NameOf_rm_ec_id} AND {db_recibos_relation_table}.rt_rm_id = {rm_table}.{DBRemito.NameOf_id} 
                 JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {db_table}.{NameOf_cm_tc_id} 
                 WHERE rt_em_id = {recibo.GetCuentaID()} AND rt_ec_id = {recibo.GetEntidadComercialID()} AND rt_rm_id = {recibo.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
@@ -581,11 +583,11 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {GetCuentaID()} AND rp_ec_id = {GetEntidadComercialID()} AND rp_cm_id = {GetID()}";
+                string query = $"DELETE FROM {db_recibos_relation_table} WHERE rp_em_id = {GetCuentaID()} AND rp_ec_id = {GetEntidadComercialID()} AND rp_cm_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
-                query = $"DELETE FROM remitos_comprobantes WHERE rt_em_id = {GetCuentaID()} AND rt_ec_id = {GetEntidadComercialID()} AND rt_cm_id = {GetID()}";
+                query = $"DELETE FROM {db_remitos_relation_table} WHERE rt_em_id = {GetCuentaID()} AND rt_ec_id = {GetEntidadComercialID()} AND rt_cm_id = {GetID()}";
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
@@ -674,6 +676,143 @@ namespace SistemaEMMG_Alpha
             return existsInDB;
         }
 
+        private bool? CheckIfRelatioshipWithRemitoExistsDB(MySqlConnection conn, DBRemito remito)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+            bool? existsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_recibos_relation_table} WHERE rt_em_id = {_entidadComercial.GetCuentaID()} AND rt_ec_id = {_entidadComercial.GetID()} AND rt_cm_id = {GetID()} AND rt_rc_id = {remito.GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBComprobantes::CheckIfRelatioshipWithReciboExistsDB: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                existsInDB = null;
+            }
+            return existsInDB;
+        }
+        public bool PushRelationshipRemitoDB(MySqlConnection conn, DBRemito newRemito)
+        {
+            if (IsLocal() || newRemito.IsLocal())
+            {
+                return false;
+            }
+            if (newRemito.GetEntidadComercialID() != GetEntidadComercialID() || newRemito.GetCuentaID() != GetCuentaID())
+            {
+                MessageBox.Show("Error en el método DBComprobantes::PushRelationshipRemitoDB.\nImposible relacionar un Remito de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if ((newRemito.ExistsInDatabase(conn) != true) || (ExistsInDatabase(conn) != true))
+            {
+                MessageBox.Show("Error en el método DBComprobantes::PushRelationshipRemitoDB.\n Parece que uno de los datos a relacionar no existe en la base de datos.\nRecuerde llamar esta función solo si los datos están en la base de datos.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (CheckIfRelatioshipWithRemitoExistsDB(conn, newRemito) != false)
+            {
+                return false;
+            }
+
+            bool wasAbleToInsertRelation = false;
+            try
+            {
+                string query = $@"INSERT INTO {db_remitos_relation_table} (
+                                rt_em_id,
+                                rt_ec_id,
+                                rt_rm_id,
+                                rt_cm_id) 
+                                VALUES (
+                                {_entidadComercial.GetCuentaID()},
+                                {_entidadComercial.GetID()},
+                                {newRemito.GetID()},
+                                {GetID()})";
+
+                var cmd = new MySqlCommand(query, conn);
+                wasAbleToInsertRelation = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                wasAbleToInsertRelation = false;
+                MessageBox.Show("Error DBComprobantes::PushRelationshipRemitoDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return wasAbleToInsertRelation;
+        }
+        public bool RemoveRelationshipRemitoDB(MySqlConnection conn, long rm_id)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_remitos_relation_table} WHERE rt_em_id = {_entidadComercial.GetCuentaID()} AND rt_ec_id = {_entidadComercial.GetID()} AND rt_cm_id = {GetID()} AND rt_rm_id = {rm_id}";
+                var cmd = new MySqlCommand(query, conn);
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBComprobantes::RemoveRelationshipRemitoDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                deletedCorrectly = false;
+            }
+            return deletedCorrectly;
+        }
+        public bool RemoveRelationshipRemitoDB(MySqlConnection conn, DBRemito remito)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+            if (remito.GetEntidadComercialID() != GetEntidadComercialID() || remito.GetCuentaID() != GetCuentaID())
+            {
+                MessageBox.Show("Error en el método DBComprobantes::RemoveRelationshipRemitoDB.\nImposible relacionar un Remito de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            bool deletedCorrectly = RemoveRelationshipRemitoDB(conn, remito.GetID());
+            if (deletedCorrectly)
+            {
+                RemoveRemito(remito);
+            }
+            return deletedCorrectly;
+        }
+
+        public bool RemoveAllRelationshipsWithRemitosDB(MySqlConnection conn)
+        {
+            if (IsLocal())
+            {
+                return false;
+            }
+            bool deletedCorrectly = false;
+            try
+            {
+                string query = $"DELETE FROM {db_remitos_relation_table} WHERE rt_em_id = {_entidadComercial.GetCuentaID()} AND rt_ec_id = {_entidadComercial.GetID()} AND rt_cm_id = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                deletedCorrectly = cmd.ExecuteNonQuery() > 0;
+                if (deletedCorrectly)
+                {
+                    _db_remitos.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRemito::RemoveAllRelationshipsWithRemitosDB " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                deletedCorrectly = false;
+            }
+            return deletedCorrectly;
+        }
+        public void PushAllRelationshipsWithRemitosDB(MySqlConnection conn)
+        {
+            foreach (DBRemito remito in _db_remitos)
+            {
+                PushRelationshipRemitoDB(conn, remito);
+            }
+        }
+
         private bool? CheckIfRelatioshipWithReciboExistsDB(MySqlConnection conn, DBRecibo newRecibo)
         {
             if (IsLocal())
@@ -683,7 +822,7 @@ namespace SistemaEMMG_Alpha
             bool? existsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()} AND rp_rc_id = {newRecibo.GetID()}";
+                string query = $"SELECT COUNT(*) FROM {db_recibos_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()} AND rp_rc_id = {newRecibo.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 existsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }
@@ -718,7 +857,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsertRelation = false;
             try
             {
-                string query = $@"INSERT INTO {db_relation_table} (
+                string query = $@"INSERT INTO {db_recibos_relation_table} (
                                 rp_em_id,
                                 rp_ec_id,
                                 rp_rc_id,
@@ -749,7 +888,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()} AND rp_rc_id = {rc_id}";
+                string query = $"DELETE FROM {db_recibos_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()} AND rp_rc_id = {rc_id}";
                 var cmd = new MySqlCommand(query, conn);
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
             }
@@ -788,7 +927,7 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
-                string query = $"DELETE FROM {db_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()}";
+                string query = $"DELETE FROM {db_recibos_relation_table} WHERE rp_em_id = {_entidadComercial.GetCuentaID()} AND rp_ec_id = {_entidadComercial.GetID()} AND rp_cm_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 deletedCorrectly = cmd.ExecuteNonQuery() > 0;
                 if (deletedCorrectly)
@@ -877,6 +1016,73 @@ namespace SistemaEMMG_Alpha
             }
         }
         public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
+
+        public List<DBRemito> GetAllRemitos(MySqlConnection conn)
+        {
+            List<DBRemito> returnList = DBRemito.GetAll(conn, this);
+            _db_remitos.Clear();
+            foreach (DBRemito Remito in returnList)
+            {
+                _db_remitos.Add(Remito);
+            }
+            return returnList;
+        }
+        public List<DBRemito> GetAllRemitos() //Get CACHE
+        {
+            List<DBRemito> returnList = new List<DBRemito>();
+            foreach (DBRemito Remito in _db_remitos)
+            {
+                returnList.Add(Remito);
+            }
+            return returnList;
+        }
+        public DBRemito GetRemitoByID(long rc_id) => DBRemito.GetByID(_db_remitos, GetEntidadComercial(), rc_id);
+
+        public bool AddRemito(DBRemito newRemito)
+        {
+            if (newRemito is null)
+            {
+                return false;
+            }
+            if (newRemito.GetCuentaID() != GetCuentaID() || newRemito.GetEntidadComercialID() != GetEntidadComercialID())
+            {
+                return false; //Cannot add an payament from another account or entity like this...
+            }
+            if (_db_remitos.Contains(newRemito))
+            {
+                return false;
+            }
+            _db_remitos.Add(newRemito);
+            return true;
+        }
+        public bool AddRemito(MySqlConnection conn, long rc_id)
+        {
+            DBRemito Remito = DBRemito.GetByID(conn, GetEntidadComercial(), rc_id);
+            if (Remito is null)
+            {
+                return false;
+            }
+            for (int i = 0; i < _db_remitos.Count; i++)
+            {
+                if (_db_remitos[i].GetCuentaID() == Remito.GetCuentaID() && _db_remitos[i].GetEntidadComercialID() == Remito.GetEntidadComercialID() && _db_remitos[i].GetID() == Remito.GetID())
+                {
+                    _db_remitos[i] = Remito;
+                    return false;
+                }
+            }
+            return AddRemito(Remito);
+        }
+
+        public void RemoveRemito(long rc_id)
+        {
+            List<DBRemito> filteredList = _db_remitos.Where(x => x.GetID() != rc_id).ToList();
+            _db_remitos.Clear();
+            foreach (DBRemito Remito in filteredList)
+            {
+                _db_remitos.Add(Remito);
+            }
+        }
+        public void RemoveRemito(DBRemito entRemove) => _db_remitos.Remove(entRemove);
 
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
