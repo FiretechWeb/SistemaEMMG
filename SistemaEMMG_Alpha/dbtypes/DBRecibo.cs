@@ -575,7 +575,14 @@ namespace SistemaEMMG_Alpha
             bool? duplicatedExistsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE UPPER({ReciboData.NameOf_rc_nro}) = '{_data.rc_nro.Trim().ToUpper()}'";
+                string query = "";
+                if (_data.rc_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND UPPER({ReciboData.NameOf_rc_nro}) = '{_data.rc_nro.Trim().ToUpper()}'";
+                } else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND {NameOf_rc_ec_id} = {GetEntidadComercialID()} AND UPPER({ReciboData.NameOf_rc_nro}) = '{_data.rc_nro.Trim().ToUpper()}'";
+                }
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }

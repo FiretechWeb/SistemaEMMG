@@ -232,7 +232,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{_data.em_rs}' WHERE {NameOf_id} = {GetID()}";
+                string query = $"UPDATE {db_table} SET {CuentaData.NameOf_em_cuit} = {_data.em_cuit}, {CuentaData.NameOf_em_rs} = '{_data.em_rs.Trim()}' WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 _shouldPush = _shouldPush && !wasAbleToUpdate;
@@ -250,7 +250,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({CuentaData.NameOf_em_cuit}, {CuentaData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs}')";
+                string query = $"INSERT INTO {db_table} ({CuentaData.NameOf_em_cuit}, {CuentaData.NameOf_em_rs}) VALUES ({_data.em_cuit}, '{_data.em_rs.Trim()}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -292,6 +292,22 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
+        public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {CuentaData.NameOf_em_cuit} = {_data.em_cuit} AND UPPER({CuentaData.NameOf_em_rs}) = '{_data.em_rs}'";
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBCuenta::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
+        }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
             bool? existsInDB = null;

@@ -254,10 +254,10 @@ namespace SistemaEMMG_Alpha
             {
                 string query = $@"UPDATE {db_table} SET {NameOf_ec_te_id} = {_tipoEntidad.GetID()}, 
                                 {EntidadesComercialesData.NameOf_ec_cuit} = {_data.ec_cuit}, 
-                                {EntidadesComercialesData.NameOf_ec_rs} = '{_data.ec_rs}', 
-                                {EntidadesComercialesData.NameOf_ec_email} = '{_data.ec_email}', 
-                                {EntidadesComercialesData.NameOf_ec_telefono} ='{_data.ec_telefono}', 
-                                {EntidadesComercialesData.NameOf_ec_celular} ='{_data.ec_celular}' 
+                                {EntidadesComercialesData.NameOf_ec_rs} = '{_data.ec_rs.Trim()}', 
+                                {EntidadesComercialesData.NameOf_ec_email} = '{_data.ec_email.Trim()}', 
+                                {EntidadesComercialesData.NameOf_ec_telefono} ='{_data.ec_telefono.Trim()}', 
+                                {EntidadesComercialesData.NameOf_ec_celular} ='{_data.ec_celular.Trim()}' 
                                 WHERE {NameOf_ec_em_id} = {_cuenta.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -286,10 +286,10 @@ namespace SistemaEMMG_Alpha
                                 VALUES ({_cuenta.GetID()}, 
                                         {_tipoEntidad.GetID()}, 
                                         {_data.ec_cuit}, 
-                                        '{_data.ec_rs}', 
-                                        '{_data.ec_email}', 
-                                        '{_data.ec_telefono}', 
-                                        '{_data.ec_celular}')";
+                                        '{_data.ec_rs.Trim()}', 
+                                        '{_data.ec_email.Trim()}', 
+                                        '{_data.ec_telefono.Trim()}', 
+                                        '{_data.ec_celular.Trim()}')";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -326,6 +326,23 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBEntidades: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return deletedCorrectly;
+        }
+
+        public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_ec_em_id} = {GetCuentaID()} AND {EntidadesComercialesData.NameOf_ec_cuit} = {_data.ec_cuit} AND UPPER({EntidadesComercialesData.NameOf_ec_rs}) = '{_data.ec_rs.ToUpper()}'";
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBEntidades::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
         }
 
         public override bool? ExistsInDatabase(MySqlConnection conn)

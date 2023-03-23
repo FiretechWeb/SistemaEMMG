@@ -525,7 +525,7 @@ namespace SistemaEMMG_Alpha
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_cm_tc_id} = {_tipoComprobante.GetID()}, 
                                 {ComprobantesData.NameOf_cm_fecha} = {fechaEmitido}, 
-                                {ComprobantesData.NameOf_cm_numero} = '{_data.cm_numero}', 
+                                {ComprobantesData.NameOf_cm_numero} = '{_data.cm_numero.Trim()}', 
                                 {ComprobantesData.NameOf_cm_gravado} = {_data.cm_gravado.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_iva} = {_data.cm_iva.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_no_gravado} = {_data.cm_no_gravado.ToString().Replace(",", ".")}, 
@@ -567,7 +567,7 @@ namespace SistemaEMMG_Alpha
                                 {_entidadComercial.GetID()},
                                 {_tipoComprobante.GetID()},
                                 {fechaEmitido},
-                                '{_data.cm_numero}',
+                                '{_data.cm_numero.Trim()}',
                                 {_data.cm_gravado.ToString().Replace(",", ".")},
                                 {_data.cm_iva.ToString().Replace(",", ".")},
                                 {_data.cm_no_gravado.ToString().Replace(",", ".")},
@@ -611,6 +611,30 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBComprobantes: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return deletedCorrectly;
+        }
+        public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = "";
+                if (_data.cm_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{_data.cm_numero.Trim().ToUpper()}'";
+                }
+                else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND {NameOf_cm_ec_id} = {GetEntidadComercialID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{_data.cm_numero.Trim().ToUpper()}'";
+                }
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBCuenta::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
         }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {

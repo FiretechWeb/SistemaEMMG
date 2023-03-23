@@ -410,6 +410,7 @@ namespace SistemaEMMG_Alpha
             return deletedCorrectly;
         }
 
+        public override bool? DuplicatedExistsInDatabase(MySqlConnection conn) => false; //DBPagos can have duplicated data (not the same as duplicated IDs!)
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
             bool? existsInDB = null;
