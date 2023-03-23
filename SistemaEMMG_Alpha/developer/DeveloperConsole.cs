@@ -698,9 +698,9 @@ namespace SistemaEMMG_Alpha
             else
             {
                 string[] parametros = args.Split(',');
-                if (parametros.Length < 3 || parametros.Length > 4)
+                if (parametros.Length < 4 || parametros.Length > 5)
                 {
-                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Recibo, Fecha del Recibo, Numero de Recibo, Observación=''";
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Recibo, Emitido (0|1), Fecha del Recibo (dd/MM/yyyy), Numero de Recibo, Observación=''";
                     return;
                 }
                 DBTipoRecibo tipoRecibo = DBTipoRecibo.GetByID(SafeConvert.ToInt64(parametros[0]));
@@ -713,18 +713,18 @@ namespace SistemaEMMG_Alpha
 
                 DateTime fechaEmitido = new DateTime();
                 DateTime? fechaFinal = null;
-                if (DateTime.TryParse(parametros[1], out fechaEmitido))
+                if (DateTime.TryParse(parametros[2], out fechaEmitido))
                 {
                     fechaFinal = fechaEmitido;
                 }
 
                 switch (parametros.Length)
                 {
-                    case 3:
-                        _seleccion = new DBRecibo((DBEntidades)_seleccion, tipoRecibo, fechaFinal, parametros[2]);
-                        break;
                     case 4:
-                        _seleccion = new DBRecibo((DBEntidades)_seleccion, tipoRecibo, fechaFinal, parametros[2], parametros[3]);
+                        _seleccion = new DBRecibo((DBEntidades)_seleccion, tipoRecibo, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3]);
+                        break;
+                    case 5:
+                        _seleccion = new DBRecibo((DBEntidades)_seleccion, tipoRecibo, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], parametros[4]);
                         break;
                 }
             }

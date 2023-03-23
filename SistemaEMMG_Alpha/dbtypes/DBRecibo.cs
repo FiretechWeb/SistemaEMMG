@@ -11,29 +11,34 @@ namespace SistemaEMMG_Alpha
 {
     public struct ReciboData
     {
-        public ReciboData(DateTime? fecha, string numero, string obs)
+        public ReciboData(DateTime? fecha, string numero, string obs, bool emitido)
         {
             rc_fecha = fecha;
             rc_nro = numero;
             rc_obs = obs;
+            rc_emitido = emitido;
         }
         public DateTime? rc_fecha { get; set; }
         public string rc_nro { get; set; }
         public string rc_obs { get; set; }
 
+        public bool rc_emitido { get; set; }
+
         public static readonly string NameOf_rc_fecha = nameof(rc_fecha);
         public static readonly string NameOf_rc_nro = nameof(rc_nro);
         public static readonly string NameOf_rc_obs = nameof(rc_obs);
+        public static readonly string NameOf_rc_emitido = nameof(rc_emitido);
 
         public static ReciboData CreateFromReader(MySqlDataReader reader)
         {
             return new ReciboData(reader.GetDateTimeSafe(NameOf_rc_fecha),
                                         reader.GetStringSafe(NameOf_rc_nro),
-                                        reader.GetStringSafe(NameOf_rc_obs));
+                                        reader.GetStringSafe(NameOf_rc_obs),
+                                        Convert.ToBoolean(reader.GetInt32Safe(NameOf_rc_emitido)));
         }
         public override string ToString()
         {
-            return $"Fecha: {rc_fecha} - Número: {rc_nro} - Observación: {rc_obs}";
+            return $"Emitido: {rc_emitido} - Fecha: {rc_fecha} - Número: {rc_nro} - Observación: {rc_obs}";
         }
     }
     public class DBRecibo : DBBaseClass, IDBase<DBRecibo>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
@@ -288,6 +293,7 @@ namespace SistemaEMMG_Alpha
             DBEntidades entidadComercial,
             DBTipoRecibo newTipo,
             long id,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs
@@ -295,13 +301,14 @@ namespace SistemaEMMG_Alpha
             entidadComercial,
             id,
             newTipo,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
 
         public DBRecibo(
             DBEntidades entidadComercial,
             DBTipoRecibo newTipo,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs=""
@@ -309,7 +316,7 @@ namespace SistemaEMMG_Alpha
             entidadComercial,
             -1,
             newTipo,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
 
@@ -317,6 +324,7 @@ namespace SistemaEMMG_Alpha
             DBEntidades entidadComercial,
             long tr_id,
             long id,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs=""
@@ -324,12 +332,13 @@ namespace SistemaEMMG_Alpha
             entidadComercial,
             id,
             tr_id,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
         public DBRecibo(
             DBEntidades entidadComercial,
             long tr_id,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs=""
@@ -337,7 +346,7 @@ namespace SistemaEMMG_Alpha
             entidadComercial,
             -1,
             tr_id,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
         public DBRecibo(
@@ -345,6 +354,7 @@ namespace SistemaEMMG_Alpha
             long ec_id,
             DBTipoRecibo newTipo,
             long id,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs=""
@@ -353,13 +363,14 @@ namespace SistemaEMMG_Alpha
             id,
             ec_id,
             newTipo,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
         public DBRecibo(
             DBCuenta cuentaSeleccioanda,
             long ec_id,
             DBTipoRecibo newTipo,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs=""
@@ -368,13 +379,14 @@ namespace SistemaEMMG_Alpha
             -1,
             ec_id,
             newTipo,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
         public DBRecibo(
             DBCuenta cuentaSeleccioanda,
             MySqlConnection conn,
             long ec_id,
+            bool emitido,
             DBTipoRecibo newTipo,
             long id,
             DateTime? fecha,
@@ -386,7 +398,7 @@ namespace SistemaEMMG_Alpha
             id,
             ec_id,
             newTipo,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
         public DBRecibo(
@@ -394,6 +406,7 @@ namespace SistemaEMMG_Alpha
             MySqlConnection conn,
             long ec_id,
             DBTipoRecibo newTipo,
+            bool emitido,
             DateTime? fecha,
             string numero,
             string obs=""
@@ -403,7 +416,7 @@ namespace SistemaEMMG_Alpha
             -1,
             ec_id,
             newTipo,
-            new ReciboData(fecha, numero, obs)
+            new ReciboData(fecha, numero, obs, emitido)
         )
         { }
         public DBRecibo(DBEntidades entidadComercial, DBTipoRecibo newTipo, MySqlDataReader reader) : this(
@@ -479,8 +492,9 @@ namespace SistemaEMMG_Alpha
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_rc_tr_id} = {_tipoRecibo.GetID()}, 
                                 {ReciboData.NameOf_rc_fecha} = {fechaEmitido}, 
-                                {ReciboData.NameOf_rc_nro} = '{_data.rc_nro}', 
-                                {ReciboData.NameOf_rc_obs} = '{_data.rc_obs}' 
+                                {ReciboData.NameOf_rc_nro} = '{_data.rc_nro.Trim()}', 
+                                {ReciboData.NameOf_rc_obs} = '{_data.rc_obs}', 
+                                {ReciboData.NameOf_rc_emitido} = {Convert.ToInt32(_data.rc_emitido)}, 
                                 WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -507,14 +521,16 @@ namespace SistemaEMMG_Alpha
                                 {NameOf_rc_tr_id},
                                 {ReciboData.NameOf_rc_fecha},
                                 {ReciboData.NameOf_rc_nro}, 
-                                {ReciboData.NameOf_rc_obs} ) 
+                                {ReciboData.NameOf_rc_obs}, 
+                                {ReciboData.NameOf_rc_emitido} ) 
                                 VALUES (
                                 {_entidadComercial.GetCuentaID()},
                                 {_entidadComercial.GetID()},
                                 {_tipoRecibo.GetID()},
                                 {fechaEmitido},
-                                '{_data.rc_nro}',
-                                '{_data.rc_obs}')";
+                                '{_data.rc_nro.Trim()}',
+                                '{_data.rc_obs}', 
+                                {Convert.ToInt32(_data.rc_emitido)} )";
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
@@ -553,6 +569,22 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBRecibo: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return deletedCorrectly;
+        }
+        public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE UPPER({ReciboData.NameOf_rc_nro}) = '{_data.rc_nro.Trim().ToUpper()}'";
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBRecibo::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
         }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
@@ -931,7 +963,7 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaEmitido;
             }
 
-            return new DBRecibo(entidadComercial, DBTipoRecibo.GetRandom(), fechaFinal, $"{r.Next(10000, 99999)}", "Sin información");
+            return new DBRecibo(entidadComercial, DBTipoRecibo.GetRandom(), Convert.ToBoolean(r.Next(0, 2)), fechaFinal, $"{r.Next(10000, 99999)}", "Sin información");
         }
 
     }

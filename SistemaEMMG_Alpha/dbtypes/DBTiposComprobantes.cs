@@ -270,6 +270,22 @@ namespace SistemaEMMG_Alpha
 
             return deletedCorrectly;
         }
+        public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE UPPER({TiposComprobantesData.NameOf_tc_nombre}) = '{_data.tc_nombre.ToUpper()}'";
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBTiposComprobantes::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
+        }
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
             bool? existsInDB = null;

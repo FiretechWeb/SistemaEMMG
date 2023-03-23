@@ -15,6 +15,10 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         abstract protected void ChangeID(long id);
         ///<summary>
+        ///Check if element with same data exists in DB. This checks for data, and not ID. For checking if an element with the same ID exists in database, use ExistsInDatabase method.
+        ///</summary>
+        abstract public bool? DuplicatedExistsInDatabase(MySqlConnection conn);
+        ///<summary>
         ///Check if element exists in the database or not. If it returns null, it means there was an error connecting with the DB.
         ///</summary>
         abstract public bool? ExistsInDatabase(MySqlConnection conn);
