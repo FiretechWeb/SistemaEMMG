@@ -42,6 +42,8 @@ namespace SistemaEMMG_Alpha
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make cuenta", (x) => _CMD_CrearCuenta(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set name", (x) => _CMD_CuentaSetRazonSocial(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set cuit", (x) => _CMD_CuentaSetCUIT(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("selected", (x) => _CMD_PrintSelected()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("delete", (x) => _CMD_DeleteSelected()));
@@ -256,6 +258,35 @@ namespace SistemaEMMG_Alpha
             _outputStr = $"Cuenta creada> {_seleccion}";
         }
 
+        private void _CMD_CuentaSetRazonSocial(string rs)
+        {
+            if (_seleccion is null || !(_seleccion is DBCuenta))
+            {
+                _outputStr = "No hay cuenta seleccionada.";
+                return;
+            }
+            DBCuenta cuentaSeleccionada = (DBCuenta)_seleccion;
+            cuentaSeleccionada.SetRazonSocial(rs.Trim());
+            _outputStr = $"Razón social de la cuenta cambiada.";
+        }
+        private void _CMD_CuentaSetCUIT(string str)
+        {
+            if (_seleccion is null || !(_seleccion is DBCuenta))
+            {
+                _outputStr = "No hay cuenta seleccionada.";
+                return;
+            }
+            long cuit;
+            if (!long.TryParse(str.Trim(), out cuit))
+            {
+                _outputStr = "El CUIT introducido es inválido.";
+                return;
+            }
+            DBCuenta cuentaSeleccionada = (DBCuenta)_seleccion;
+            cuentaSeleccionada.SetCUIT(cuit);
+            _outputStr = $"CUIT de la cuenta cambiada.";
+        }
+
         private void _CMD_PrintSelected()
         {
             if (_seleccion is null)
@@ -344,10 +375,12 @@ namespace SistemaEMMG_Alpha
             {
                 DBComprobantes comprobanteSeleccionado = (DBComprobantes)_seleccion;
                 comprobanteSeleccionado.RemoveAllRelationshipsWithRecibosDB(conn);
+                _outputStr = "Se han eliminado las relaciones de este comprobante con los recibos.";
             } else if (_seleccion is DBRecibo)
             {
                 DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
                 reciboSeleccionado.RemoveAllRelationshipsWithComprobantesDB(conn);
+                _outputStr = "Se han eliminado las relaciones de este recibo con los comprobantes.";
             } else
             {
                 _outputStr = "No hay entidad seleccionada válida. Tiene que ser un comprobnate o un recibo.";
