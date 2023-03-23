@@ -357,7 +357,8 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
-            if (DuplicatedExistsInDatabase(conn) == true || DuplicatedExistsInDatabase(conn) == null)
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
             {
                 return false;
             }
