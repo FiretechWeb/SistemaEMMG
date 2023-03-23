@@ -83,11 +83,19 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("link recibo", (x) => _CMD_LinkRecibo(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink recibo", (x) => _CMD_UnlinkRecibo(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("link remito", (x) => _CMD_LinkRemito(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink remito", (x) => _CMD_UnlinkRemito(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get recibos", (x) => _CMD_GetRecibos(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print recibos", (x) => _CMD_PrintRecibos()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select recibo", (x) => _CMD_SelectRecibo(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRecibo(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get remitos", (x) => _CMD_GetRemitos(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print remitos", (x) => _CMD_PrintRemitos()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select remito", (x) => _CMD_SelectRemito(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRemito(x)));
+
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("link comprobante", (x) => _CMD_LinkComprobante(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink comprobante", (x) => _CMD_UnlinkComprobante(x)));
 
@@ -853,6 +861,46 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        private void _CMD_LinkRemito(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado, seleccione un comprobante primero.";
+                return;
+            }
+            DBComprobantes comprobante = (DBComprobantes)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBRemito remito = DBRemito.GetByID(conn, comprobante.GetEntidadComercial(), SafeConvert.ToInt64(id.Trim()));
+            if (remito is null)
+            {
+                _outputStr = "No existe un remito con el ID seleccionado.";
+                return;
+            }
+            comprobante.AddRemito(remito);
+            comprobante.PushAllRelationshipsWithRemitosDB(conn);
+            _outputStr = "Remito relacionado al comprobante.";
+        }
+
+        private void _CMD_UnlinkRemito(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBComprobantes))
+            {
+                _outputStr = "No hay un comprobante seleccionado, seleccione un comprobante primero.";
+                return;
+            }
+            DBComprobantes comprobante = (DBComprobantes)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (comprobante.RemoveRelationshipRemitoDB(conn, SafeConvert.ToInt64(id.Trim())))
+            {
+                _outputStr = "Remito removido de la relación con el comprobante exitosamente.";
+            }
+            else
+            {
+                _outputStr = "Error, no se pudo eliminar la relación entre el comprobante y el remito.";
+            }
+        }
+
+
         private void _CMD_GetRecibos(string filter)
         {
             if (_seleccion is null)
@@ -965,41 +1013,192 @@ namespace SistemaEMMG_Alpha
 
         }
 
+
+        private void _CMD_GetRemitos(string filter)
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o comprobante primero.";
+                return;
+            }
+            if (_seleccion is DBEntidades entidadComercialSeleccionada)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                entidadComercialSeleccionada.GetAllRemitos(conn);
+                _outputStr = "\t:: Remitos ::\n";
+                _outputStr += entidadComercialSeleccionada.PrintAllRemitos();
+            }
+            else if (_seleccion is DBComprobantes comprobanteSeleccionado)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                comprobanteSeleccionado.GetAllRemitos(conn);
+                _outputStr = "\t:: Remitos Relacionados ::\n";
+                _outputStr += comprobanteSeleccionado.PrintAllRemitos();
+            }
+            else
+            {
+                _outputStr = "La entidad seleccionada no es válida para esta operación. Seleccione una entidad comercial o un comprobante.";
+            }
+        }
+        private void _CMD_PrintRemitos()
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o comprobante primero.";
+                return;
+            }
+            if (_seleccion is DBEntidades entidadComercialSeleccionada)
+            {
+                _outputStr = "\t:: Remitos ::\n";
+                _outputStr += entidadComercialSeleccionada.PrintAllRemitos();
+            }
+            else if (_seleccion is DBComprobantes comprobanteSeleccionado)
+            {
+                _outputStr = "\t:: Remitos Relacionados ::\n";
+                _outputStr += comprobanteSeleccionado.PrintAllRemitos();
+            }
+            else
+            {
+                _outputStr = "La entidad seleccionada no es válida para esta operación. Seleccione una entidad comercial o un comprobante.";
+            }
+        }
+
+        private void _CMD_CrearRemito(string args)
+        {
+            if (_seleccion is null || !(_seleccion is DBEntidades))
+            {
+                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                return;
+            }
+            if (args.Trim().ToLower().Equals("random"))
+            {
+                _seleccion = DBRemito.GenerateRandom((DBEntidades)_seleccion);
+            }
+            else
+            {
+                string[] parametros = args.Split(',');
+                if (parametros.Length < 4 || parametros.Length > 5)
+                {
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear remito ID Tipo Remito, Emitido (0|1), Fecha del Remito (dd/MM/yyyy), Numero de Remito, Observación=''";
+                    return;
+                }
+                DBTipoRemito tipoRemito = DBTipoRemito.GetByID(SafeConvert.ToInt64(parametros[0]));
+                if (tipoRemito is null)
+                {
+                    _outputStr = "ID del tipo de remito seleccionado inválido, vea los tipos de remitos válidos:\n";
+                    _outputStr += DBTipoRemito.PrintAll();
+                    return;
+                }
+
+                DateTime fechaEmitido = new DateTime();
+                DateTime? fechaFinal = null;
+                if (DateTime.TryParse(parametros[2], out fechaEmitido))
+                {
+                    fechaFinal = fechaEmitido;
+                }
+
+                switch (parametros.Length)
+                {
+                    case 4:
+                        _seleccion = new DBRemito((DBEntidades)_seleccion, tipoRemito, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3]);
+                        break;
+                    case 5:
+                        _seleccion = new DBRemito((DBEntidades)_seleccion, tipoRemito, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], parametros[4]);
+                        break;
+                }
+            }
+            _outputStr = $"Remito creado> {_seleccion}";
+        }
+
+        private void _CMD_SelectRemito(string id)
+        {
+            if (_seleccion is null || !(_seleccion is DBEntidades))
+            {
+                _outputStr = "No hay una entidad comercial seleccionada, seleccione una entidad comercial primero.";
+                return;
+            }
+            DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
+            DBRemito remitoSeleccionado = entidadComercialSeleccionada.GetRemitoByID(SafeConvert.ToInt64(id.Trim()));
+
+            if (remitoSeleccionado is null)
+            {
+                _outputStr = "No existe un remito en esta entidad comercial con el ID introducido.";
+                return;
+            }
+            _seleccion = remitoSeleccionado;
+            _outputStr = $"Remito seleccionado> {_seleccion}";
+
+        }
+
         private void _CMD_LinkComprobante(string id)
         {
-            if (_seleccion is null || !(_seleccion is DBRecibo))
+            if (_seleccion is null)
             {
-                _outputStr = "No hay un recibo seleccionado, seleccione un recibo primero.";
+                _outputStr = "No hay una entidad seleccionada.";
                 return;
             }
-            DBRecibo recibo = (DBRecibo)_seleccion;
-            MySqlConnection conn = DBConnection.Instance().Connection;
-            DBComprobantes comprobantes = DBComprobantes.GetByID(conn, recibo.GetEntidadComercial(), SafeConvert.ToInt64(id.Trim()));
-            if (comprobantes is null)
+            if (_seleccion is DBRecibo recibo)
             {
-                _outputStr = "No existe un comprobante con el ID seleccionado.";
-                return;
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                DBComprobantes comprobantes = DBComprobantes.GetByID(conn, recibo.GetEntidadComercial(), SafeConvert.ToInt64(id.Trim()));
+                if (comprobantes is null)
+                {
+                    _outputStr = "No existe un comprobante con el ID seleccionado.";
+                    return;
+                }
+                recibo.AddComprobante(comprobantes);
+                recibo.PushAllRelationshipsWithComprobantesDB(conn);
+                _outputStr = "Comprobante relacionado al recibo.";
             }
-            recibo.AddComprobante(comprobantes);
-            recibo.PushAllRelationshipsWithComprobantesDB(conn);
-            _outputStr = "Comprobante relacionado al recibo.";
+            else if (_seleccion is DBRemito remito)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                DBComprobantes comprobantes = DBComprobantes.GetByID(conn, remito.GetEntidadComercial(), SafeConvert.ToInt64(id.Trim()));
+                if (comprobantes is null)
+                {
+                    _outputStr = "No existe un comprobante con el ID seleccionado.";
+                    return;
+                }
+                remito.AddComprobante(comprobantes);
+                remito.PushAllRelationshipsWithComprobantesDB(conn);
+                _outputStr = "Comprobante relacionado al remito.";
+            } else
+            {
+                _outputStr = "La entidad seleccionada no es ni un remito ni un recibo.";
+            }
         }
 
         private void _CMD_UnlinkComprobante(string id)
         {
-            if (_seleccion is null || !(_seleccion is DBRecibo))
+            if (_seleccion is null)
             {
-                _outputStr = "No hay un recibo seleccionado, seleccione un recibo primero.";
+                _outputStr = "No hay una entidad seleccionada.";
                 return;
             }
-            DBRecibo recibo = (DBRecibo)_seleccion;
-            MySqlConnection conn = DBConnection.Instance().Connection;
-            if (recibo.RemoveRelationshipComprobanteDB(conn, SafeConvert.ToInt64(id.Trim())))
+            if (_seleccion is DBRecibo recibo)
             {
-                _outputStr = "Comprobante removido de la relación con el recibo exitosamente.";
-            } else
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                if (recibo.RemoveRelationshipComprobanteDB(conn, SafeConvert.ToInt64(id.Trim())))
+                {
+                    _outputStr = "Comprobante removido de la relación con el recibo exitosamente.";
+                }
+                else
+                {
+                    _outputStr = "Error, no se pudo eliminar la relación entre el comprobnate y el recibo.";
+                }
+            } else if (_seleccion is DBRemito remito)
             {
-                _outputStr = "Error, no se pudo eliminar la relación entre el comprobnate y el recibo.";
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                if (remito.RemoveRelationshipComprobanteDB(conn, SafeConvert.ToInt64(id.Trim())))
+                {
+                    _outputStr = "Comprobante removido de la relación con el remito exitosamente.";
+                }
+                else
+                {
+                    _outputStr = "Error, no se pudo eliminar la relación entre el comprobnate y el remito.";
+                }
+            } else {
+                _outputStr = "La entidad seleccionada no es ni un remito ni un recibo.";
             }
         }
 

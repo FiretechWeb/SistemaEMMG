@@ -587,9 +587,18 @@ namespace SistemaEMMG_Alpha
         public string PrintAllRecibos()
         {
             string str = "";
-            foreach (DBRecibo comprobante in _db_recibos)
+            foreach (DBRecibo recibo in _db_recibos)
             {
-                str += $"Recibo> {comprobante}\n";
+                str += $"Recibo> {recibo}\n";
+            }
+            return str;
+        }
+        public string PrintAllRemitos()
+        {
+            string str = "";
+            foreach (DBRemito remito in _db_remitos)
+            {
+                str += $"Remito> {remito}\n";
             }
             return str;
         }
