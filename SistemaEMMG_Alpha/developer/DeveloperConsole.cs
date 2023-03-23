@@ -94,7 +94,7 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("get remitos", (x) => _CMD_GetRemitos(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("print remitos", (x) => _CMD_PrintRemitos()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select remito", (x) => _CMD_SelectRemito(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRemito(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make remito", (x) => _CMD_CrearRemito(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("link comprobante", (x) => _CMD_LinkComprobante(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink comprobante", (x) => _CMD_UnlinkComprobante(x)));
@@ -604,7 +604,12 @@ namespace SistemaEMMG_Alpha
                     _seleccion = recibo.GetEntidadComercial();
                     _outputStr += $"{_seleccion}";
                     break;
-               case DBPago pago:
+                case DBRemito remito:
+                    _outputStr = "¡Remito deseleccionado!. Ahora la seleccion es la entidad comercial: \n";
+                    _seleccion = remito.GetEntidadComercial();
+                    _outputStr += $"{_seleccion}";
+                    break;
+                case DBPago pago:
                         _outputStr = "¡Pago deseleccionada!. Ahora la seleccion es el recibo: \n";
                         _seleccion = pago.GetRecibo();
                         _outputStr += $"{_seleccion}";
@@ -707,26 +712,32 @@ namespace SistemaEMMG_Alpha
         {
             if (_seleccion is null)
             {
-                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial o recibo primero.";
+                _outputStr = "No hay una entidad seleccionada. Seleccione una entidad comercial, remito o recibo primero.";
                 return;
             }
-            if (_seleccion is DBEntidades)
+            if (_seleccion is DBEntidades entidadComercialSeleccionada)
             {
                 MySqlConnection conn = DBConnection.Instance().Connection;
-                DBEntidades entidadComercialSeleccionada = (DBEntidades)_seleccion;
                 entidadComercialSeleccionada.GetAllComprobantes(conn);
                 _outputStr = "\t:: Comprobantes ::\n";
                 _outputStr += entidadComercialSeleccionada.PrintAllComprobantes();
-            } else if (_seleccion is DBRecibo)
+            } else if (_seleccion is DBRecibo reciboSeleccionado)
             {
                 MySqlConnection conn = DBConnection.Instance().Connection;
-                DBRecibo reciboSeleccionado = (DBRecibo)_seleccion;
                 reciboSeleccionado.GetAllComprobantes(conn);
                 _outputStr = "\t:: Comprobantes Relacionados ::\n";
                 _outputStr += reciboSeleccionado.PrintAllComprobantes();
-            } else
+            }
+            else if (_seleccion is DBRemito remitoSeleccionado)
             {
-                _outputStr = "No hay una entidad comercial o recibo seleccionado. Seleccione una entidad comercial o un recibo primero.";
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                remitoSeleccionado.GetAllComprobantes(conn);
+                _outputStr = "\t:: Comprobantes Relacionados ::\n";
+                _outputStr += remitoSeleccionado.PrintAllComprobantes();
+            }
+            else
+            {
+                _outputStr = "No hay una entidad comercial, recibo o remito seleccionado. Seleccione una entidad comercial, remito o un recibo primero.";
             }
         }
         private void _CMD_PrintComprobantes()

@@ -121,9 +121,9 @@ namespace SistemaEMMG_Alpha
             {
                 string tc_table = DBTiposComprobantes.db_table;
                 string rm_table = DBRemito.db_table;
-                string query = $@"SELECT * FROM {db_recibos_relation_table} 
-                JOIN {db_table} ON {db_recibos_relation_table}.rt_em_id = {db_table}.{NameOf_cm_em_id} AND {db_recibos_relation_table}.rt_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_recibos_relation_table}.rt_cm_id = {db_table}.{NameOf_id} 
-                JOIN {rm_table} ON {db_recibos_relation_table}.rt_em_id = {rm_table}.{DBRemito.NameOf_rm_em_id} AND {db_recibos_relation_table}.rt_ec_id = {rm_table}.{DBRemito.NameOf_rm_ec_id} AND {db_recibos_relation_table}.rt_rm_id = {rm_table}.{DBRemito.NameOf_id} 
+                string query = $@"SELECT * FROM {db_remitos_relation_table} 
+                JOIN {db_table} ON {db_remitos_relation_table}.rt_em_id = {db_table}.{NameOf_cm_em_id} AND {db_remitos_relation_table}.rt_ec_id = {db_table}.{NameOf_cm_ec_id} AND {db_remitos_relation_table}.rt_cm_id = {db_table}.{NameOf_id} 
+                JOIN {rm_table} ON {db_remitos_relation_table}.rt_em_id = {rm_table}.{DBRemito.NameOf_rm_em_id} AND {db_remitos_relation_table}.rt_ec_id = {rm_table}.{DBRemito.NameOf_rm_ec_id} AND {db_remitos_relation_table}.rt_rm_id = {rm_table}.{DBRemito.NameOf_id} 
                 JOIN {tc_table} ON {tc_table}.{DBTiposComprobantes.NameOf_id} = {db_table}.{NameOf_cm_tc_id} 
                 WHERE rt_em_id = {recibo.GetCuentaID()} AND rt_ec_id = {recibo.GetEntidadComercialID()} AND rt_rm_id = {recibo.GetID()}";
                 var cmd = new MySqlCommand(query, conn);
