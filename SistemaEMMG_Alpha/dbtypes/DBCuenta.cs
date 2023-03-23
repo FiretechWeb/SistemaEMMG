@@ -22,15 +22,9 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_em_cuit = nameof(em_cuit);
         public static readonly string NameOf_em_rs = nameof(em_rs);
-        public static CuentaData CreateFromReader(MySqlDataReader reader)
-        {
-            return new CuentaData(reader.GetInt64Safe(NameOf_em_cuit), reader.GetStringSafe(NameOf_em_rs));
-        }
+        public static CuentaData CreateFromReader(MySqlDataReader reader) => new CuentaData(reader.GetInt64Safe(NameOf_em_cuit), reader.GetStringSafe(NameOf_em_rs));
 
-        public override string ToString()
-        {
-            return $"Razón Social: {em_rs} - CUIT: {em_cuit}";
-        }
+        public override string ToString() => $"Razón Social: {em_rs} - CUIT: {em_cuit}";
     }
     public class DBCuenta : DBBaseClass, IDBase<DBCuenta>, IDBDataType<DBCuenta>
     {
@@ -41,10 +35,8 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_id = "em_id";
         private static readonly List<DBCuenta> _db_cuentas = new List<DBCuenta>();
 
-        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
-        {
-            return $"SELECT {fieldsToGet} FROM {db_table}";
-        }
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
+
         string IDBase<DBCuenta>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static List<DBCuenta> UpdateAll(MySqlConnection conn)
@@ -197,7 +189,6 @@ namespace SistemaEMMG_Alpha
 
             return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
         }
-
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {
@@ -452,10 +443,7 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public DBEntidades GetEntidadByID(long ec_id)
-        {
-            return DBEntidades.GetByID(_db_entidades_comerciales, this, ec_id);
-        }
+        public DBEntidades GetEntidadByID(long ec_id) => DBEntidades.GetByID(_db_entidades_comerciales, this, ec_id);
 
         public bool AddNewEntidad(DBEntidades newEntidadComercial)
         {
@@ -470,10 +458,7 @@ namespace SistemaEMMG_Alpha
             _db_entidades_comerciales.Add(newEntidadComercial);
             return true;
         }
-        public void RemoveEntidad(DBEntidades entRemove)
-        {
-            _db_entidades_comerciales.Remove(entRemove);
-        }
+        public void RemoveEntidad(DBEntidades entRemove) => _db_entidades_comerciales.Remove(entRemove);
 
         public bool AddNewComprobante(DBComprobantes entAdd)
         {
@@ -489,11 +474,7 @@ namespace SistemaEMMG_Alpha
             _db_comprobantes.Add(entAdd);
             return true;
         }
-       public void RemoveComprobante(DBComprobantes entRemove)
-        {
-             _db_comprobantes.Remove(entRemove);
-        }
-
+        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
 
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
@@ -535,15 +516,9 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBCuenta(-1, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBCuenta(-1, _data);
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - {_data}";
 
         /**********************
          * DEBUG STUFF ONLY

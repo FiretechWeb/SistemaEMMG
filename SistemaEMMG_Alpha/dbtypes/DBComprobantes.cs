@@ -182,10 +182,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
-        public static DBComprobantes GetByID(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id)
-        {
-            return GetByID(conn, DBEntidades.GetByID(conn, cuenta, ec_id), id);
-        }
+        public static DBComprobantes GetByID(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id) => GetByID(conn, DBEntidades.GetByID(conn, cuenta, ec_id), id);
 
         public static DBComprobantes GetByID(List<DBComprobantes> listaComprobantes, DBCuenta cuenta, long ec_id, long id)
         {
@@ -858,10 +855,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBRecibo GetReciboByID(long rc_id)
-        {
-            return DBRecibo.GetByID(_db_recibos, GetEntidadComercial(), rc_id);
-        }
+        public DBRecibo GetReciboByID(long rc_id) => DBRecibo.GetByID(_db_recibos, GetEntidadComercial(), rc_id);
 
         public bool AddRecibo(DBRecibo newRecibo)
         {
@@ -907,10 +901,7 @@ namespace SistemaEMMG_Alpha
                 _db_recibos.Add(recibo);
             }
         }
-        public void RemoveRecibo(DBRecibo entRemove)
-        {
-            _db_recibos.Remove(entRemove);
-        }
+        public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
 
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
@@ -1022,20 +1013,11 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _data);
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - Tipo: {_tipoComprobante.GetName()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoComprobante.GetName()} - {_data}";
 
-        public double GetTotal()
-        {
-            return _data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion;
-        }
+        public double GetTotal() => _data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion;
 
         /**********************
          * DEBUG STUFF ONLY

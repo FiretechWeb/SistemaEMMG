@@ -21,15 +21,9 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_tc_nombre = nameof(tc_nombre);
 
-        public static TiposComprobantesData CreateFromReader(MySqlDataReader reader)
-        {
-            return new TiposComprobantesData(reader.GetStringSafe(NameOf_tc_nombre));
-        }
+        public static TiposComprobantesData CreateFromReader(MySqlDataReader reader) => new TiposComprobantesData(reader.GetStringSafe(NameOf_tc_nombre));
 
-        public override string ToString()
-        {
-            return $"Tipo: {tc_nombre}";
-        }
+        public override string ToString() => $"Tipo: {tc_nombre}";
     }
 
     public class DBTiposComprobantes : DBBaseClass, IDBase<DBTiposComprobantes>, IDBDataType<DBTiposComprobantes>
@@ -43,10 +37,7 @@ namespace SistemaEMMG_Alpha
         private bool _shouldPush=false;
         private TiposComprobantesData _data;
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
-        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
-        {
-            return $"SELECT {fieldsToGet} FROM {db_table}";
-        }
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
         string IDBase<DBTiposComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static List<DBTiposComprobantes> UpdateAll(MySqlConnection conn)
@@ -87,10 +78,7 @@ namespace SistemaEMMG_Alpha
         }
         List<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAll() => GetAll();
 
-        public static IReadOnlyCollection<DBTiposComprobantes> GetAllLocal()
-        {
-            return _db_tipos_comprobantes.Where(x => x.IsLocal()).ToList().AsReadOnly();
-        }
+        public static IReadOnlyCollection<DBTiposComprobantes> GetAllLocal() => _db_tipos_comprobantes.Where(x => x.IsLocal()).ToList().AsReadOnly();
         IReadOnlyCollection<DBTiposComprobantes> IDBDataType<DBTiposComprobantes>.GetAllLocal() => GetAllLocal();
 
         public static DBTiposComprobantes GetByID(long tc_id)
@@ -280,6 +268,7 @@ namespace SistemaEMMG_Alpha
             }
             catch (Exception ex)
             {
+                deletedCorrectly = false;
                 MessageBox.Show("Error en DBTiposComprobantes::DeleteFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
@@ -346,19 +335,10 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBTiposComprobantes(-1, _data);
-        }
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - {_data.ToString()}";
-        }
+        public override DBBaseClass GetLocalCopy() => new DBTiposComprobantes(-1, _data);
 
-        ~DBTiposComprobantes()
-        {
+        public override string ToString() => $"ID: {GetID()} - {_data}";
 
-        }
         /**********************
          * DEBUG STUFF ONLY
          * ********************/

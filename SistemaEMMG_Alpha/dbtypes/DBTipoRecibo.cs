@@ -20,15 +20,9 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_tr_nombre = nameof(tr_nombre);
 
-        public static TipoReciboData CreateFromReader(MySqlDataReader reader)
-        {
-            return new TipoReciboData(reader.GetStringSafe(NameOf_tr_nombre));
-        }
+        public static TipoReciboData CreateFromReader(MySqlDataReader reader) => new TipoReciboData(reader.GetStringSafe(NameOf_tr_nombre));
 
-        public override string ToString()
-        {
-            return $"Tipo: {tr_nombre}";
-        }
+        public override string ToString() => $"Tipo: {tr_nombre}";
     }
     public class DBTipoRecibo : DBBaseClass, IDBase<DBTipoRecibo>, IDBDataType<DBTipoRecibo>
     {
@@ -42,10 +36,8 @@ namespace SistemaEMMG_Alpha
         private TipoReciboData _data;
         private static readonly List<DBTipoRecibo> _db_tipos_recibos = new List<DBTipoRecibo>();
 
-        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
-        {
-            return $"SELECT {fieldsToGet} FROM {db_table}";
-        }
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
+
         string IDBase<DBTipoRecibo>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static List<DBTipoRecibo> UpdateAll(MySqlConnection conn)
@@ -87,10 +79,7 @@ namespace SistemaEMMG_Alpha
 
         List<DBTipoRecibo> IDBDataType<DBTipoRecibo>.GetAll() => GetAll();
 
-        public static IReadOnlyCollection<DBTipoRecibo> GetAllLocal()
-        {
-            return _db_tipos_recibos.Where(x => x.IsLocal()).ToList().AsReadOnly();
-        }
+        public static IReadOnlyCollection<DBTipoRecibo> GetAllLocal() => _db_tipos_recibos.Where(x => x.IsLocal()).ToList().AsReadOnly();
         IReadOnlyCollection<DBTipoRecibo> IDBDataType<DBTipoRecibo>.GetAllLocal() => GetAllLocal();
 
         public static DBTipoRecibo GetByID(long te_id)
@@ -350,15 +339,9 @@ namespace SistemaEMMG_Alpha
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - {_data}";
 
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBTipoRecibo(-1, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBTipoRecibo(-1, _data);
 
         /**********************
          * DEBUG STUFF ONLY

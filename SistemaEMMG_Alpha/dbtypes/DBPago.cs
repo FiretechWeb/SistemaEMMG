@@ -33,10 +33,7 @@ namespace SistemaEMMG_Alpha
                                             reader.GetDateTimeSafe(NameOf_pg_fecha));
         }
 
-        public override string ToString()
-        {
-            return $"Importe: {pg_importe} - Observación: {pg_obs} - Fecha: {pg_fecha}";
-        }
+        public override string ToString() => $"Importe: {pg_importe} - Observación: {pg_obs} - Fecha: {pg_fecha}";
     }
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBPago y PagoData
     public class DBPago : DBBaseClass, IDBase<DBPago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBRecibo<DBRecibo>
@@ -159,15 +156,9 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
-        public static DBPago GetByID(MySqlConnection conn, DBCuenta cuenta, long pg_ec_id, long pg_rc_id, long pg_id)
-        {
-            return GetByID(conn, DBRecibo.GetByID(conn, cuenta, pg_ec_id, pg_rc_id), pg_id);
-        }
+        public static DBPago GetByID(MySqlConnection conn, DBCuenta cuenta, long pg_ec_id, long pg_rc_id, long pg_id) => GetByID(conn, DBRecibo.GetByID(conn, cuenta, pg_ec_id, pg_rc_id), pg_id);
 
-        public static DBPago GetByID(MySqlConnection conn, DBEntidades entidadComercial, long pg_rc_id, long pg_id)
-        {
-            return GetByID(conn, DBRecibo.GetByID(conn, entidadComercial, pg_rc_id), pg_id);
-        }
+        public static DBPago GetByID(MySqlConnection conn, DBEntidades entidadComercial, long pg_rc_id, long pg_id) => GetByID(conn, DBRecibo.GetByID(conn, entidadComercial, pg_rc_id), pg_id);
 
         public static DBPago GetByID(List<DBPago> listaPagos, DBCuenta cuenta, long pg_ec_id, long pg_rc_id, long pg_id)
         {
@@ -182,15 +173,9 @@ namespace SistemaEMMG_Alpha
             return null;
         }
 
-        public static DBPago GetByID(List<DBPago> listaPagos, DBEntidades entidadComercial, long pg_rc_id, long id)
-        {
-            return GetByID(listaPagos, entidadComercial.GetCuenta(), entidadComercial.GetID(), pg_rc_id, id);
-        }
+        public static DBPago GetByID(List<DBPago> listaPagos, DBEntidades entidadComercial, long pg_rc_id, long id) => GetByID(listaPagos, entidadComercial.GetCuenta(), entidadComercial.GetID(), pg_rc_id, id);
 
-        public static DBPago GetByID(List<DBPago> listaPagos, DBRecibo Recibo, long id)
-        {
-            return GetByID(listaPagos, Recibo.GetCuenta(), Recibo.GetEntidadComercialID(), Recibo.GetID(), id);
-        }
+        public static DBPago GetByID(List<DBPago> listaPagos, DBRecibo Recibo, long id) => GetByID(listaPagos, Recibo.GetCuenta(), Recibo.GetEntidadComercialID(), Recibo.GetID(), id);
 
         public static bool CheckIfExistsInList(List<DBPago> listaPagsRecibos, DBPago ent)
         {
@@ -479,15 +464,9 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBPago(_recibo, -1, _formaDePago, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _data);
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - {_data.ToString()}";
 
         /**********************
          * DEBUG STUFF ONLY

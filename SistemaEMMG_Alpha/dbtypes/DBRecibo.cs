@@ -37,10 +37,7 @@ namespace SistemaEMMG_Alpha
                                         reader.GetStringSafe(NameOf_rc_obs),
                                         Convert.ToBoolean(reader.GetInt32Safe(NameOf_rc_emitido)));
         }
-        public override string ToString()
-        {
-            return $"Emitido: {rc_emitido} - Fecha: {rc_fecha} - Número: {rc_nro} - Observación: {rc_obs}";
-        }
+        public override string ToString() => $"Emitido: {rc_emitido} - Fecha: {rc_fecha} - Número: {rc_nro} - Observación: {rc_obs}";
     }
     public class DBRecibo : DBBaseClass, IDBase<DBRecibo>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
     {
@@ -171,10 +168,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnEnt;
         }
-        public static DBRecibo GetByID(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id)
-        {
-            return GetByID(conn, DBEntidades.GetByID(conn, cuenta, ec_id), id);
-        }
+        public static DBRecibo GetByID(MySqlConnection conn, DBCuenta cuenta, long ec_id, long id) => GetByID(conn, DBEntidades.GetByID(conn, cuenta, ec_id), id);
 
         public static DBRecibo GetByID(List<DBRecibo> listaRecibos, DBCuenta cuenta, long ec_id, long id)
         {
@@ -864,10 +858,7 @@ namespace SistemaEMMG_Alpha
                 _db_comprobantes.Add(comprobante);
             }
         }
-        public void RemoveComprobante(DBComprobantes entRemove)
-        {
-            _db_comprobantes.Remove(entRemove);
-        }
+        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
 
         public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
         {
@@ -888,10 +879,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBPago GetPagoByID(long pg_id)
-        {
-            return DBPago.GetByID(_db_pagos, this, pg_id);
-        }
+        public DBPago GetPagoByID(long pg_id) => DBPago.GetByID(_db_pagos, this, pg_id);
 
         public bool AddPago(DBPago newPago)
         {
@@ -910,10 +898,8 @@ namespace SistemaEMMG_Alpha
             _db_pagos.Add(newPago);
             return true;
         }
-        public void RemovePago(DBPago entRemove)
-        {
-            _db_pagos.Remove(entRemove);
-        }
+        public void RemovePago(DBPago entRemove) => _db_pagos.Remove(entRemove);
+
 
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
@@ -994,15 +980,9 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBRecibo(_entidadComercial, -1, _tipoRecibo, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBRecibo(_entidadComercial, -1, _tipoRecibo, _data);
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - Tipo: {_tipoRecibo.GetName()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoRecibo.GetName()} - {_data}";
 
         /**********************
          * DEBUG STUFF ONLY

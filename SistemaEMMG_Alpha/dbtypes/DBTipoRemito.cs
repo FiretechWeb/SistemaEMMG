@@ -20,15 +20,9 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_ts_nombre = nameof(ts_nombre);
 
-        public static TipoRemitoData CreateFromReader(MySqlDataReader reader)
-        {
-            return new TipoRemitoData(reader.GetStringSafe(NameOf_ts_nombre));
-        }
+        public static TipoRemitoData CreateFromReader(MySqlDataReader reader) => new TipoRemitoData(reader.GetStringSafe(NameOf_ts_nombre));
 
-        public override string ToString()
-        {
-            return $"Tipo: {ts_nombre}";
-        }
+        public override string ToString() => $"Tipo: {ts_nombre}";
     }
     public class DBTipoRemito : DBBaseClass, IDBase<DBTipoRemito>, IDBDataType<DBTipoRemito>
     {
@@ -42,10 +36,8 @@ namespace SistemaEMMG_Alpha
         private TipoRemitoData _data;
         private static readonly List<DBTipoRemito> _db_tipos_remitos = new List<DBTipoRemito>();
 
-        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
-        {
-            return $"SELECT {fieldsToGet} FROM {db_table}";
-        }
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
+
         string IDBase<DBTipoRemito>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static List<DBTipoRemito> UpdateAll(MySqlConnection conn)
@@ -87,10 +79,8 @@ namespace SistemaEMMG_Alpha
 
         List<DBTipoRemito> IDBDataType<DBTipoRemito>.GetAll() => GetAll();
 
-        public static IReadOnlyCollection<DBTipoRemito> GetAllLocal()
-        {
-            return _db_tipos_remitos.Where(x => x.IsLocal()).ToList().AsReadOnly();
-        }
+        public static IReadOnlyCollection<DBTipoRemito> GetAllLocal() => _db_tipos_remitos.Where(x => x.IsLocal()).ToList().AsReadOnly();
+
         IReadOnlyCollection<DBTipoRemito> IDBDataType<DBTipoRemito>.GetAllLocal() => GetAllLocal();
 
         public static DBTipoRemito GetByID(long te_id)
@@ -165,7 +155,6 @@ namespace SistemaEMMG_Alpha
             }
         }
         public DBTipoRemito(MySqlDataReader reader) : this(reader.GetInt64Safe(NameOf_id), TipoRemitoData.CreateFromReader(reader)) { }
-
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {
@@ -283,6 +272,7 @@ namespace SistemaEMMG_Alpha
             }
             catch (Exception ex)
             {
+                deletedCorrectly = false;
                 MessageBox.Show("Error tratando de eliminar una fila de la base de datos en DBTipoRemito: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return deletedCorrectly;
@@ -351,15 +341,9 @@ namespace SistemaEMMG_Alpha
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - {_data}";
 
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBTipoRemito(-1, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBTipoRemito(-1, _data);
 
         /**********************
          * DEBUG STUFF ONLY

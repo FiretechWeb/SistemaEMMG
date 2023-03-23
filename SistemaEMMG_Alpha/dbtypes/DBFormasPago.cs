@@ -20,14 +20,8 @@ namespace SistemaEMMG_Alpha
 
         public static readonly string NameOf_fp_nombre = nameof(fp_nombre);
 
-        public static FormasPagoData CreateFromReader(MySqlDataReader reader)
-        {
-            return new FormasPagoData(reader.GetStringSafe(NameOf_fp_nombre));
-        }
-        public override string ToString()
-        {
-            return $"Forma: {fp_nombre}";
-        }
+        public static FormasPagoData CreateFromReader(MySqlDataReader reader) => new FormasPagoData(reader.GetStringSafe(NameOf_fp_nombre));
+        public override string ToString() => $"Forma: {fp_nombre}";
     }
     public class DBFormasPago : DBBaseClass, IDBase<DBFormasPago>, IDBDataType<DBFormasPago>
     {
@@ -41,10 +35,8 @@ namespace SistemaEMMG_Alpha
         private FormasPagoData _data;
         private static readonly List<DBFormasPago> _db_formas_pago = new List<DBFormasPago>();
 
-        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
-        {
-            return $"SELECT {fieldsToGet} FROM {db_table}";
-        }
+        public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
+
         string IDBase<DBFormasPago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
         public static List<DBFormasPago> UpdateAll(MySqlConnection conn)
@@ -86,10 +78,8 @@ namespace SistemaEMMG_Alpha
 
         List<DBFormasPago> IDBDataType<DBFormasPago>.GetAll() => GetAll();
 
-        public static IReadOnlyCollection<DBFormasPago> GetAllLocal()
-        {
-            return _db_formas_pago.Where(x => x.IsLocal()).ToList().AsReadOnly();
-        }
+        public static IReadOnlyCollection<DBFormasPago> GetAllLocal() => _db_formas_pago.Where(x => x.IsLocal()).ToList().AsReadOnly();
+
         IReadOnlyCollection<DBFormasPago> IDBDataType<DBFormasPago>.GetAllLocal() => GetAllLocal();
         public static DBFormasPago GetByID(long fp_id)
         {
@@ -347,6 +337,8 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
+        public override string ToString() => $"ID: {GetID()} - {_data}";
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
@@ -363,10 +355,6 @@ namespace SistemaEMMG_Alpha
         {
             Random r = new Random(Guid.NewGuid().GetHashCode());
             return _db_formas_pago[r.Next(0, _db_formas_pago.Count)];
-        }
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - {_data.ToString()}";
         }
 
     }

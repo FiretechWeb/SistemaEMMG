@@ -40,10 +40,7 @@ namespace SistemaEMMG_Alpha
                                 reader.GetStringSafe(NameOf_ec_celular));
         }
 
-        public override string ToString()
-        {
-            return $"CUIT: {ec_cuit} - Razón Social: {ec_rs} - Email: {ec_email} - Teléfono: {ec_telefono} - Celular: {ec_celular}";
-        }
+        public override string ToString() => $"CUIT: {ec_cuit} - Razón Social: {ec_rs} - Email: {ec_email} - Teléfono: {ec_telefono} - Celular: {ec_celular}";
     }
     public class DBEntidades : DBBaseClass, IDBase<DBEntidades>, IDBCuenta<DBCuenta>
     {
@@ -445,10 +442,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBComprobantes GetComprobanteByID(long cm_id)
-        {
-            return DBComprobantes.GetByID(_db_comprobantes, this, cm_id);
-        }
+        public DBComprobantes GetComprobanteByID(long cm_id) => DBComprobantes.GetByID(_db_comprobantes, this, cm_id);
 
         public bool AddNewComprobante(DBComprobantes newComprobante)
         {
@@ -467,10 +461,7 @@ namespace SistemaEMMG_Alpha
             _db_comprobantes.Add(newComprobante);
             return true;
         }
-        public void RemoveComprobante(DBComprobantes entRemove)
-        {
-            _db_comprobantes.Remove(entRemove);
-        }
+        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
 
         public List<DBRecibo> GetAllRecibos(MySqlConnection conn) //Get directly from database
         {
@@ -491,10 +482,7 @@ namespace SistemaEMMG_Alpha
             }
             return returnList;
         }
-        public DBRecibo GetReciboByID(long rc_id)
-        {
-            return DBRecibo.GetByID(_db_recibos, this, rc_id);
-        }
+        public DBRecibo GetReciboByID(long rc_id) => DBRecibo.GetByID(_db_recibos, this, rc_id);
 
         public bool AddNewRecibo(DBRecibo newRecibo)
         {
@@ -513,10 +501,7 @@ namespace SistemaEMMG_Alpha
             _db_recibos.Add(newRecibo);
             return true;
         }
-        public void RemoveRecibo(DBRecibo entRemove)
-        {
-            _db_recibos.Remove(entRemove);
-        }
+        public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
 
         public override bool ShouldPush() => _shouldPush;
         public override bool IsLocal() => _id < 0;
@@ -589,15 +574,9 @@ namespace SistemaEMMG_Alpha
                 ChangeID(-1);
             }
         }
-        public override DBBaseClass GetLocalCopy()
-        {
-            return new DBEntidades(_cuenta, -1, _tipoEntidad, _data);
-        }
+        public override DBBaseClass GetLocalCopy() => new DBEntidades(_cuenta, -1, _tipoEntidad, _data);
 
-        public override string ToString()
-        {
-            return $"ID: {GetID()} - Tipo Entidad: {_tipoEntidad.GetName()} - {_data.ToString()}";
-        }
+        public override string ToString() => $"ID: {GetID()} - Tipo Entidad: {_tipoEntidad.GetName()} - {_data}";
 
         /**********************
          * DEBUG STUFF ONLY
