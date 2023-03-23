@@ -107,6 +107,7 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("go back", (x) => _CMD_GoBack()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("reset database", (x) => _CMD_ResetDatabase()));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
         }
         ///<summary>
         ///Process an input string and retrieves the result.
@@ -1306,10 +1307,84 @@ namespace SistemaEMMG_Alpha
             _outputStr = $"Pago creado> {_seleccion}";
         }
  
-
-        private void _CMD_ResetDatabase()
+        private void _CMD_PopulateRandom()
         {
-            if (_inputRegister.Count < 2 || !_inputRegister[_inputRegister.Count-2].ToLower().Contains("reset database"))
+            if (_inputRegister.Count < 2 || !_inputRegister[_inputRegister.Count - 2].ToLower().Contains("populate random"))
+            {
+                _outputStr = "¿Estás realmente seguro de que queres llenar la base de datos de contenido random?, Esto va a eliminar TODOS los datos. Si estás seguro, escribí de nuevo:\npopulate random";
+                return;
+            }
+            _CMD_ResetDatabase(true);
+            _CMD_GenerateBasicData(true);
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            int cuentasCount = r.Next(1, 2);
+            for (int i=0; i < cuentasCount; i++)
+            {
+                DBCuenta randomCuenta = DBCuenta.GenerateRandom();
+                if (!randomCuenta.PushToDatabase(conn))
+                {
+                    continue;
+                }
+                int entidadesCount = r.Next(5, 20);
+                for (int j=0; j < entidadesCount; j++)
+                {
+                    DBEntidades randomEntidad = DBEntidades.GenerateRandom(randomCuenta);
+                    if (!randomEntidad.PushToDatabase(conn))
+                    {
+                        continue;
+                    }
+                    int comprobantesCount = r.Next(10, 25);
+                    List<DBComprobantes> comprobantes = new List<DBComprobantes>();
+                    for (int k=0; k < comprobantesCount; k++)
+                    {
+                        DBComprobantes randomComprobante = DBComprobantes.GenerateRandom(randomEntidad);
+                        if (randomComprobante.PushToDatabase(conn))
+                        {
+                            comprobantes.Add(randomComprobante);
+                        }
+                    }
+                    int recibosCount = r.Next(10, 25);
+                    for (int k = 0; k < recibosCount; k++)
+                    {
+                        DBRecibo randomRecibo = DBRecibo.GenerateRandom(randomEntidad);
+                        if (randomRecibo.PushToDatabase(conn))
+                        {
+                            int pagosCount = r.Next(1, 4);
+                            for (int z =0; z < pagosCount; z++)
+                            {
+                                DBPago randomPago = DBPago.GenerateRandom(randomRecibo);
+                                randomPago.PushToDatabase(conn);
+                            }
+                            int comprobantesRelacionados = r.Next(0, 4);
+                            for (int z = 0; z < comprobantesRelacionados; z++)
+                            {
+                                randomRecibo.AddComprobante(comprobantes[r.Next(0, comprobantes.Count)]);
+                            }
+                            randomRecibo.PushAllRelationshipsWithComprobantesDB(conn);
+                        }
+                    }
+                    int remitosCount = r.Next(10, 25);
+                    for (int k = 0; k < remitosCount; k++)
+                    {
+                        DBRemito randomRemito = DBRemito.GenerateRandom(randomEntidad);
+                        if (randomRemito.PushToDatabase(conn))
+                        {
+                            int comprobantesRelacionados = r.Next(0, 4);
+                            for (int z = 0; z < comprobantesRelacionados; z++)
+                            {
+                                randomRemito.AddComprobante(comprobantes[r.Next(0, comprobantes.Count)]);
+                            }
+                            randomRemito.PushAllRelationshipsWithComprobantesDB(conn);
+                        }
+                    }
+                }
+            }
+            _outputStr = "Done!";
+        }
+        private void _CMD_ResetDatabase(bool force = false)
+        {
+            if (!force && (_inputRegister.Count < 2 || !_inputRegister[_inputRegister.Count-2].ToLower().Contains("reset database")))
             {
                 _outputStr = "¿Estás realmente seguro de que queres resetear el contenido de la base de datos?, Esto va a eliminar TODOS los datos. Si estás seguro, escribí de nuevo:\nreset database";
                 return;
@@ -1424,9 +1499,9 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        private void _CMD_GenerateBasicData()
+        private void _CMD_GenerateBasicData(bool force=false)
         {
-            if (_inputRegister.Count < 2 || !_inputRegister[_inputRegister.Count - 2].ToLower().Contains("generate basic data"))
+            if (!force && (_inputRegister.Count < 2 || !_inputRegister[_inputRegister.Count - 2].ToLower().Contains("generate basic data")))
             {
                 _outputStr = "¿Estás realmente seguro de que queres volver a generar los datos básicos en la base de datos?, Esto puedo corromper la base de datos. Si estás seguro, escribí de nuevo:\ngenerate basic data";
                 return;

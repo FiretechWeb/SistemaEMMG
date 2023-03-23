@@ -707,6 +707,10 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el método DBComprobantes::PushRelationshipRemitoDB.\nImposible relacionar un Remito de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+            if (newRemito.IsEmitido() != IsEmitido())
+            {
+                return false;
+            }
             if ((newRemito.ExistsInDatabase(conn) != true) || (ExistsInDatabase(conn) != true))
             {
                 MessageBox.Show("Error en el método DBComprobantes::PushRelationshipRemitoDB.\n Parece que uno de los datos a relacionar no existe en la base de datos.\nRecuerde llamar esta función solo si los datos están en la base de datos.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -842,6 +846,10 @@ namespace SistemaEMMG_Alpha
             if (newRecibo.GetEntidadComercialID() != GetEntidadComercialID() || newRecibo.GetCuentaID() != GetCuentaID())
             {
                 MessageBox.Show("Error en el método DBComprobantes::PushRelationshipReciboDB.\nImposible relacionar un recibo de otra entidad comercial a la del comprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (newRecibo.IsEmitido() != IsEmitido())
+            {
                 return false;
             }
             if ((newRecibo.ExistsInDatabase(conn) != true) || (ExistsInDatabase(conn) != true))
@@ -981,6 +989,10 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an payament from another account or entity like this...
             }
+            if (newRecibo.IsEmitido() != IsEmitido())
+            {
+                return false;
+            }
             if (_db_recibos.Contains(newRecibo))
             {
                 return false;
@@ -992,6 +1004,10 @@ namespace SistemaEMMG_Alpha
         {
             DBRecibo recibo = DBRecibo.GetByID(conn, GetEntidadComercial(), rc_id);
             if (recibo is null)
+            {
+                return false;
+            }
+            if (recibo.IsEmitido() != IsEmitido())
             {
                 return false;
             }
@@ -1048,6 +1064,10 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an payament from another account or entity like this...
             }
+            if (newRemito.IsEmitido() != IsEmitido())
+            {
+                return false;
+            }
             if (_db_remitos.Contains(newRemito))
             {
                 return false;
@@ -1057,20 +1077,24 @@ namespace SistemaEMMG_Alpha
         }
         public bool AddRemito(MySqlConnection conn, long rc_id)
         {
-            DBRemito Remito = DBRemito.GetByID(conn, GetEntidadComercial(), rc_id);
-            if (Remito is null)
+            DBRemito remito = DBRemito.GetByID(conn, GetEntidadComercial(), rc_id);
+            if (remito is null)
+            {
+                return false;
+            }
+            if (remito.IsEmitido() != IsEmitido())
             {
                 return false;
             }
             for (int i = 0; i < _db_remitos.Count; i++)
             {
-                if (_db_remitos[i].GetCuentaID() == Remito.GetCuentaID() && _db_remitos[i].GetEntidadComercialID() == Remito.GetEntidadComercialID() && _db_remitos[i].GetID() == Remito.GetID())
+                if (_db_remitos[i].GetCuentaID() == remito.GetCuentaID() && _db_remitos[i].GetEntidadComercialID() == remito.GetEntidadComercialID() && _db_remitos[i].GetID() == remito.GetID())
                 {
-                    _db_remitos[i] = Remito;
+                    _db_remitos[i] = remito;
                     return false;
                 }
             }
-            return AddRemito(Remito);
+            return AddRemito(remito);
         }
 
         public void RemoveRemito(long rc_id)

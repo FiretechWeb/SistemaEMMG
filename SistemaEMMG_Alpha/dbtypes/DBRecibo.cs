@@ -630,6 +630,10 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en el método DBRecibo::PushRelationshipComprobanteDB.\nImposible relacionar un comprobante de otra entidad comercial a la del recibo.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+            if (comprobante.IsEmitido() != _data.rc_emitido)
+            {
+                return false;
+            }
             if ((comprobante.ExistsInDatabase(conn) != true) || (ExistsInDatabase(conn) != true))
             {
                 MessageBox.Show("Error en el método DBComprobantes::PushRelationshipReciboDB.\n Parece que uno de los datos a relacionar no existe en la base de datos.\nRecuerde llamar esta función solo si los datos están en la base de datos.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -771,6 +775,10 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //Cannot add an payament from another account or entity like this...
             }
+            if (newComprobante.IsEmitido() != _data.rc_emitido)
+            {
+                return false;
+            }
             if (_db_comprobantes.Contains(newComprobante))
             {
                 return false;
@@ -783,6 +791,10 @@ namespace SistemaEMMG_Alpha
         {
             DBComprobantes comprobante = DBComprobantes.GetByID(conn, GetEntidadComercial(), cm_id);
             if (comprobante is null)
+            {
+                return false;
+            }
+            if (comprobante.IsEmitido() != _data.rc_emitido)
             {
                 return false;
             }
@@ -893,6 +905,17 @@ namespace SistemaEMMG_Alpha
         public string GetNumero() => _data.rc_nro;
 
         public string GetObservacion() => _data.rc_obs;
+
+        ///<summary>
+        ///Returns if this business recibo was emitted to get payed or received to be payed.
+        ///</summary>
+        public bool IsEmitido() => _data.rc_emitido;
+
+        public void SetEmitido(bool esEmitido)
+        {
+            _shouldPush = _shouldPush || (esEmitido != _data.rc_emitido);
+            _data.rc_emitido = esEmitido;
+        }
 
         public void SetFecha(DateTime? fecha)
         {
