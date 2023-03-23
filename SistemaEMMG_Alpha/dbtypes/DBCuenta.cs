@@ -256,6 +256,10 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
+                    if (!_db_cuentas.Contains(this))
+                    {
+                        _db_cuentas.Add(this);
+                    }
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
             }
@@ -278,6 +282,7 @@ namespace SistemaEMMG_Alpha
                 if (deletedCorrectly)
                 {
                     MakeLocal();
+                    _db_cuentas.Remove(this);
                 }
             }
             catch (Exception ex)
