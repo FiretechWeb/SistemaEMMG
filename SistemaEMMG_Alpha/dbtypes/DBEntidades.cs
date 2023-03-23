@@ -66,40 +66,25 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBEntidades>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
-        public DBEntidades(DBCuenta newCuenta, long id, DBTipoEntidad newTipo, EntidadesComercialesData newData)
+        public DBEntidades(DBCuenta newCuenta, long id, DBTipoEntidad newTipo, EntidadesComercialesData newData) : base(id)
         {
-            _id = id;
             _tipoEntidad = newTipo;
             _cuenta = newCuenta;
             _data = newData;
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBEntidades(DBCuenta newCuenta, long id, long te_id, EntidadesComercialesData newData)
+        public DBEntidades(DBCuenta newCuenta, long id, long te_id, EntidadesComercialesData newData) : base(id)
         {
-            _id = id;
             _tipoEntidad = DBTipoEntidad.GetByID(te_id);
             _cuenta = newCuenta;
             _data = newData;
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBEntidades(DBCuenta newCuenta, MySqlConnection conn, long id, long te_id, EntidadesComercialesData newData)
+        public DBEntidades(DBCuenta newCuenta, MySqlConnection conn, long id, long te_id, EntidadesComercialesData newData) : base(id)
         {
-            _id = id;
             _tipoEntidad = DBTipoEntidad.GetByID(te_id, conn);
             _cuenta = newCuenta;
             _data = newData;
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
         public DBEntidades(DBCuenta newCuenta, DBTipoEntidad newTipo, long id, long cuit, string rs, string email = "", string tel = "", string cel = "") : this(newCuenta, id, newTipo, new EntidadesComercialesData(cuit, rs, email, tel, cel)) { }
@@ -226,21 +211,6 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en DBEntidades::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToPull;
-        }
-
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
         }
 
         public override bool UpdateToDatabase(MySqlConnection conn)

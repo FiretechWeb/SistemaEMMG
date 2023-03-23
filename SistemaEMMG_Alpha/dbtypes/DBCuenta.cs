@@ -138,21 +138,13 @@ namespace SistemaEMMG_Alpha
         private CuentaData _data;
         private readonly List<DBEntidades> _db_entidades_comerciales = new List<DBEntidades>();
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>(); //Useless, TO REMOVE in future. 
-        public DBCuenta(long id, CuentaData newData)
-        {
-            _id = id;
-            _data = newData;
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
-        }
+        public DBCuenta(long id, CuentaData newData) : base (id) { _data = newData; }
 
         public DBCuenta(long id, long cuit, string rs) : this (id, new CuentaData(cuit, rs)) { }
         public DBCuenta(long cuit, string rs) : this(-1, cuit, rs) { }
 
         public DBCuenta(MySqlDataReader reader) : this (reader.GetInt64Safe(NameOf_id), CuentaData.CreateFromReader(reader)) { }
-        public DBCuenta(MySqlConnection conn, int id)
+        public DBCuenta(MySqlConnection conn, int id) : base (id)
         {
             try
             {
@@ -162,30 +154,15 @@ namespace SistemaEMMG_Alpha
                
                 while (reader.Read())
                 {
-                    _id = id;
                     _data = CuentaData.CreateFromReader(reader);
                 }
 
                 reader.Close();
             } catch (Exception ex)
             {
+                MakeLocal();
                 MessageBox.Show("Error en el constructor de DBCuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-        }
-
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
         }
 
         public override bool PullFromDatabase(MySqlConnection conn)

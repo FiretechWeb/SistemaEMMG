@@ -126,23 +126,14 @@ namespace SistemaEMMG_Alpha
             return returnTipoEntidad;
         }
 
-        public DBTipoEntidad(long id, TiposEntidadesData newData)
-        {
-            _id = id;
-            _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
-        }
+        public DBTipoEntidad(long id, TiposEntidadesData newData) : base (id) { _data = newData; }
 
         public DBTipoEntidad(TiposEntidadesData newData) : this(-1, newData) { }
         public DBTipoEntidad(long id, string nombre) : this(id, new TiposEntidadesData(nombre)) { }
 
         public DBTipoEntidad(string nombre) : this(-1, nombre) { }
 
-        public DBTipoEntidad(MySqlConnection conn, long id)
+        public DBTipoEntidad(MySqlConnection conn, long id) : base (id)
         {
             try
             {
@@ -152,7 +143,6 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    _id = id;
                     _data = TiposEntidadesData.CreateFromReader(reader);
                 }
 
@@ -160,6 +150,7 @@ namespace SistemaEMMG_Alpha
             }
             catch (Exception ex)
             {
+                MakeLocal();
                 MessageBox.Show("Error en el constructo de DBTipoEntidad, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -192,20 +183,6 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en DBTipoEntidad::PullFromDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToPull;
-        }
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
         }
 
         public override bool UpdateToDatabase(MySqlConnection conn)

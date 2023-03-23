@@ -12,6 +12,16 @@ namespace SistemaEMMG_Alpha
     {
         protected long _id=-1;
         protected bool _shouldPush = false;
+
+
+        protected DBBaseClass(long id)
+        {
+            _id = id;
+            if (IsLocal())
+            {
+                _shouldPush = true;
+            }
+        }
         ///<summary>
         ///Check if element with same data exists in DB. This checks for data, and not ID. For checking if an element with the same ID exists in database, use ExistsInDatabase method.
         ///</summary>
@@ -31,11 +41,25 @@ namespace SistemaEMMG_Alpha
         ///<summary>
         ///Push this element to the database. If it exists then just updates it. If it does not exists, then it is inserted as a new element.
         ///</summary>
-        abstract public bool PushToDatabase(MySqlConnection conn);
+        virtual public bool PushToDatabase(MySqlConnection conn)
+        {
+            if (!ShouldPush())
+            {
+                return false;
+            }
+            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
+            if (existsInDB is null) //error with DB...
+            {
+                return false;
+            }
+
+            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
+        }
         ///<summary>
         ///Refresh (pull) the information directly from DB.
         ///</summary>
         abstract public bool PullFromDatabase(MySqlConnection conn);
+
         ///<summary>
         ///Delete this element from the database.
         ///</summary>

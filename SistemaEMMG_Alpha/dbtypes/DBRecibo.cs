@@ -205,81 +205,45 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBRecibo(DBEntidades entidadComercial, long id, DBTipoRecibo newTipo, ReciboData newData)
+        public DBRecibo(DBEntidades entidadComercial, long id, DBTipoRecibo newTipo, ReciboData newData) : base (id)
         {
-            _id = id;
             _entidadComercial = entidadComercial;
             _tipoRecibo = newTipo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBRecibo(DBEntidades entidadComercial, long id, long tr_id, ReciboData newData)
+        public DBRecibo(DBEntidades entidadComercial, long id, long tr_id, ReciboData newData) : base (id)
         {
-            _id = id;
             _entidadComercial = entidadComercial;
             _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBRecibo(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTipoRecibo newTipo, ReciboData newData)
+        public DBRecibo(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTipoRecibo newTipo, ReciboData newData) : base (id)
         {
-            _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoRecibo = newTipo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBRecibo(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tr_id, ReciboData newData)
+        public DBRecibo(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tr_id, ReciboData newData) : base (id)
         {
-            _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
-        public DBRecibo(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tr_id, ReciboData newData)
+        public DBRecibo(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tr_id, ReciboData newData) : base(id)
         {
-            _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoRecibo = DBTipoRecibo.GetByID(tr_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBRecibo(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTipoRecibo newTipo, ReciboData newData)
+        public DBRecibo(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTipoRecibo newTipo, ReciboData newData) : base (id)
         {
-            _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoRecibo = newTipo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
         public DBRecibo(
@@ -418,21 +382,6 @@ namespace SistemaEMMG_Alpha
             newTipo,
             ReciboData.CreateFromReader(reader))
         { }
-
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
-        }
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {

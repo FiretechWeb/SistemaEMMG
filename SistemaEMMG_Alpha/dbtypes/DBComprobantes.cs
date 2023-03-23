@@ -219,81 +219,45 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, ComprobantesData newData) : base (id)
         {
-            _id = id;
             _entidadComercial = entidadComercial;
             _tipoComprobante = newTipo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, ComprobantesData newData) : base(id)
         {
-            _id = id;
             _entidadComercial = entidadComercial;
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData) : base(id)
         {
-            _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = newTipo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tc_id, ComprobantesData newData) : base(id)
         {
-            _id = id;
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, ComprobantesData newData) : base(id)
         {
-            _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, ComprobantesData newData) : base(id)
         {
-            _id = id;
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = newTipo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
         public DBComprobantes(
@@ -454,21 +418,6 @@ namespace SistemaEMMG_Alpha
             reader.GetInt64Safe(NameOf_id),
             newTipo,
             ComprobantesData.CreateFromReader(reader)) { }
-
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
-        }
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {

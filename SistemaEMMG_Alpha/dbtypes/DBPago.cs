@@ -187,9 +187,8 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, PagoData newData)
+        public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, PagoData newData) : base (id)
         {
-            _id = id;
             if (formaDePago is null)
             {
                 throw new Exception("Error here");
@@ -197,16 +196,10 @@ namespace SistemaEMMG_Alpha
             _formaDePago = formaDePago;
             _recibo = Recibo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBPago(DBRecibo Recibo, long id, long fp_id, PagoData newData)
+        public DBPago(DBRecibo Recibo, long id, long fp_id, PagoData newData) : base (id)
         {
-            _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id);
             if (_formaDePago is null)
             {
@@ -214,16 +207,10 @@ namespace SistemaEMMG_Alpha
             }
             _recibo = Recibo;
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, PagoData newData) //Directly from DB
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, PagoData newData) : base (id)
         {
-            _id = id;
             _formaDePago = DBFormasPago.GetByID(fp_id, conn);
             if (_formaDePago is null)
             {
@@ -231,11 +218,6 @@ namespace SistemaEMMG_Alpha
             }
             _recibo = DBRecibo.GetByID(conn, cuenta, ec_id, rc_id);
             _data = newData;
-
-            if (IsLocal())
-            {
-                _shouldPush = true;
-            }
         }
 
         public DBPago(DBRecibo Recibo, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(Recibo, -1, formaPago, new PagoData(importe, obs, fecha)) { }
@@ -251,20 +233,6 @@ namespace SistemaEMMG_Alpha
             newFormaPago,
             PagoData.CreateFromReader(reader)) { }
 
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
-        }
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {

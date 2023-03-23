@@ -113,22 +113,14 @@ namespace SistemaEMMG_Alpha
             return returnEnt;
         }
 
-        public DBFormasPago(long id, FormasPagoData newData)
-        {
-            _id = id;
-            _data = newData;
-            if (IsLocal()) //Locally created
-            {
-                _shouldPush = true;
-            }
-        }
+        public DBFormasPago(long id, FormasPagoData newData) : base (id) { _data = newData; }
 
         public DBFormasPago(FormasPagoData newData) : this(-1, newData) { }
         public DBFormasPago(long id, string nombre) : this(id, new FormasPagoData(nombre)) { }
 
         public DBFormasPago(string nombre) : this(-1, nombre) { }
 
-        public DBFormasPago(MySqlConnection conn, long id)
+        public DBFormasPago(MySqlConnection conn, long id) : base (id)
         {
             try
             {
@@ -137,13 +129,13 @@ namespace SistemaEMMG_Alpha
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    _id = id;
                     _data = FormasPagoData.CreateFromReader(reader);
                 }
                 reader.Close();
             }
             catch (Exception ex)
             {
+                MakeLocal();
                 MessageBox.Show("Error en el constructor de DBFormasPago. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -177,20 +169,6 @@ namespace SistemaEMMG_Alpha
             return wasAbleToPull;
         }
 
-        public override bool PushToDatabase(MySqlConnection conn)
-        {
-            if (!ShouldPush())
-            {
-                return false;
-            }
-            bool? existsInDB = IsLocal() ? false : ExistsInDatabase(conn);
-            if (existsInDB is null) //error with DB...
-            {
-                return false;
-            }
-
-            return Convert.ToBoolean(existsInDB) ? UpdateToDatabase(conn) : InsertIntoToDatabase(conn);
-        }
 
         public override bool UpdateToDatabase(MySqlConnection conn)
         {
