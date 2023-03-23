@@ -59,6 +59,7 @@ namespace SistemaEMMG_Alpha
         private DBTipoEntidad _tipoEntidad = null;
         private readonly List<DBComprobantes> _db_comprobantes = new List<DBComprobantes>();
         private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
+        private readonly List<DBRemito> _db_remitos = new List<DBRemito>();
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -470,6 +471,46 @@ namespace SistemaEMMG_Alpha
             return true;
         }
         public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
+
+        public List<DBRemito> GetAllRemitos(MySqlConnection conn) //Get directly from database
+        {
+            List<DBRemito> returnList = DBRemito.GetAll(conn, this);
+            _db_remitos.Clear();
+            foreach (DBRemito recibo in returnList)
+            {
+                _db_remitos.Add(recibo);
+            }
+            return returnList;
+        }
+        public List<DBRemito> GetAllRemitos() //Get CACHE
+        {
+            List<DBRemito> returnList = new List<DBRemito>();
+            foreach (DBRemito recibo in _db_remitos)
+            {
+                returnList.Add(recibo);
+            }
+            return returnList;
+        }
+        public DBRemito GetRemitoByID(long rc_id) => DBRemito.GetByID(_db_remitos, this, rc_id);
+
+        public bool AddNewRemito(DBRemito newRecibo)
+        {
+            if (newRecibo is null)
+            {
+                return false;
+            }
+            if (newRecibo.GetCuentaID() != GetCuentaID() || newRecibo.GetEntidadComercialID() != GetID())
+            {
+                return false; //Cannot add an receipt from another account or entity like this...
+            }
+            if (_db_remitos.Contains(newRecibo))
+            {
+                return false;
+            }
+            _db_remitos.Add(newRecibo);
+            return true;
+        }
+        public void RemoveRemito(DBRemito entRemove) => _db_remitos.Remove(entRemove);
 
         public long GetCuentaID() => _cuenta.GetID();
 
