@@ -1411,7 +1411,7 @@ namespace SistemaEMMG_Alpha
                 {
                     continue;
                 }
-                int entidadesCount = r.Next(5, 20);
+                int entidadesCount = r.Next(5, 10);
                 for (int j=0; j < entidadesCount; j++)
                 {
                     DBEntidades randomEntidad = DBEntidades.GenerateRandom(randomCuenta);

@@ -502,6 +502,21 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
 
+        /***********************************************
+         * Useful functions for Real world applications
+         * ********************************************/
+        public double GetImporte_MonedaLocal() => _data.pg_importe * _data.pg_cambio;
+
+        public static double GetTotal_MonedaLocal(List<DBPago>pagosList)
+        {
+            double totalPagos = 0.0;
+            foreach (DBPago pago in pagosList)
+            {
+                totalPagos += pago.GetImporte_MonedaLocal();
+            }
+            return totalPagos;
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
@@ -519,8 +534,15 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaPago;
             }
             DBMoneda moneda = DBMoneda.GetRandom();
+            double cambio = moneda.IsExtranjera() ? (200.0 + Math.Truncate(10000.0 * r.NextDouble()) / 100.0) : 1.0;
 
-            return new DBPago(Recibo, DBFormasPago.GetRandom(), DBMoneda.GetRandom(), Math.Truncate(100000.0*r.NextDouble())/100.0, "Sin información", fechaFinal, moneda.IsExtranjera() ? (200.0 + Math.Truncate(10000.0 * r.NextDouble()) / 100.0) : 1.0);
+            return new DBPago(Recibo,
+                DBFormasPago.GetRandom(),
+                moneda,
+                Math.Truncate(5000000.0*r.NextDouble()/cambio) /100.0,
+                "Sin información",
+                fechaFinal,
+                cambio);
         }
         
     }

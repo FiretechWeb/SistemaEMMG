@@ -113,6 +113,7 @@
     </ApplicationDefinition>
     <Compile Include="DBInterfaces.cs" />
     <Compile Include="DBOldMain.cs" />
+    <Compile Include="dbtypes\DBMoneda.cs" />
     <Compile Include="dbtypes\DBRecibo.cs" />
     <Compile Include="dbtypes\DBRemito.cs" />
     <Compile Include="dbtypes\DBTipoRecibo.cs" />

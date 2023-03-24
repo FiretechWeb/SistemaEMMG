@@ -1313,7 +1313,99 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoComprobante.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
 
+        /***********************************************
+         * Useful functions for Real world applications
+         * ********************************************/
+
         public double GetTotal() => _data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion;
+
+        public double GetTotal_MonedaLocal() => (_data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion) * _data.cm_cambio;
+        public double GetGravado_MonedaLocal() => _data.cm_gravado * _data.cm_cambio;
+        public double GetIVA_MonedaLocal() => _data.cm_iva * _data.cm_cambio;
+        public double GetNoGravado_MonedaLocal() => _data.cm_no_gravado * _data.cm_cambio;
+        public double GetPercepcion_MonedaLocal() => _data.cm_percepcion * _data.cm_cambio;
+
+        public static List<DBComprobantes> GetAllEmitidos(List<DBComprobantes> comprobantesList) => comprobantesList.Where(x => x.IsEmitido()).ToList();
+        public static List<DBComprobantes> GetAllRecibidos(List<DBComprobantes> comprobantesList) => comprobantesList.Where(x => !x.IsEmitido()).ToList();
+        public static List<DBComprobantes> GetAllWithMonedaExtranjera(List<DBComprobantes> comprobantesList) => comprobantesList.Where(x => x.GetMoneda().IsExtranjera()).ToList();
+
+        public static double GetSaldoTotal_MonedaLocal(List<DBComprobantes> comprobantesList)
+        {
+            double saldoTotal = 0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                if (comprobante.IsEmitido())
+                {
+                    saldoTotal += comprobante.GetTotal_MonedaLocal();
+                }
+                else
+                {
+                    saldoTotal -= comprobante.GetTotal_MonedaLocal();
+                }
+
+            }
+            return saldoTotal;
+        }
+        public static double GetSaldoIVA_MonedaLocal(List<DBComprobantes> comprobantesList) {
+            double saldoIVA = 0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                if (comprobante.IsEmitido())
+                {
+                    saldoIVA -= comprobante.GetIVA_MonedaLocal();
+                } else
+                {
+                    saldoIVA += comprobante.GetIVA_MonedaLocal();
+                }
+                
+            }
+            return saldoIVA;
+        }
+        public static double GetTotal_MonedaLocal(List<DBComprobantes>comprobantesList)
+        {
+            double total=0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                total += comprobante.GetTotal_MonedaLocal();
+            }
+            return total;
+        }
+        public static double GetTotalIVA_MonedaLocal(List<DBComprobantes> comprobantesList)
+        {
+            double totalIva = 0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                totalIva += comprobante.GetIVA_MonedaLocal();
+            }
+            return totalIva;
+        }
+        public static double GetTotalGravado_MonedaLocal(List<DBComprobantes> comprobantesList)
+        {
+            double totalGravado = 0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                totalGravado += comprobante.GetGravado_MonedaLocal();
+            }
+            return totalGravado;
+        }
+        public static double GetTotalNoGravado_MonedaLocal(List<DBComprobantes> comprobantesList)
+        {
+            double totalNoGravado = 0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                totalNoGravado += comprobante.GetNoGravado_MonedaLocal();
+            }
+            return totalNoGravado;
+        }
+        public static double GetTotalPercepcion_MonedaLocal(List<DBComprobantes> comprobantesList)
+        {
+            double totalPercepcion = 0.0;
+            foreach (DBComprobantes comprobante in comprobantesList)
+            {
+                totalPercepcion += comprobante.GetPercepcion_MonedaLocal();
+            }
+            return totalPercepcion;
+        }
 
         /**********************
          * DEBUG STUFF ONLY
@@ -1356,17 +1448,18 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaEmitido;
             }
             DBMoneda moneda = DBMoneda.GetRandom();
+            double cambio = moneda.IsExtranjera() ? (200.0 + Math.Truncate(10000.0 * r.NextDouble()) / 100.0) : 1.0;
             return new DBComprobantes(entidadComercial,
                 DBTiposComprobantes.GetRandom(),
                 moneda,
                 Convert.ToBoolean(r.Next(0, 2)),
                 fechaFinal,
                 $"{randomFacturaCodigos[r.Next(0, randomFacturaCodigos.Length)]}{r.Next(1, 10)}-{r.Next(100000, 999999)}",
-                Math.Truncate(10000000.0*r.NextDouble())/100.0,
-                Math.Truncate(2100000.0 *r.NextDouble())/100.0,
-                Math.Truncate(5000000.0 *r.NextDouble())/100.0,
-                Math.Truncate(50000.0 *r.NextDouble())/100.0,
-                moneda.IsExtranjera() ? (200.0+Math.Truncate(10000.0*r.NextDouble())/100.0) : 1.0,
+                Math.Truncate(10000000.0*r.NextDouble()/cambio) /100.0,
+                Math.Truncate(2100000.0 *r.NextDouble()/ cambio) /100.0,
+                Math.Truncate(5000000.0 *r.NextDouble()/ cambio) /100.0,
+                Math.Truncate(500000.0 *r.NextDouble()/ cambio) /100.0,
+                cambio,
                 "Sin información adicional");
         }
         
