@@ -412,10 +412,31 @@ namespace SistemaEMMG_Alpha
 
         public string GetObservacion() => _data.pg_obs;
 
-        public void SetFormaDePago(DBFormasPago newFormaDePago) => _formaDePago = newFormaDePago;
+        public double GetImporte() => _data.pg_importe;
 
-        public void SetFormaDePago(long fp_id) => _formaDePago = DBFormasPago.GetByID(fp_id);
-        public void SetObservacion(string obs) => _data.pg_obs = obs;
+        public DateTime? GetFecha() => _data.pg_fecha;
+
+        public void SetFormaDePago(DBFormasPago newFormaDePago)
+        {
+            _shouldPush = _shouldPush || (newFormaDePago.GetID() != _formaDePago.GetID());
+            _formaDePago = newFormaDePago;
+        }
+
+        public void SetFormaDePago(long fp_id)
+        {
+            _shouldPush = _shouldPush || (fp_id != _formaDePago.GetID());
+            _formaDePago = DBFormasPago.GetByID(fp_id);
+        }
+        public void SetObservacion(string obs) {
+            _shouldPush = _shouldPush || !_data.pg_obs.Equals(obs);
+            _data.pg_obs = obs;
+        }
+        public void SetFecha(DateTime? fecha)
+        {
+            _shouldPush = _shouldPush || (fecha != _data.pg_fecha);
+            _data.pg_fecha = fecha;
+        }
+
 
         public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _data);
 
