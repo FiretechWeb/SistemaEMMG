@@ -58,7 +58,12 @@ namespace SistemaEMMG_Alpha
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select forma pago", (x) => _CMD_SelectFormaPago(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make forma pago", (x) => _CMD_CrearFormaDePago(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("forma pago set name", (x) => _CMD_FormaPagoSetName(x))); 
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("forma pago set name", (x) => _CMD_FormaPagoSetName(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select moneda", (x) => _CMD_SelectMoneda(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make moneda", (x) => _CMD_CrearMoneda(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("moneda set name", (x) => _CMD_MonedaSetName(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("moneda set extranjera", (x) => _CMD_MonedaSetExtranjera(x)));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("make cuenta", (x) => _CMD_CrearCuenta(x)));
@@ -312,6 +317,17 @@ namespace SistemaEMMG_Alpha
             }
             _outputStr = $"Forma de pago seleccionada> {_seleccion}";
         }
+        private void _CMD_SelectMoneda(string id)
+        {
+            _seleccion = DBMoneda.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No exise una moneda con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Moneda seleccionada> {_seleccion}";
+        }
+
         private void _CMD_SelectCuenta(string id)
         {
             _seleccion = DBCuenta.GetByID(SafeConvert.ToInt64(id.Trim()));
@@ -395,6 +411,17 @@ namespace SistemaEMMG_Alpha
             _seleccion = new DBFormasPago(parametros[0]);
             _outputStr = $"Forma de pago creada> {_seleccion}";
         }
+        private void _CMD_CrearMoneda(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make moneda Nombre, ¿Es Extranjera? (0|1)";
+                return;
+            }
+            _seleccion = new DBMoneda(parametros[0], SafeConvert.ToBoolean(parametros[1]));
+            _outputStr = $"Moneda creada> {_seleccion}";
+        }
 
         private void _CMD_CuentaSetRazonSocial(string rs)
         {
@@ -473,13 +500,37 @@ namespace SistemaEMMG_Alpha
         {
             if (_seleccion is null || !(_seleccion is DBFormasPago))
             {
-                _outputStr = "No hay un tipo de entidad seleccionado.";
+                _outputStr = "No hay una forma de pago seleccionada.";
                 return;
             }
             DBFormasPago formaPagoSeleccionada = (DBFormasPago)_seleccion;
             formaPagoSeleccionada.SetName(name.Trim());
             _outputStr = $"Nombre de la forma de pago cambiada.";
         }
+
+        private void _CMD_MonedaSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBMoneda))
+            {
+                _outputStr = "No hay una moneda seleccionada.";
+                return;
+            }
+            DBMoneda monedaSeleccionada = (DBMoneda)_seleccion;
+            monedaSeleccionada.SetName(name.Trim());
+            _outputStr = $"Nombre de la moneda cambiada.";
+        }
+        private void _CMD_MonedaSetExtranjera(string esExtranjera)
+        {
+            if (_seleccion is null || !(_seleccion is DBMoneda))
+            {
+                _outputStr = "No hay una moneda seleccionada.";
+                return;
+            }
+            DBMoneda monedaSeleccionada = (DBMoneda)_seleccion;
+            monedaSeleccionada.SetExtranjera(SafeConvert.ToBoolean(esExtranjera));
+            _outputStr = $"Estado de la moneda cambiada.";
+        }
+        
 
         private void _CMD_PrintSelected()
         {
