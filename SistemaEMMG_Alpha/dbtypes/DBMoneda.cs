@@ -298,9 +298,9 @@ namespace SistemaEMMG_Alpha
         public static string PrintAll()
         {
             string str = "";
-            foreach (DBMoneda tipoMoneda in _db_monedas)
+            foreach (DBMoneda moneda in _db_monedas)
             {
-                str += $"Moneda> {tipoMoneda}\n";
+                str += $"Moneda> {moneda}\n";
             }
             return str;
         }

@@ -259,6 +259,8 @@ namespace SistemaEMMG_Alpha
             _outputStr += DBTipoRemito.PrintAll();
             _outputStr += "\t:: Tipos de Recibos ::\n";
             _outputStr += DBTipoRecibo.PrintAll();
+            _outputStr += "\t:: Monedas ::\n";
+            _outputStr += DBMoneda.PrintAll();
         }
         private void _CMD_SelectTipoComprobante(string id)
         {
@@ -779,9 +781,9 @@ namespace SistemaEMMG_Alpha
             else
             {
                 string[] parametros = args.Split(',');
-                if (parametros.Length < 6 || parametros.Length > 8)
+                if (parametros.Length < 7 || parametros.Length > 11)
                 {
-                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Comprobante, Emitido, Fecha, Numero, Gravado, IVA, No Gravado='0', Percepción='0'";
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear comprobante ID Tipo Comprobante, ID Moneda, Emitido, Fecha, Numero, Gravado, IVA, No Gravado='0', Percepción='0', Cambio='1.0', Obs=''";
                     return;
                 }
                 DBTiposComprobantes tipoComprobante = DBTiposComprobantes.GetByID(SafeConvert.ToInt64(parametros[0]));
@@ -792,24 +794,38 @@ namespace SistemaEMMG_Alpha
                     return;
                 }
 
+                DBMoneda moneda = DBMoneda.GetByID(SafeConvert.ToInt64(parametros[1]));
+                if (moneda is null)
+                {
+                    _outputStr = "ID de moneda seleccionado inválido, vea las monedas válidas:\n";
+                    _outputStr += DBMoneda.PrintAll();
+                    return;
+                }
+
                 DateTime fechaEmitido = new DateTime();
                 DateTime? fechaFinal = null;
-                if (DateTime.TryParse(parametros[2], out fechaEmitido))
+                if (DateTime.TryParse(parametros[3], out fechaEmitido))
                 {
                     fechaFinal = fechaEmitido;
                 }
 
                 switch (parametros.Length)
                 {
-                    case 6:
-                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
-                        break;
                     case 7:
-                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
-
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, moneda, SafeConvert.ToBoolean(parametros[2]), fechaFinal, parametros[4], SafeConvert.ToDouble(parametros[5]), SafeConvert.ToDouble(parametros[6]));
                         break;
                     case 8:
-                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, SafeConvert.ToBoolean(parametros[1]), fechaFinal, parametros[3], SafeConvert.ToDouble(parametros[4]), SafeConvert.ToDouble(parametros[5]));
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, moneda, SafeConvert.ToBoolean(parametros[2]), fechaFinal, parametros[4], SafeConvert.ToDouble(parametros[5]), SafeConvert.ToDouble(parametros[6]), SafeConvert.ToDouble(parametros[7]));
+
+                        break;
+                    case 9:
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, moneda, SafeConvert.ToBoolean(parametros[2]), fechaFinal, parametros[4], SafeConvert.ToDouble(parametros[5]), SafeConvert.ToDouble(parametros[6]), SafeConvert.ToDouble(parametros[7]), SafeConvert.ToDouble(parametros[8]));
+                        break;
+                    case 10:
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, moneda, SafeConvert.ToBoolean(parametros[2]), fechaFinal, parametros[4], SafeConvert.ToDouble(parametros[5]), SafeConvert.ToDouble(parametros[6]), SafeConvert.ToDouble(parametros[7]), SafeConvert.ToDouble(parametros[8]), SafeConvert.ToDouble(parametros[9]));
+                        break;
+                    case 11:
+                        _seleccion = new DBComprobantes((DBEntidades)_seleccion, tipoComprobante, moneda, SafeConvert.ToBoolean(parametros[2]), fechaFinal, parametros[4], SafeConvert.ToDouble(parametros[5]), SafeConvert.ToDouble(parametros[6]), SafeConvert.ToDouble(parametros[7]), SafeConvert.ToDouble(parametros[8]), SafeConvert.ToDouble(parametros[9]), parametros[10]);
                         break;
                 }
             }
@@ -1278,9 +1294,9 @@ namespace SistemaEMMG_Alpha
             else
             {
                 string[] parametros = args.Split(',');
-                if (parametros.Length < 3 || parametros.Length > 4)
+                if (parametros.Length < 4 || parametros.Length > 6)
                 {
-                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear entidad ID Forma de Pago, Importe, Observación, Fecha=''";
+                    _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: crear entidad ID Forma de Pago, ID Moneday, Importe, Observación, Fecha='', Cambio=1.0";
                     return;
                 }
                 DBFormasPago formasPago = DBFormasPago.GetByID(SafeConvert.ToInt64(parametros[0]));
@@ -1290,19 +1306,35 @@ namespace SistemaEMMG_Alpha
                     _outputStr += DBFormasPago.PrintAll();
                     return;
                 }
+                DBMoneda moneda = DBMoneda.GetByID(SafeConvert.ToInt64(parametros[1]));
+                if (moneda is null)
+                {
+                    _outputStr = "ID de moneda no es válido, véa las moneda válidas:\n";
+                    _outputStr += DBMoneda.PrintAll();
+                    return;
+                }
                 switch (parametros.Length)
                 {
-                    case 3:
-                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2]);
-                        break;
                     case 4:
+                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, moneda, SafeConvert.ToDouble(parametros[2]), parametros[3]);
+                        break;
+                    case 5:
                         DateTime fechaPago = new DateTime();
                         DateTime? fechaFinal = null;
-                        if (DateTime.TryParse(parametros[3], out fechaPago))
+                        if (DateTime.TryParse(parametros[4], out fechaPago))
                         {
                             fechaFinal = fechaPago;
                         }
-                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, SafeConvert.ToDouble(parametros[1]), parametros[2], fechaFinal);
+                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, moneda, SafeConvert.ToDouble(parametros[2]), parametros[3], fechaFinal);
+                        break;
+                    case 6:
+                        DateTime fechaP = new DateTime();
+                        DateTime? fechaF = null;
+                        if (DateTime.TryParse(parametros[4], out fechaP))
+                        {
+                            fechaF = fechaP;
+                        }
+                        _seleccion = new DBPago((DBRecibo)_seleccion, formasPago, moneda, SafeConvert.ToDouble(parametros[2]), parametros[3], fechaF, SafeConvert.ToDouble(parametros[5]));
                         break;
                 }
             }
@@ -1485,6 +1517,14 @@ namespace SistemaEMMG_Alpha
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
+                //Deleting monedas
+                query = $"DELETE FROM {DBMoneda.db_table}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = $"ALTER TABLE {DBMoneda.db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
                 //Deleting cuentas
                 query = $"DELETE FROM {DBCuenta.db_table}";
                 cmd = new MySqlCommand(query, conn);
@@ -1552,6 +1592,14 @@ namespace SistemaEMMG_Alpha
                 cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
 
+                //Deleting monedas
+                query = $"DELETE FROM {DBMoneda.db_table}";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = $"ALTER TABLE {DBMoneda.db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
                 //Now populate.
                 List<DBTiposComprobantes> tiposComprobantes = new List<DBTiposComprobantes>();
                 tiposComprobantes.Add(new DBTiposComprobantes("Factura A"));
@@ -1599,6 +1647,15 @@ namespace SistemaEMMG_Alpha
                 foreach (DBTipoRemito tipoRemito in tiposRemitos)
                 {
                     tipoRemito.PushToDatabase(conn);
+                }
+
+                List<DBMoneda> monedasList = new List<DBMoneda>();
+                monedasList.Add(new DBMoneda("ARS", false));
+                monedasList.Add(new DBMoneda("USD", true));
+
+                foreach (DBMoneda moneda in monedasList)
+                {
+                    moneda.PushToDatabase(conn);
                 }
 
                 _outputStr = "Tipos de datos basicos generados nuevamente.";

@@ -36,6 +36,7 @@ namespace SistemaEMMG_Alpha
             DBFormasPago.UpdateAll(conn);
             DBTipoRecibo.UpdateAll(conn);
             DBTipoRemito.UpdateAll(conn);
+            DBMoneda.UpdateAll(conn);
         }
     }
 }

@@ -1209,6 +1209,9 @@ namespace SistemaEMMG_Alpha
         public double GetIVA() => _data.cm_iva;
         public double GetNoGravado() => _data.cm_no_gravado;
         public double GetPercepcion() => _data.cm_percepcion;
+        public double GetCambio() => _data.cm_cambio;
+        public string GetObservacion() => _data.cm_obs;
+        public DBMoneda GetMoneda() => _moneda;
 
         ///<summary>
         ///Returns if this business receipt was emitted to get payed or received to be payed.
@@ -1245,6 +1248,21 @@ namespace SistemaEMMG_Alpha
             _shouldPush = _shouldPush || (tc_id != _tipoComprobante.GetID());
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id, conn);
         }
+        public void SetMoneda(DBMoneda newMoneda)
+        {
+            _shouldPush = _shouldPush || (_moneda != newMoneda);
+            _moneda = newMoneda;
+        }
+        public void SetMoneda(long mn_id)
+        {
+            _shouldPush = _shouldPush || (mn_id != _moneda.GetID());
+            _moneda = DBMoneda.GetByID(mn_id);
+        }
+        public void SetMoneda(long mn_id, MySqlConnection conn)
+        {
+            _shouldPush = _shouldPush || (mn_id != _moneda.GetID());
+            _moneda = DBMoneda.GetByID(mn_id, conn);
+        }
         public void SetNumeroComprobante(string numeroCom)
         {
             _shouldPush = _shouldPush || !_data.cm_numero.Equals(numeroCom);
@@ -1279,6 +1297,16 @@ namespace SistemaEMMG_Alpha
         {
             _shouldPush = _shouldPush || (esEmitido != _data.cm_emitido);
             _data.cm_emitido = esEmitido;
+        }
+        public void SetCambio(double cambio)
+        {
+            _shouldPush = _shouldPush || (cambio != _data.cm_cambio);
+            _data.cm_cambio = cambio;
+        }
+        public void SetObservacion(string obs)
+        {
+            _shouldPush = _shouldPush || !_data.cm_obs.Equals(obs);
+            _data.cm_obs = obs;
         }
 
         public override DBBaseClass GetLocalCopy() => new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _moneda, _data);

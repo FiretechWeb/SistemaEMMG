@@ -441,9 +441,13 @@ namespace SistemaEMMG_Alpha
 
         public DBFormasPago GetFormaDePago() => _formaDePago;
 
+        public DBMoneda GetMoneda() => _moneda;
+
         public string GetObservacion() => _data.pg_obs;
 
         public double GetImporte() => _data.pg_importe;
+
+        public double GetCambio() => _data.pg_cambio;
 
         public DateTime? GetFecha() => _data.pg_fecha;
 
@@ -467,7 +471,32 @@ namespace SistemaEMMG_Alpha
             _shouldPush = _shouldPush || (fecha != _data.pg_fecha);
             _data.pg_fecha = fecha;
         }
+        public void SetImporte(double importe)
+        {
+            _shouldPush = _shouldPush || (importe != _data.pg_importe);
+            _data.pg_importe = importe;
+        }
+        public void SetCambio(double cambio)
+        {
+            _shouldPush = _shouldPush || (cambio != _data.pg_cambio);
+            _data.pg_cambio = cambio;
+        }
 
+        public void SetMoneda(DBMoneda newMoneda)
+        {
+            _shouldPush = _shouldPush || (_moneda != newMoneda);
+            _moneda = newMoneda;
+        }
+        public void SetMoneda(long mn_id)
+        {
+            _shouldPush = _shouldPush || (mn_id != _moneda.GetID());
+            _moneda = DBMoneda.GetByID(mn_id);
+        }
+        public void SetMoneda(long mn_id, MySqlConnection conn)
+        {
+            _shouldPush = _shouldPush || (mn_id != _moneda.GetID());
+            _moneda = DBMoneda.GetByID(mn_id, conn);
+        }
 
         public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _moneda, _data);
 
