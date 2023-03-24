@@ -215,8 +215,8 @@ namespace SistemaEMMG_Alpha
                 }
                 row = initRow;
 
-                sl.SetCellValue(row + 6, 1, "Total pagos:");
-                sl.SetCellValue(row + 6, 2, totalPagos);
+                sl.SetCellValue(row + 7, 1, "Total pagos:");
+                sl.SetCellValue(row + 7, 2, totalPagos);
 
                 row = maxRow;
             }
