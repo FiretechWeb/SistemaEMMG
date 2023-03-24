@@ -49,7 +49,7 @@ namespace SistemaEMMG_Alpha
             
             guiRefreshComprobantesDetalles();
         }
-        private bool ConnectWithDatabase()
+        public bool ConnectWithDatabase()
         {
             if (!(dbCon is null))
             {
@@ -135,7 +135,7 @@ namespace SistemaEMMG_Alpha
             dbData.GetComprobanteSelected().SetTipoComprobante(((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key);
         }
 
-        private void SoftwareMain()
+        public void SoftwareMain()
         {
             Console.WriteLine("Able to connect Database!");
 
@@ -413,6 +413,8 @@ namespace SistemaEMMG_Alpha
         {
             InitializeComponent();
 
+            errorScreen.SetMainWindow(this);
+
            if (!ConnectWithDatabase())
             {
                 errorScreen.Visibility = Visibility.Visible;
@@ -423,18 +425,6 @@ namespace SistemaEMMG_Alpha
                 SoftwareMain();
             }
            
-        }
-
-        private void btnDbReconnect_Click(object sender, RoutedEventArgs e)
-        {
-            if (ConnectWithDatabase())
-            {
-                errorScreen.Visibility = Visibility.Collapsed;
-                SoftwareMain();
-            } else
-            {
-                MessageBox.Show("Error al tratar de reconectarse con la base de datos.");
-            }
         }
 
         private void cmbCuentasEmpresas_SelectionChanged(object sender, SelectionChangedEventArgs e)

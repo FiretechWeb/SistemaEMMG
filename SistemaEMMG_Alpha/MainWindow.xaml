@@ -451,15 +451,7 @@
     <Label VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3, 3, 3, 3" Foreground="BlueViolet">Versión Alpha 1</Label>
     <!-- END: Version info -->
     <!-- START: Error Database Connection -->
-    <Grid x:Name="errorScreen" Background="#EE000000" Visibility="Collapsed">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="3*"></RowDefinition>
-            <RowDefinition Height="4*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Label Foreground="Red" FontSize="28" FontWeight="Black" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Row="0">¡Error al conectarse con la base de datos!</Label>
-        <Label HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Grid.Row="1" FontSize="16" FontWeight="Bold">Prueba reiniciando el servidor Apache o verificando los datos de conexión.</Label>
-            <Button x:Name="btnDbReconnect" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnDbReconnect_Click">Intentar conectar de nuevo</Button>
-    </Grid>
+        <uc:UIErrorScreen x:Name="errorScreen" Visibility="Collapsed"></uc:UIErrorScreen>
     <!-- END: Error Database Connection -->
         <uc:UIDeveloperConsole x:Name="developerWin" Visibility="Collapsed"></uc:UIDeveloperConsole>
     </Grid>

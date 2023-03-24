@@ -124,6 +124,9 @@
     <Compile Include="ui\UIDeveloperConsole.xaml.cs">
       <DependentUpon>UIDeveloperConsole.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\UIErrorScreen.xaml.cs">
+      <DependentUpon>UIErrorScreen.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -149,6 +152,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ui\UIDeveloperConsole.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\UIErrorScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
