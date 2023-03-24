@@ -567,7 +567,8 @@ namespace SistemaEMMG_Alpha
                                 {ComprobantesData.NameOf_cm_iva} = {_data.cm_iva.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_no_gravado} = {_data.cm_no_gravado.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_percepcion} = {_data.cm_percepcion.ToString().Replace(",", ".")}, 
-                                {ComprobantesData.NameOf_cm_emitido } = {Convert.ToInt32(_data.cm_emitido)} 
+                                {ComprobantesData.NameOf_cm_emitido } = {Convert.ToInt32(_data.cm_emitido)}, 
+                                {ComprobantesData.NameOf_cm_cambio } = {_data.cm_cambio.ToString().Replace(",", ".")} 
                                 WHERE {NameOf_cm_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -603,7 +604,8 @@ namespace SistemaEMMG_Alpha
                                 {ComprobantesData.NameOf_cm_iva}, 
                                 {ComprobantesData.NameOf_cm_no_gravado}, 
                                 {ComprobantesData.NameOf_cm_percepcion}, 
-                                {ComprobantesData.NameOf_cm_emitido})
+                                {ComprobantesData.NameOf_cm_emitido}, 
+                                {ComprobantesData.NameOf_cm_cambio}) 
                                 VALUES (
                                 {_entidadComercial.GetCuentaID()}, 
                                 {_entidadComercial.GetID()}, 
@@ -615,7 +617,8 @@ namespace SistemaEMMG_Alpha
                                 {_data.cm_iva.ToString().Replace(",", ".")}, 
                                 {_data.cm_no_gravado.ToString().Replace(",", ".")}, 
                                 {_data.cm_percepcion.ToString().Replace(",", ".")}, 
-                                {Convert.ToInt32(_data.cm_emitido)})";
+                                {Convert.ToInt32(_data.cm_emitido)}, 
+                                {_data.cm_cambio.ToString().Replace(",", ".")})";
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;

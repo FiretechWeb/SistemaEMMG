@@ -12,28 +12,32 @@ namespace SistemaEMMG_Alpha
 {
     public struct PagoData
     {
-        public PagoData(double importe, string obs, DateTime? fecha)
+        public PagoData(double importe, string obs, DateTime? fecha, double cambio)
         {
             pg_importe = importe;
             pg_obs = obs;
             pg_fecha = fecha;
+            pg_cambio = cambio;
         }
         public string pg_obs { get; set; }
         public double pg_importe { get; set; }
         public DateTime? pg_fecha { get; set; }
+        public double pg_cambio { get; set; }
 
         public static readonly string NameOf_pg_obs = nameof(pg_obs);
         public static readonly string NameOf_pg_importe = nameof(pg_importe);
         public static readonly string NameOf_pg_fecha = nameof(pg_fecha);
+        public static readonly string NameOf_pg_cambio = nameof(pg_cambio);
 
         public static PagoData CreateFromReader(MySqlDataReader reader)
         {
             return new PagoData(reader.GetDoubleSafe(NameOf_pg_importe),
                                             reader.GetStringSafe(NameOf_pg_obs),
-                                            reader.GetDateTimeSafe(NameOf_pg_fecha));
+                                            reader.GetDateTimeSafe(NameOf_pg_fecha),
+                                            reader.GetDoubleSafe(NameOf_pg_cambio));
         }
 
-        public override string ToString() => $"Importe: {pg_importe} - Observación: {pg_obs} - Fecha: {pg_fecha}";
+        public override string ToString() => $"Importe: {pg_importe} - Observación: {pg_obs} - Fecha: {pg_fecha} - Cambio: {pg_cambio}";
     }
     //RECORDATORIO, TERMINAR DE REMPLAZAR LAS STRINGS LITERALES DE LAS CONSULTAS SQL POR las constantes NameOf de DBPago y PagoData
     public class DBPago : DBBaseClass, IDBase<DBPago>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>, IDBRecibo<DBRecibo>
@@ -44,9 +48,12 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_pg_rc_id = "pg_rc_id";
         public const string NameOf_id = "pg_id";
         public const string NameOf_pg_fp_id = "pg_fp_id";
+        public const string NameOf_pg_mn_id = "pg_mn_id";
+
         private PagoData _data;
         private DBRecibo _recibo; //ESTO Luego se cambia por DBRecibo
         private DBFormasPago _formaDePago;
+        private DBMoneda _moneda;
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -55,9 +62,11 @@ namespace SistemaEMMG_Alpha
             string tc_table = DBTipoRecibo.db_table;
             string fp_table = DBFormasPago.db_table;
             string cm_table = DBRecibo.db_table;
+            string mn_table = DBMoneda.db_table;
 
             return $@"SELECT {fieldsToGet} FROM {db_table} 
                 JOIN {fp_table} ON {fp_table}.{DBFormasPago.NameOf_id} = {db_table}.{NameOf_pg_fp_id} 
+                JOIN {mn_table} ON {mn_table}.{DBMoneda.NameOf_id} = {db_table}.{NameOf_pg_mn_id} 
                 JOIN {cm_table} ON {cm_table}.{DBRecibo.NameOf_id} = {db_table}.{NameOf_pg_rc_id} AND {cm_table}.{DBRecibo.NameOf_rc_ec_id} = {db_table}.{NameOf_pg_ec_id} AND {cm_table}.{DBRecibo.NameOf_rc_em_id} = {db_table}.{NameOf_pg_em_id} 
                 JOIN {tc_table} ON {tc_table}.{DBTipoRecibo.NameOf_id} = {cm_table}.{DBRecibo.NameOf_rc_tr_id} 
                 JOIN {ec_table} ON {ec_table}.{DBEntidades.NameOf_id} = {db_table}.{NameOf_pg_ec_id} AND {ec_table}.{DBEntidades.NameOf_ec_em_id} = {db_table}.{NameOf_pg_em_id} 
@@ -76,7 +85,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBPago(Recibo, new DBFormasPago(reader), reader));
+                    returnList.Add(new DBPago(Recibo, new DBFormasPago(reader), new DBMoneda(reader), reader));
                 }
                 reader.Close();
             }
@@ -98,7 +107,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBPago(new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader), new DBFormasPago(reader), reader));
+                    returnList.Add(new DBPago(new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader), new DBFormasPago(reader), new DBMoneda(reader), reader));
                 }
                 reader.Close();
             }
@@ -121,7 +130,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnList.Add(new DBPago(new DBRecibo(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTipoRecibo(reader), reader), new DBFormasPago(reader), reader));
+                    returnList.Add(new DBPago(new DBRecibo(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTipoRecibo(reader), reader), new DBFormasPago(reader), new DBMoneda(reader), reader));
                 }
                 reader.Close();
             }
@@ -144,7 +153,7 @@ namespace SistemaEMMG_Alpha
 
                 while (reader.Read())
                 {
-                    returnEnt = new DBPago(Recibo, new DBFormasPago(reader), reader);
+                    returnEnt = new DBPago(Recibo, new DBFormasPago(reader), new DBMoneda(reader), reader);
                 }
                 reader.Close();
             }
@@ -187,50 +196,66 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, PagoData newData) : base (id)
+        public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, DBMoneda moneda, PagoData newData) : base (id)
         {
             if (formaDePago is null)
             {
                 throw new Exception("Error here");
             }
+            _moneda = moneda;
             _formaDePago = formaDePago;
             _recibo = Recibo;
             _data = newData;
         }
 
-        public DBPago(DBRecibo Recibo, long id, long fp_id, PagoData newData) : base (id)
+        public DBPago(DBRecibo Recibo, long id, long fp_id, DBMoneda moneda, PagoData newData) : base (id)
         {
             _formaDePago = DBFormasPago.GetByID(fp_id);
             if (_formaDePago is null)
             {
                 throw new Exception("Error here");
             }
+            _moneda = moneda;
             _recibo = Recibo;
             _data = newData;
         }
 
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, PagoData newData) : base (id)
+        public DBPago(DBRecibo Recibo, long id, long fp_id, long mn_id, PagoData newData) : base(id)
+        {
+            _formaDePago = DBFormasPago.GetByID(fp_id);
+            if (_formaDePago is null)
+            {
+                throw new Exception("Error here");
+            }
+            _moneda = DBMoneda.GetByID(mn_id);
+            _recibo = Recibo;
+            _data = newData;
+        }
+
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, DBMoneda moneda, PagoData newData) : base (id)
         {
             _formaDePago = DBFormasPago.GetByID(fp_id, conn);
             if (_formaDePago is null)
             {
                 throw new Exception("Error here");
             }
+            _moneda = moneda;
             _recibo = DBRecibo.GetByID(conn, cuenta, ec_id, rc_id);
             _data = newData;
         }
 
-        public DBPago(DBRecibo Recibo, DBFormasPago formaPago, double importe, string obs, DateTime? fecha=null) : this(Recibo, -1, formaPago, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBRecibo Recibo, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(Recibo, id, fp_id, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBRecibo Recibo, long fp_id, double importe, string obs, DateTime? fecha = null) : this(Recibo, -1, fp_id,  importe, obs, fecha) { }
+        public DBPago(DBRecibo Recibo, DBFormasPago formaPago, DBMoneda moneda, double importe, string obs, DateTime? fecha=null, double cambio=1.0) : this(Recibo, -1, formaPago, moneda, new PagoData(importe, obs, fecha, cambio)) { }
+        public DBPago(DBRecibo Recibo, long id, long fp_id, DBMoneda moneda, double importe, string obs, DateTime? fecha = null, double cambio = 1.0) : this(Recibo, id, fp_id, moneda, new PagoData(importe, obs, fecha, cambio)) { }
+        public DBPago(DBRecibo Recibo, long fp_id, DBMoneda moneda, double importe, string obs, DateTime? fecha = null, double cambio = 1.0) : this(Recibo, -1, fp_id, moneda, importe, obs, fecha, cambio) { }
 
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, id, ec_id, rc_id, fp_id, new PagoData(importe, obs, fecha)) { }
-        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long fp_id, double importe, string obs, DateTime? fecha = null) : this(cuenta, conn, ec_id, rc_id, -1, fp_id, importe, obs, fecha) { }
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long id, long fp_id, DBMoneda moneda, double importe, string obs, DateTime? fecha = null, double cambio = 1.0) : this(cuenta, conn, id, ec_id, rc_id, fp_id, moneda, new PagoData(importe, obs, fecha, cambio)) { }
+        public DBPago(DBCuenta cuenta, MySqlConnection conn, long ec_id, long rc_id, long fp_id, DBMoneda moneda, double importe, string obs, DateTime? fecha = null, double cambio = 1.0) : this(cuenta, conn, ec_id, rc_id, -1, fp_id, moneda, importe, obs, fecha, cambio) { }
         
-        public DBPago(DBRecibo Recibo, DBFormasPago newFormaPago, MySqlDataReader reader) : this (
+        public DBPago(DBRecibo Recibo, DBFormasPago newFormaPago, DBMoneda moneda, MySqlDataReader reader) : this (
             Recibo,
             reader.GetInt64Safe(NameOf_id),
             newFormaPago,
+            moneda,
             PagoData.CreateFromReader(reader)) { }
 
 
@@ -290,9 +315,11 @@ namespace SistemaEMMG_Alpha
                 string fechaPago = (_data.pg_fecha.HasValue) ? $"'{((DateTime)_data.pg_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_pg_fp_id} = {_formaDePago.GetID()}, 
+                                {NameOf_pg_mn_id} = {_moneda.GetID()}, 
                                 {PagoData.NameOf_pg_importe} = {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 {PagoData.NameOf_pg_obs} = '{_data.pg_obs}', 
-                                {PagoData.NameOf_pg_fecha} = {fechaPago} 
+                                {PagoData.NameOf_pg_fecha} = {fechaPago}, 
+                                {PagoData.NameOf_pg_cambio} = {_data.pg_cambio.ToString().Replace(",", ".")} 
                                 WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -322,16 +349,20 @@ namespace SistemaEMMG_Alpha
                                 {NameOf_pg_ec_id}, 
                                 {NameOf_pg_rc_id}, 
                                 {NameOf_pg_fp_id}, 
+                                {NameOf_pg_mn_id}, 
                                 {PagoData.NameOf_pg_importe}, 
                                 {PagoData.NameOf_pg_obs}, 
-                                {PagoData.NameOf_pg_fecha}) VALUES (
+                                {PagoData.NameOf_pg_fecha}, 
+                                {PagoData.NameOf_pg_cambio}) VALUES (
                                 {GetCuentaID()}, 
                                 {GetEntidadComercialID()}, 
                                 {GetReciboID()}, 
                                 {_formaDePago.GetID()}, 
+                                {_moneda.GetID()}, 
                                 {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 '{_data.pg_obs}', 
-                                {fechaPago})";
+                                {fechaPago}, 
+                                {_data.pg_cambio.ToString().Replace(",", ".")})";
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
@@ -438,9 +469,9 @@ namespace SistemaEMMG_Alpha
         }
 
 
-        public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _data);
+        public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _moneda, _data);
 
-        public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - {_data.ToString()}";
+        public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
 
         /**********************
          * DEBUG STUFF ONLY
@@ -459,7 +490,7 @@ namespace SistemaEMMG_Alpha
                 fechaFinal = fechaPago;
             }
 
-            return new DBPago(Recibo, DBFormasPago.GetRandom(), Math.Truncate(100000.0*r.NextDouble())/100.0, "Sin información", fechaFinal);
+            return new DBPago(Recibo, DBFormasPago.GetRandom(), DBMoneda.GetRandom(), Math.Truncate(100000.0*r.NextDouble())/100.0, "Sin información", fechaFinal);
         }
         
     }
