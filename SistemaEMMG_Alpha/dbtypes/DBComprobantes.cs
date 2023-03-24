@@ -1355,8 +1355,19 @@ namespace SistemaEMMG_Alpha
             {
                 fechaFinal = fechaEmitido;
             }
-
-            return new DBComprobantes(entidadComercial, DBTiposComprobantes.GetRandom(), DBMoneda.GetRandom(), Convert.ToBoolean(r.Next(0, 2)), fechaFinal, $"{randomFacturaCodigos[r.Next(0, randomFacturaCodigos.Length)]}{r.Next(1, 10)}-{r.Next(100000, 999999)}", Math.Truncate(10000000.0*r.NextDouble())/100.0, Math.Truncate(2100000.0 *r.NextDouble())/100.0, Math.Truncate(5000000.0 *r.NextDouble())/100.0, Math.Truncate(50000.0 *r.NextDouble())/100.0);
+            DBMoneda moneda = DBMoneda.GetRandom();
+            return new DBComprobantes(entidadComercial,
+                DBTiposComprobantes.GetRandom(),
+                moneda,
+                Convert.ToBoolean(r.Next(0, 2)),
+                fechaFinal,
+                $"{randomFacturaCodigos[r.Next(0, randomFacturaCodigos.Length)]}{r.Next(1, 10)}-{r.Next(100000, 999999)}",
+                Math.Truncate(10000000.0*r.NextDouble())/100.0,
+                Math.Truncate(2100000.0 *r.NextDouble())/100.0,
+                Math.Truncate(5000000.0 *r.NextDouble())/100.0,
+                Math.Truncate(50000.0 *r.NextDouble())/100.0,
+                moneda.IsExtranjera() ? (200.0+Math.Truncate(10000.0*r.NextDouble())/100.0) : 1.0,
+                "Sin información adicional");
         }
         
     }

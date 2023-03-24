@@ -518,8 +518,9 @@ namespace SistemaEMMG_Alpha
             {
                 fechaFinal = fechaPago;
             }
+            DBMoneda moneda = DBMoneda.GetRandom();
 
-            return new DBPago(Recibo, DBFormasPago.GetRandom(), DBMoneda.GetRandom(), Math.Truncate(100000.0*r.NextDouble())/100.0, "Sin información", fechaFinal);
+            return new DBPago(Recibo, DBFormasPago.GetRandom(), DBMoneda.GetRandom(), Math.Truncate(100000.0*r.NextDouble())/100.0, "Sin información", fechaFinal, moneda.IsExtranjera() ? (200.0 + Math.Truncate(10000.0 * r.NextDouble()) / 100.0) : 1.0);
         }
         
     }

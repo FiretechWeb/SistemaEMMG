@@ -99,13 +99,16 @@ namespace SistemaEMMG_Alpha
                     -1,
                     entidadComercial_id,
                     ((KeyValuePair<long, string>)cbxCMDTipoComprobante.SelectedItem).Key,
+                    1,
                     new ComprobantesData(feFinal,
                                         txtCMDNumero.Text,
                                         SafeConvert.ToDouble(txtCMDGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMDIVA.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMDNoGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMDPercepcion.Text.Replace(".", ",")),
-                                        SafeConvert.ToBoolean(rdbCMDEmitido.IsChecked))
+                                        SafeConvert.ToBoolean(rdbCMDEmitido.IsChecked),
+                                        1.0,
+                                        "")
             );
         }
 
@@ -679,13 +682,16 @@ namespace SistemaEMMG_Alpha
                     -1,
                     entidadComercial_id,
                     ((KeyValuePair<long, string>)cbxCMTipoComprobante.SelectedItem).Key,
+                    1,
                     new ComprobantesData(feFinal,
                                         txtCMNumeroFactura.Text,
                                         SafeConvert.ToDouble(txtCMGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMIVA.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMNoGravado.Text.Replace(".", ",")),
                                         SafeConvert.ToDouble(txtCMPercepcion.Text.Replace(".", ",")),
-                                        SafeConvert.ToBoolean(chbxCMEsEmitido.IsChecked))
+                                        SafeConvert.ToBoolean(chbxCMEsEmitido.IsChecked),
+                                        1.0,
+                                        "")
             );
             if (newComprobante.PushToDatabase(dbCon.Connection))
             {
