@@ -937,6 +937,39 @@ namespace SistemaEMMG_Alpha
 
         public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoRecibo.GetName()} - {_data}";
 
+        /***********************************************
+         * Useful functions for Real world applications
+         * ********************************************/
+
+        public double GetPagosTotal_MonedaLocal(MySqlConnection conn)
+        {
+            GetAllPagos(conn);
+            return GetPagosTotal_MonedaLocal();
+        }
+        public double GetPagosTotal_MonedaLocal()
+        {
+            double totalPagos = 0.0;
+            foreach (DBPago pago in _db_pagos)
+            {
+                totalPagos += pago.GetImporte_MonedaLocal();
+            }
+            return totalPagos;
+        }
+        public double GetComprobantesTotal_MonedaLocal(MySqlConnection conn)
+        {
+            GetAllComprobantes(conn);
+            return GetComprobantesTotal_MonedaLocal();
+        }
+        public double GetComprobantesTotal_MonedaLocal()
+        {
+            double totalComprobantes = 0.0;
+            foreach (DBComprobantes comprobante in _db_comprobantes)
+            {
+                totalComprobantes += comprobante.GetTotal_MonedaLocal();
+            }
+            return totalComprobantes;
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/

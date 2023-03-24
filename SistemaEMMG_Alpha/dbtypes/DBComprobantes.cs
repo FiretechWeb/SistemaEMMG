@@ -1407,6 +1407,34 @@ namespace SistemaEMMG_Alpha
             return totalPercepcion;
         }
 
+        //Para saber si un comprobante está pago, buscamos todo los recibos que incluyan a este comprobante
+        // y nos fijamos que la suma de todos los pagos de estos recibos sea igual o superior a la suma del importe de todas las facturas relacionadas.
+
+        public bool IsPago(MySqlConnection conn)
+        {
+            GetAllRecibos(conn);
+
+            double totalPago = 0.0;
+            double totalImporte = 0.0;
+            List<DBComprobantes> listaComprobantes = new List<DBComprobantes>();
+            listaComprobantes.Add(this);
+            totalImporte += GetTotal_MonedaLocal();
+            foreach (DBRecibo recibo in _db_recibos)
+            {
+                List<DBComprobantes> comprobantesRecibo = recibo.GetAllComprobantes(conn);
+                foreach (DBComprobantes comprobante in comprobantesRecibo)
+                {
+                    if (!CheckIfExistsInList(listaComprobantes, comprobante))
+                    {
+                        listaComprobantes.Add(comprobante);
+                        totalImporte += comprobante.GetTotal_MonedaLocal();
+                    }
+                }
+                totalPago += recibo.GetPagosTotal_MonedaLocal(conn);
+            }
+            return totalPago >= totalImporte;
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/

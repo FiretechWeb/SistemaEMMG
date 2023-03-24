@@ -507,6 +507,7 @@ namespace SistemaEMMG_Alpha
          * ********************************************/
         public double GetImporte_MonedaLocal() => _data.pg_importe * _data.pg_cambio;
 
+
         public static double GetTotal_MonedaLocal(List<DBPago>pagosList)
         {
             double totalPagos = 0.0;
@@ -516,7 +517,6 @@ namespace SistemaEMMG_Alpha
             }
             return totalPagos;
         }
-
         /**********************
          * DEBUG STUFF ONLY
          * ********************/

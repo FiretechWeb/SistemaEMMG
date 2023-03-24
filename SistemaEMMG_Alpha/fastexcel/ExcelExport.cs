@@ -161,9 +161,21 @@ namespace SistemaEMMG_Alpha
                     sl.SetCellValue(row, 19, comprobante.GetObservacion());
                     sl.SetCellStyle(row, 19, styleDefaultText);
 
-                    row++;
-
-                    List<DBRecibo> recibosFromComprobante = comprobante.GetAllRecibos(conn);
+                    bool isComprobantePago = comprobante.IsPago(conn);
+                    for (int j = 1; j < 20; j++)
+                    {
+                        SLStyle richStyle = sl.GetCellStyle(row, j);
+                        if (isComprobantePago)
+                        {
+                            richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
+                        }
+                        else
+                        {
+                            richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.Gainsboro, System.Drawing.Color.Gainsboro);
+                        }
+                        sl.SetCellStyle(row, j, richStyle);
+                    }
+                    List<DBRecibo> recibosFromComprobante = comprobante.GetAllRecibos();
                     foreach (DBRecibo recibo in recibosFromComprobante)
                     {
                         if (!DBRecibo.CheckIfExistsInList(recibos, recibo))
@@ -171,6 +183,8 @@ namespace SistemaEMMG_Alpha
                             recibos.Add(recibo);
                         }
                     }
+
+                    row++;
                 }
 
                 /*
@@ -201,10 +215,6 @@ namespace SistemaEMMG_Alpha
                         if (i==1)
                         {
                             richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightSeaGreen, System.Drawing.Color.LightSeaGreen);
-                        }
-                        else
-                        {
-                            richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
                         }
 
                         sl.SetCellStyle(i, j, richStyle);

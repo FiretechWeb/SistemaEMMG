@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaEMMG_Alpha"
+        xmlns:uc="clr-namespace:SistemaEMMG_Alpha.ui"
         mc:Ignorable="d"
         Title="Sistema Compra-Venta (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip" KeyDown="Window_KeyDown">
     <Grid>
@@ -460,24 +461,6 @@
             <Button x:Name="btnDbReconnect" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnDbReconnect_Click">Intentar conectar de nuevo</Button>
     </Grid>
     <!-- END: Error Database Connection -->
-    <Grid x:Name="developerWin" Background="#EE000000" Visibility="Collapsed">
-            <Grid Margin="50, 50, 50, 50">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition Height="25"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Label Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold">Consola de desarrollador</Label>
-                <TextBox x:Name="txtDeveloperDisplayConsole" Grid.Row="1"  TextWrapping="Wrap"
-                        AcceptsReturn="True"
-                     VerticalScrollBarVisibility="Auto"
-                           IsReadOnly="True"
-                           Background="DarkBlue"
-                           BorderBrush="Green"
-                           BorderThickness="2"
-                         Foreground="LightGreen"></TextBox>
-                <TextBox x:Name="txtDeveloperInputConsole" Background="Black" Grid.Row="2" Foreground="White" VerticalAlignment="Center" FontSize="15" KeyDown="txtDeveloperInputConsole_KeyDown" PreviewKeyDown="txtDeveloperInputConsole_PreviewKeyDown"></TextBox>
-            </Grid>
-    </Grid>
+        <uc:UIDeveloperConsole x:Name="developerWin" Visibility="Collapsed"></uc:UIDeveloperConsole>
     </Grid>
 </Window>
