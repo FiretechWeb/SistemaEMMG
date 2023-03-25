@@ -22,7 +22,8 @@
         </DockPanel>
         <!-- START: Contenido -->
         <TabControl>
-            <TabItem x:Name="tabCuentas" Header="Cuentas" FontWeight="Bold">
+                <TabItem x:Name="tabCuentas" Header="Cuentas" FontWeight="Bold">
+                    <uc:UICuentas x:Name="uiCuentasPanel"></uc:UICuentas>
             </TabItem>
             <TabItem x:Name="tabEntidades" Header="Entidades" FontWeight="Bold">
             </TabItem>

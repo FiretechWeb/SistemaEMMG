@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.cuentas.UIAgregarModificarCuenta"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.cuentas"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition MinHeight="200"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition MinWidth="400"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    CUIT:
+                </Label>
+                <TextBox x:Name="txtCuentaCUIT" Grid.Row="0" Grid.Column="1" FontFamily="Helvetica" FontSize="18" VerticalAlignment="Center" PreviewTextInput="txtCuentaCUIT_PreviewTextInput" TextChanged="txtCuentaCUIT_TextChanged"></TextBox>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    Razón Social:
+                </Label>
+                <TextBox x:Name="txtCuentaRazonSocial" Grid.Row="0" Grid.Column="1" FontFamily="Helvetica" FontSize="18" VerticalAlignment="Center" TextChanged="txtCuentaRazonSocial_TextChanged"></TextBox>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnCuentaGuardar" Grid.Column="0" Padding="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Center"  FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" Click="btnCuentaGuardar_Click">
+                    Guardar
+                </Button>
+                <Button x:Name="btnCuentaCancelar" Grid.Column="1" Padding="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Center"  FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" Click="btnCuentaCancelar_Click">
+                    Cancelar
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

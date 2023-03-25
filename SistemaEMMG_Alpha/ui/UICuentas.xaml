@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui"
+             xmlns:cuentas="clr-namespace:SistemaEMMG_Alpha.ui.cuentas"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="White">
-        <Grid.RowDefinitions>
+        <Grid Background="White">
+            <Grid.RowDefinitions>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
@@ -24,10 +26,10 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Label FontFamily="Helvetica" Grid.Column="0" Margin="5, 5, 5, 5" Foreground="Black" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <Label FontFamily="Helvetica" Grid.Column="0" Margin="5, 5, 5, 5" Foreground="Black" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
                 Cuenta seleccionada:
             </Label>
-            <ComboBox FontFamily="Helvetica" Grid.Column="1" Margin="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" FontSize="20"></ComboBox>
+            <ComboBox x:Name="cmbCuentas" FontFamily="Helvetica" Grid.Column="1" Margin="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" FontSize="18"></ComboBox>
         </Grid>
         <Label FontFamily="Helvetica"  Foreground="Black" FontSize="22" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
             Acciones
@@ -38,7 +40,7 @@
                 <ColumnDefinition MinWidth="400" MaxWidth="600"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+                <ListBox x:Name="listCuentas" FontFamily="Helvetica" FontSize="14" Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
         </Grid>
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
@@ -48,15 +50,17 @@
                 <ColumnDefinition Width="150"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" x:Name="btnCrearNuevaCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5">
+            <Button Grid.Column="1" x:Name="btnCrearNuevaCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5" Click="btnCrearNuevaCuenta_Click">
                 Crear cuenta
             </Button>
-            <Button Grid.Column="2" x:Name="btnEliminarCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5">
+            <Button Grid.Column="2" x:Name="btnEliminarCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5" IsEnabled="False" Click="btnEliminarCuenta_Click">
                 Eliminar cuenta
             </Button>
-            <Button Grid.Column="3" x:Name="btnModificarCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5">
+            <Button Grid.Column="3" x:Name="btnModificarCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5"  IsEnabled="False" Click="btnModificarCuenta_Click">
                 Modificar cuenta
             </Button>
         </Grid>
+        </Grid>
+        <cuentas:UIAgregarModificarCuenta x:Name="uiAgregarModificarCuenta" Visibility="Collapsed"></cuentas:UIAgregarModificarCuenta>
     </Grid>
 </UserControl>

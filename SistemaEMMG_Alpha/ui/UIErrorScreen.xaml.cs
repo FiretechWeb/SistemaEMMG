@@ -21,14 +21,15 @@ namespace SistemaEMMG_Alpha.ui
     public partial class UIErrorScreen : UserControl
     {
         private MainWindow _mainWin = null;
-        public UIErrorScreen()
-        {
-            InitializeComponent();
-        }
-
         public void SetMainWindow(MainWindow mainWin)
         {
             _mainWin = mainWin;
+        }
+        public MainWindow GetMainWindow() => _mainWin;
+
+        public UIErrorScreen()
+        {
+            InitializeComponent();
         }
 
         private void btnDbReconnect_Click(object sender, RoutedEventArgs e)
@@ -39,7 +40,7 @@ namespace SistemaEMMG_Alpha.ui
             }
             if (_mainWin.ConnectWithDatabase())
             {
-                _mainWin.errorScreen.Visibility = Visibility.Collapsed;
+                Visibility = Visibility.Collapsed;
                 _mainWin.SoftwareMain();
             }
             else

@@ -29,7 +29,9 @@ namespace SistemaEMMG_Alpha
             return _instance;
         }
 
-        public bool IsConnected()
+        public bool IsConnected() => !(Connection is null) && Connection.State.ToString().ToLower() == "open";
+
+        public bool StartConnection()
         {
             if (Connection == null)
             {
@@ -44,7 +46,7 @@ namespace SistemaEMMG_Alpha
 
         public void Reconnect()
         {
-            if (!(Connection is null) && Connection.State.ToString().ToLower() == "open")
+            if (IsConnected())
             {
                 Connection.Close();
             }

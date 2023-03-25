@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 
 namespace SistemaEMMG_Alpha
@@ -29,7 +30,20 @@ namespace SistemaEMMG_Alpha
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
         public DBConnection dbCon = null;
         public DBMain dbData = null;
+        private DBCuenta _cuentaSeleccionada = null;
+        public DBCuenta GetCuentaSeleccionada() => _cuentaSeleccionada;
 
+        public void SetCuentaSeleccionada(DBCuenta newCuenta)
+        {
+            _cuentaSeleccionada = newCuenta;
+            if (newCuenta is null)
+            {
+                lblCuentaSeleccionada.Content = "No hay ninguna cuenta seleccionada.";
+            } else
+            {
+                lblCuentaSeleccionada.Content = _cuentaSeleccionada.GetRazonSocial();
+            }
+        }
         public bool ConnectWithDatabase()
         {
             if (!(dbCon is null))
@@ -44,7 +58,7 @@ namespace SistemaEMMG_Alpha
                 dbCon.DatabaseName = "sistemacomprobantes";
                 dbCon.UserName = "root";
                 dbCon.Password = "root";
-                if (dbCon.IsConnected())
+                if (dbCon.StartConnection())
                 {
                     sucessfulConnected = true;
                 } else
@@ -71,6 +85,8 @@ namespace SistemaEMMG_Alpha
             //Intialize data
             dbData = DBMain.Instance();
             dbData.RefreshBasicDataDB(dbCon.Connection);
+            uiCuentasPanel.RefreshData();
+
         }
         
         public MainWindow()
@@ -78,6 +94,7 @@ namespace SistemaEMMG_Alpha
             InitializeComponent();
 
             errorScreen.SetMainWindow(this);
+            uiCuentasPanel.SetMainWindow(this);
 
            if (!ConnectWithDatabase())
             {
@@ -89,6 +106,16 @@ namespace SistemaEMMG_Alpha
                 SoftwareMain();
             }
            
+        }
+
+        public bool CheckDBConnection()
+        {
+            if (dbCon.IsConnected())
+            {
+                return true;
+            }
+            errorScreen.Visibility = Visibility.Visible;
+            return false;
         }
 
         private void btnBackupDB_Click(object sender, RoutedEventArgs e)
