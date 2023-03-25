@@ -27,20 +27,49 @@ namespace SistemaEMMG_Alpha
     public partial class MainWindow : Window
     {
 
+        enum TabItemsSelections
+        {
+            TI_CUENTAS,
+            TI_ENTIDADES,
+            TI_COMPROBANTES,
+            TI_RECIBOS,
+            TI_REMITOS,
+            TI_LISTADOS
+        };
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
+
         public DBConnection dbCon = null;
         public DBMain dbData = null;
         private DBCuenta _cuentaSeleccionada = null;
         public DBCuenta GetCuentaSeleccionada() => _cuentaSeleccionada;
+
+        private void enableTabItems()
+        {
+            tabComprobantes.IsEnabled = true;
+            tabEntidades.IsEnabled = true;
+            tabListados.IsEnabled = true;
+            tabRecibos.IsEnabled = true;
+            tabRemitos.IsEnabled = true;
+        }
+        private void disableTabItems()
+        {
+            tabComprobantes.IsEnabled = false;
+            tabEntidades.IsEnabled = false;
+            tabListados.IsEnabled = false;
+            tabRecibos.IsEnabled = false;
+            tabRemitos.IsEnabled = false;
+        }
 
         public void SetCuentaSeleccionada(DBCuenta newCuenta)
         {
             _cuentaSeleccionada = newCuenta;
             if (newCuenta is null)
             {
+                disableTabItems();
                 lblCuentaSeleccionada.Content = "No hay ninguna cuenta seleccionada.";
             } else
             {
+                enableTabItems();
                 lblCuentaSeleccionada.Content = _cuentaSeleccionada.GetRazonSocial();
             }
         }
@@ -85,8 +114,15 @@ namespace SistemaEMMG_Alpha
             //Intialize data
             dbData = DBMain.Instance();
             dbData.RefreshBasicDataDB(dbCon.Connection);
+            List<DBCuenta> cuentasDisponibles = DBCuenta.GetAll();
+            if (cuentasDisponibles.Count > 0)
+            {
+                SetCuentaSeleccionada(cuentasDisponibles[0]);
+            } else
+            {
+                SetCuentaSeleccionada(null);
+            }
             uiCuentasPanel.RefreshData();
-
         }
         
         public MainWindow()
@@ -130,6 +166,67 @@ namespace SistemaEMMG_Alpha
             if (e.Key == Key.F11)
             {
                 developerWin.Visibility = developerWin.IsVisible ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is TabControl)
+            {
+                short newTabItemSelection = oldTabItemSelection;
+                if (tabComprobantes.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_COMPROBANTES;
+                }
+                else if (tabCuentas.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_CUENTAS;
+                }
+                else if (tabEntidades.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_ENTIDADES;
+                } else if (tabRecibos.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_RECIBOS;
+                }
+                else if (tabRemitos.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_REMITOS;
+                }
+                else if (tabListados.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_LISTADOS;
+                }
+
+                if (oldTabItemSelection == newTabItemSelection || oldTabItemSelection == -1)
+                {
+                    oldTabItemSelection = newTabItemSelection;
+                    return;
+                }
+
+                oldTabItemSelection = newTabItemSelection;
+
+                switch ((TabItemsSelections)newTabItemSelection)
+                {
+                    case TabItemsSelections.TI_CUENTAS:
+                        Console.WriteLine("TI_CUENTAS");
+                        break;
+                    case TabItemsSelections.TI_ENTIDADES:
+                        Console.WriteLine("TI_ENTIDADES");
+                        break;
+                    case TabItemsSelections.TI_COMPROBANTES:
+                        Console.WriteLine("TI_COMPROBANTES");
+                        break;
+                    case TabItemsSelections.TI_REMITOS:
+                        Console.WriteLine("TI_REMITOS");
+                        break;
+                    case TabItemsSelections.TI_RECIBOS:
+                        Console.WriteLine("TI_RECIBOS");
+                        break;
+                    case TabItemsSelections.TI_LISTADOS:
+                        Console.WriteLine("TI_LISTADOS");
+                        break;
+                }
             }
         }
     }

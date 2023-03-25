@@ -21,19 +21,19 @@
            <Button x:Name="btnBackupDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnBackupDB_Click">Backup</Button>
         </DockPanel>
         <!-- START: Contenido -->
-        <TabControl>
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
                 <TabItem x:Name="tabCuentas" Header="Cuentas" FontWeight="Bold">
                     <uc:UICuentas x:Name="uiCuentasPanel"></uc:UICuentas>
             </TabItem>
-            <TabItem x:Name="tabEntidades" Header="Entidades" FontWeight="Bold">
+            <TabItem x:Name="tabEntidades" Header="Entidades" FontWeight="Bold" IsEnabled="False">
             </TabItem>
-            <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold">
+                <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold" IsEnabled="False">
             </TabItem>
-            <TabItem x:Name="tabRecibos" Header="Recibos" FontWeight="Bold">
+                <TabItem x:Name="tabRecibos" Header="Recibos" FontWeight="Bold" IsEnabled="False">
             </TabItem>
-            <TabItem x:Name="tabRemitos" Header="Remitos" FontWeight="Bold">
+                <TabItem x:Name="tabRemitos" Header="Remitos" FontWeight="Bold" IsEnabled="False">
             </TabItem>
-            <TabItem x:Name="tabListados" Header="Listados" FontWeight="Bold">
+                <TabItem x:Name="tabListados" Header="Listados" FontWeight="Bold" IsEnabled="False">
             </TabItem>
             </TabControl>
         <!-- End: Conenido -->
