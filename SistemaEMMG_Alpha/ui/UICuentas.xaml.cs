@@ -151,5 +151,20 @@ namespace SistemaEMMG_Alpha.ui
                 }
             }
         }
+
+        private void cmbCuentas_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cmbSender = sender as ComboBox;
+            if (cmbSender.SelectedItem is null)
+            {
+                return;
+            }
+            DBCuenta newCuentaSelected = DBCuenta.GetByID(((KeyValuePair<long, string>)cmbSender.SelectedItem).Key);
+            if (newCuentaSelected is null)
+            {
+                return;
+            }
+            _mainWin.SetCuentaSeleccionada(newCuentaSelected);
+        }
     }
 }

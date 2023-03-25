@@ -29,7 +29,7 @@
             <Label FontFamily="Helvetica" Grid.Column="0" Margin="5, 5, 5, 5" Foreground="Black" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
                 Cuenta seleccionada:
             </Label>
-            <ComboBox x:Name="cmbCuentas" FontFamily="Helvetica" Grid.Column="1" Margin="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" FontSize="18"></ComboBox>
+            <ComboBox x:Name="cmbCuentas" FontFamily="Helvetica" Grid.Column="1" Margin="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" FontSize="18" SelectionChanged="cmbCuentas_SelectionChanged"></ComboBox>
         </Grid>
         <Label FontFamily="Helvetica"  Foreground="Black" FontSize="22" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
             Acciones

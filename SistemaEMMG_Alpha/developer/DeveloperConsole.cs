@@ -115,6 +115,7 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => _CMD_Help()));
         }
         ///<summary>
         ///Process an input string and retrieves the result.
@@ -244,6 +245,14 @@ namespace SistemaEMMG_Alpha
 
         }
 
+        private void _CMD_Help()
+        {
+            _outputStr = ":: Comandos disponibles ::\n\n";
+            foreach (KeyValuePair<string, Action<string>> internalCmd in internalComandsList)
+            {
+                _outputStr += $"\t{internalCmd.Key}\n";
+            }
+        }
         private void _CMD_RefreshBasicDataDB()
         {
             MySqlConnection conn = DBConnection.Instance().Connection;
