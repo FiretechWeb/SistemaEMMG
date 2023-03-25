@@ -162,6 +162,13 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
+
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+
             bool wasAbleToUpdate = false;
 
             try
@@ -241,7 +248,7 @@ namespace SistemaEMMG_Alpha
             bool? duplicatedExistsInDB = null;
             try
             {
-                string query = $"SELECT COUNT(*) FROM {db_table} WHERE UPPER({MonedaData.NameOf_mn_name}) = '{Regex.Replace(_data.mn_name.Trim().ToUpper(), @"\s+", " ")}'";
+                string query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_id} <> {GetID()} AND UPPER({MonedaData.NameOf_mn_name}) = '{Regex.Replace(_data.mn_name.Trim().ToUpper(), @"\s+", " ")}'";
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
             }

@@ -430,6 +430,11 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
             bool wasAbleToUpdate = false;
             try
             {
@@ -558,11 +563,11 @@ namespace SistemaEMMG_Alpha
                 string query = "";
                 if (_data.rm_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
                 {
-                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rm_em_id} = {GetCuentaID()} AND UPPER({RemitoData.NameOf_rm_nro}) = '{Regex.Replace(_data.rm_nro.Trim().ToUpper(), @"\s+", " ")}'";
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rm_em_id} = {GetCuentaID()} AND {NameOf_id} <> {GetID()} AND UPPER({RemitoData.NameOf_rm_nro}) = '{Regex.Replace(_data.rm_nro.Trim().ToUpper(), @"\s+", " ")}'";
                 }
                 else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
                 {
-                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rm_em_id} = {GetCuentaID()} AND {NameOf_rm_ec_id} = {GetEntidadComercialID()} AND UPPER({RemitoData.NameOf_rm_nro}) = '{_data.rm_nro.Trim().ToUpper()}'";
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rm_em_id} = {GetCuentaID()} AND {NameOf_rm_ec_id} = {GetEntidadComercialID()} AND {NameOf_id} <> {GetID()} AND UPPER({RemitoData.NameOf_rm_nro}) = '{_data.rm_nro.Trim().ToUpper()}'";
                 }
                 var cmd = new MySqlCommand(query, conn);
                 duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
