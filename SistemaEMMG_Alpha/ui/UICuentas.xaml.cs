@@ -133,7 +133,7 @@ namespace SistemaEMMG_Alpha.ui
 
             Trace.Assert(!(cuentaAEliminar is null));
 
-            MessageBoxResult msgBoxConfirmationResult = System.Windows.MessageBox.Show("¿Está seguro que desea eliminar está cuenta?, se eliminaran todos los comprobantes, recibos y remitos relacionados a esta cuenta.", "Confirmar eliminación", System.Windows.MessageBoxButton.YesNo);
+            MessageBoxResult msgBoxConfirmationResult = System.Windows.MessageBox.Show("¿Está seguro que desea eliminar está cuenta?, se eliminaran todas las entidades comerciales, los comprobantes, recibos y remitos relacionados a esta cuenta.", "Confirmar eliminación", System.Windows.MessageBoxButton.YesNo);
             if (msgBoxConfirmationResult == MessageBoxResult.Yes)
             {
                 bool isSelectedCuenta = (cuentaAEliminar.GetID() == GetCuentaSeleccionada().GetID());

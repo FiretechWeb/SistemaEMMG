@@ -36,31 +36,33 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Tipo:
                 </Label>
-                <ComboBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
-                    
+                <ComboBox x:Name="cmbTipoEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+
                 </ComboBox>
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="125"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="64*"></ColumnDefinition>
+                    <ColumnDefinition Width="161*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,2,0,1">
                     CUIT:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtCuitEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,6,0,5" TextChanged="txtCuitEntidad_TextChanged" PreviewTextInput="txtCuitEntidad_PreviewTextInput">
 
                 </TextBox>
             </Grid>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="125"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="18*"></ColumnDefinition>
+                    <ColumnDefinition Width="95*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,2,0,1">
                     Razón Social:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtRazonEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,6,0,5" TextChanged="txtRazonEntidad_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -72,7 +74,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Email:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtEmailEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>
@@ -84,7 +86,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Teléfono:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtTelEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>
@@ -96,7 +98,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Celular:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtCelEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>
@@ -105,10 +107,10 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Margin="10, 5, 10, 5" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold">
+                <Button x:Name="btnGuardar" Margin="10, 5, 10, 5" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" Click="btnGuardar_Click">
                     Guardar
                 </Button>
-                <Button Margin="10, 5, 10, 5" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold">
+                <Button x:Name="btnCancelar" Margin="10, 5, 10, 5" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" Click="btnCancelar_Click">
                     Cancelar
                 </Button>
             </Grid>

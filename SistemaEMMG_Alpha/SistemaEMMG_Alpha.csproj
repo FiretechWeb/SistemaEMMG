@@ -147,7 +147,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DBConnection.cs" />
-    <Compile Include="DBConsultas.cs" />
     <Compile Include="DBMain.cs" />
     <Compile Include="DBBaseClass.cs" />
     <Compile Include="DBExtensions.cs" />

@@ -43,6 +43,21 @@ namespace SistemaEMMG_Alpha
         private DBCuenta _cuentaSeleccionada = null;
         public DBCuenta GetCuentaSeleccionada() => _cuentaSeleccionada;
 
+        public void SetCuentaSeleccionada(DBCuenta newCuenta)
+        {
+            _cuentaSeleccionada = newCuenta;
+            if (newCuenta is null)
+            {
+                disableTabItems();
+                lblCuentaSeleccionada.Content = "No hay ninguna cuenta seleccionada.";
+            }
+            else
+            {
+                enableTabItems();
+                lblCuentaSeleccionada.Content = _cuentaSeleccionada.GetRazonSocial();
+            }
+        }
+
         private void enableTabItems()
         {
             tabComprobantes.IsEnabled = true;
@@ -58,20 +73,6 @@ namespace SistemaEMMG_Alpha
             tabListados.IsEnabled = false;
             tabRecibos.IsEnabled = false;
             tabRemitos.IsEnabled = false;
-        }
-
-        public void SetCuentaSeleccionada(DBCuenta newCuenta)
-        {
-            _cuentaSeleccionada = newCuenta;
-            if (newCuenta is null)
-            {
-                disableTabItems();
-                lblCuentaSeleccionada.Content = "No hay ninguna cuenta seleccionada.";
-            } else
-            {
-                enableTabItems();
-                lblCuentaSeleccionada.Content = _cuentaSeleccionada.GetRazonSocial();
-            }
         }
         public bool ConnectWithDatabase()
         {
@@ -213,9 +214,11 @@ namespace SistemaEMMG_Alpha
                 switch ((TabItemsSelections)newTabItemSelection)
                 {
                     case TabItemsSelections.TI_CUENTAS:
+                        uiCuentasPanel.RefreshData();
                         Console.WriteLine("TI_CUENTAS");
                         break;
                     case TabItemsSelections.TI_ENTIDADES:
+                        uiEntidadesPanel.RefreshData();
                         Console.WriteLine("TI_ENTIDADES");
                         break;
                     case TabItemsSelections.TI_COMPROBANTES:

@@ -31,11 +31,11 @@
                 <Label Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
                     Entidad Seleccionada:
                 </Label>
-                <Label Grid.Column="2" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Black" VerticalAlignment="Center">
+                <Label x:Name="lblEntidadSeleccionada" Grid.Column="2" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Black" VerticalAlignment="Center">
                     No ha seleccionado ninguna entidad.
                 </Label>
             </Grid>
-            <ListBox Grid.Row="2" x:Name="listEntidadesComerciales" Margin="15, 15, 15, 15" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+            <ListBox Grid.Row="2" x:Name="listEntidadesComerciales" Margin="15, 15, 15, 15" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listEntidadesComerciales_SelectionChanged"></ListBox>
             <Grid Grid.Row="3" Margin="15, 0, 15, 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"></ColumnDefinition>
@@ -46,10 +46,10 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
                     Filtrar:
                 </Label>
-                <TextBox Grid.Column="1" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"> 
+                <TextBox x:Name="txtFiltroBusqueda" Grid.Column="1" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"> 
                     
                 </TextBox>
-                <Button Grid.Column="2" Margin="5, 5, 5, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnBuscarEntidad" Grid.Column="2" Margin="5, 5, 5, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnBuscarEntidad_Click">
                     Buscar
                 </Button>
             </Grid>
@@ -68,13 +68,13 @@
                     <ColumnDefinition Width="150"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Row="0" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnAgregarEntidad" Grid.Row="0" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnAgregarEntidad_Click">
                     Agregar
                 </Button>
-                <Button Grid.Row="0" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnModificarEntidad" Grid.Row="0" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnModificarEntidad_Click">
                     Modificar
                 </Button>
-                <Button Grid.Row="0" Grid.Column="3" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnEliminarEntidad" Grid.Row="0" Grid.Column="3" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnEliminarEntidad_Click">
                     Eliminar
                 </Button>
                 <Button Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
@@ -88,6 +88,6 @@
                 </Button>
             </Grid>
         </Grid>
-        <entidades:UIAgregarModificarEntidadComercial Visibility="Collapsed"></entidades:UIAgregarModificarEntidadComercial>
+        <entidades:UIAgregarModificarEntidadComercial x:Name="uiAgregarModificarEntidad" Visibility="Collapsed"></entidades:UIAgregarModificarEntidadComercial>
     </Grid>
 </UserControl>

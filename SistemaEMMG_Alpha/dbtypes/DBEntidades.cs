@@ -179,6 +179,29 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
+        public static List<DBEntidades> Search(MySqlConnection conn, DBCuenta cuenta, string toFind)
+        {
+            List<DBEntidades> returnList = new List<DBEntidades>();
+            try
+            {
+                string te_table = DBTipoEntidad.db_table;
+                string query = $"SELECT * FROM {db_table} JOIN {te_table} ON {te_table}.te_id = {db_table}.ec_te_id WHERE ec_em_id = {cuenta.GetID()} AND (LOWER(ec_rs) LIKE '%{toFind.Trim().ToLower()}%' OR ec_cuit LIKE '%{toFind.Trim().ToLower()}%')";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error SQL en  DBEntidades::Search" + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
         public override bool PullFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())
