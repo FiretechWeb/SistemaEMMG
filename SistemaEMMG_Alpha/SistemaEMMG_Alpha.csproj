@@ -112,7 +112,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DBInterfaces.cs" />
-    <Compile Include="DBOldMain.cs" />
     <Compile Include="dbtypes\DBMoneda.cs" />
     <Compile Include="dbtypes\DBRecibo.cs" />
     <Compile Include="dbtypes\DBRemito.cs" />
@@ -121,6 +120,9 @@
     <Compile Include="developer\DeveloperConsole.cs" />
     <Compile Include="fastexcel\ExcelExport.cs" />
     <Compile Include="SafeConvert.cs" />
+    <Compile Include="ui\UICuentas.xaml.cs">
+      <DependentUpon>UICuentas.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\UIDeveloperConsole.xaml.cs">
       <DependentUpon>UIDeveloperConsole.xaml</DependentUpon>
     </Compile>
@@ -151,6 +153,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ui\UICuentas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ui\UIDeveloperConsole.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -28,7 +28,7 @@ namespace SistemaEMMG_Alpha
 
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
         public DBConnection dbCon = null;
-        public DBOldMain dbData = null;
+        public DBMain dbData = null;
 
         public bool ConnectWithDatabase()
         {
@@ -68,16 +68,9 @@ namespace SistemaEMMG_Alpha
         {
             Console.WriteLine("Able to connect Database!");
 
-            //Intialize accounts
-            dbData = DBOldMain.Instance();
-            dbData.ReadCuentasFromDB(dbCon.Connection);
-            if (dbData.cuentas.Count > 0)
-            {
-                dbData.idCuentaSeleccionada = dbData.cuentas[0].GetID();
-            } else
-            {
-                dbData.idCuentaSeleccionada = -1;
-            }
+            //Intialize data
+            dbData = DBMain.Instance();
+            dbData.RefreshBasicDataDB(dbCon.Connection);
         }
         
         public MainWindow()

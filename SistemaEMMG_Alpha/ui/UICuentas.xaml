@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.UICuentas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition MaxHeight="400"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label FontFamily="Helvetica"  Foreground="Black" FontSize="28" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0">
+            Cuentas
+        </Label>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label FontFamily="Helvetica" Grid.Column="0" Margin="5, 5, 5, 5" Foreground="Black" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
+                Cuenta seleccionada:
+            </Label>
+            <ComboBox FontFamily="Helvetica" Grid.Column="1" Margin="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" FontSize="20"></ComboBox>
+        </Grid>
+        <Label FontFamily="Helvetica"  Foreground="Black" FontSize="22" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
+            Acciones
+        </Label>
+        <Grid Grid.Row="3" Margin="5, 5, 5, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition MinWidth="400" MaxWidth="600"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ListBox Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1" x:Name="btnCrearNuevaCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5">
+                Crear cuenta
+            </Button>
+            <Button Grid.Column="2" x:Name="btnEliminarCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5">
+                Eliminar cuenta
+            </Button>
+            <Button Grid.Column="3" x:Name="btnModificarCuenta" FontSize="15" FontFamily="Helvetica" FontWeight="Bold" Margin="5, 5, 5, 5">
+                Modificar cuenta
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

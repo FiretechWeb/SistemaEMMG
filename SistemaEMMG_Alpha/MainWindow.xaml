@@ -16,6 +16,7 @@
         </DockPanel>
         <DockPanel Background="Black"  Height="26" DockPanel.Dock="Top" VerticalAlignment="Top" >
            <Label x:Name="lblCuentaSeleccionada" DockPanel.Dock="Left" FontSize="13" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White">Cuenta</Label>
+           <Button x:Name="btnConfiguracion" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="90" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="True">Configuración</Button>
            <Button x:Name="btnImportDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="False">Importar</Button>
            <Button x:Name="btnBackupDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnBackupDB_Click">Backup</Button>
         </DockPanel>
@@ -26,8 +27,14 @@
             <TabItem x:Name="tabEntidades" Header="Entidades" FontWeight="Bold">
             </TabItem>
             <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold">
-                </TabItem>
-        </TabControl>
+            </TabItem>
+            <TabItem x:Name="tabRecibos" Header="Recibos" FontWeight="Bold">
+            </TabItem>
+            <TabItem x:Name="tabRemitos" Header="Remitos" FontWeight="Bold">
+            </TabItem>
+            <TabItem x:Name="tabListados" Header="Listados" FontWeight="Bold">
+            </TabItem>
+            </TabControl>
         <!-- End: Conenido -->
         </DockPanel>
     <!-- START: Version info -->
