@@ -222,6 +222,7 @@ namespace SistemaEMMG_Alpha
                         Console.WriteLine("TI_ENTIDADES");
                         break;
                     case TabItemsSelections.TI_COMPROBANTES:
+                        uiComprobantespanel.RefreshData();
                         Console.WriteLine("TI_COMPROBANTES");
                         break;
                     case TabItemsSelections.TI_REMITOS:

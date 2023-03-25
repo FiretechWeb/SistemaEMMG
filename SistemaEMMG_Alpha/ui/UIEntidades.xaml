@@ -11,14 +11,14 @@
         <Grid Background="White">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"> </RowDefinition>
-                <RowDefinition Height="25"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition MinHeight="100"></RowDefinition>
                 <RowDefinition Height="35"></RowDefinition>
                 <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="80"></RowDefinition>
                 <RowDefinition MinHeight="20" Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" FontFamily="Helvetica"  Foreground="Black" FontSize="24" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Grid.Row="0" FontFamily="Helvetica"  Foreground="Black" FontSize="22" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
                 Entidades Comerciales
             </Label>
             <Grid Grid.Row="1">
@@ -53,7 +53,7 @@
                     Buscar
                 </Button>
             </Grid>
-            <Label Grid.Row="4" FontFamily="Helvetica"  Foreground="Black" FontSize="22" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Grid.Row="4" FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
                 Acciones
             </Label>
             <Grid Grid.Row="5">

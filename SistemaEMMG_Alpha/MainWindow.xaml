@@ -29,6 +29,7 @@
                     <uc:UIEntidades x:Name="uiEntidadesPanel"></uc:UIEntidades>
             </TabItem>
                 <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold" IsEnabled="False">
+                    <uc:UIComprobantes x:Name="uiComprobantespanel"></uc:UIComprobantes>
             </TabItem>
                 <TabItem x:Name="tabRecibos" Header="Recibos" FontWeight="Bold" IsEnabled="False">
             </TabItem>
