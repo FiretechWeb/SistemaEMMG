@@ -123,6 +123,9 @@
     <Compile Include="ui\cuentas\UIAgregarModificarCuenta.xaml.cs">
       <DependentUpon>UIAgregarModificarCuenta.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\ent_comerciales\UIAgregarModificarEntidadComercial.xaml.cs">
+      <DependentUpon>UIAgregarModificarEntidadComercial.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\UICuentas.xaml.cs">
       <DependentUpon>UICuentas.xaml</DependentUpon>
     </Compile>
@@ -160,6 +163,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ui\cuentas\UIAgregarModificarCuenta.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\ent_comerciales\UIAgregarModificarEntidadComercial.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

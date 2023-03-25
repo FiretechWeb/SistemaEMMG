@@ -26,6 +26,7 @@
                     <uc:UICuentas x:Name="uiCuentasPanel"></uc:UICuentas>
             </TabItem>
             <TabItem x:Name="tabEntidades" Header="Entidades" FontWeight="Bold" IsEnabled="False">
+                    <uc:UIEntidades x:Name="uiEntidadesPanel"></uc:UIEntidades>
             </TabItem>
                 <TabItem x:Name="tabComprobantes" Header="Comprobantes" FontWeight="Bold" IsEnabled="False">
             </TabItem>

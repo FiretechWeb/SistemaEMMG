@@ -124,13 +124,17 @@ namespace SistemaEMMG_Alpha
             }
             uiCuentasPanel.RefreshData();
         }
+        public void InitUserControls()
+        {
+            errorScreen.SetMainWindow(this);
+            uiCuentasPanel.SetMainWindow(this);
+            uiEntidadesPanel.SetMainWindow(this);
+        }
         
         public MainWindow()
         {
             InitializeComponent();
-
-            errorScreen.SetMainWindow(this);
-            uiCuentasPanel.SetMainWindow(this);
+            InitUserControls();
 
            if (!ConnectWithDatabase())
             {

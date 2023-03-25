@@ -10,14 +10,14 @@
     <Grid Background="White">
         <Grid Background="White">
             <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition MaxHeight="400"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <Label FontFamily="Helvetica"  Foreground="Black" FontSize="28" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0">
+        <Label FontFamily="Helvetica"  Foreground="Black" FontSize="26" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0">
             Cuentas
         </Label>
 
@@ -31,7 +31,7 @@
             </Label>
             <ComboBox x:Name="cmbCuentas" FontFamily="Helvetica" Grid.Column="1" Margin="5, 5, 5, 5" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" FontSize="18" SelectionChanged="cmbCuentas_SelectionChanged"></ComboBox>
         </Grid>
-        <Label FontFamily="Helvetica"  Foreground="Black" FontSize="22" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
+        <Label FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
             Acciones
         </Label>
         <Grid Grid.Row="3" Margin="5, 5, 5, 5">
