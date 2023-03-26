@@ -280,7 +280,7 @@ namespace SistemaEMMG_Alpha
          *      0: No pago
          *      1: Pago
          *************/
-        public static List<DBComprobantes> Search(MySqlConnection conn, DBCuenta cuenta, int estadoEmision, DateTime? fechaComienzo, DateTime? fechaFinal, long CUIT, int estadoPago, long cm_tc_id, long ec_te_id)
+        public static List<DBComprobantes> Search(MySqlConnection conn, DBCuenta cuenta, int estadoEmision, DateTime? fechaComienzo, DateTime? fechaFinal, long CUIT, int estadoPago, long cm_tc_id, long ec_te_id, string numero)
         {
             List<DBComprobantes> returnList = new List<DBComprobantes>();
             try
@@ -309,6 +309,10 @@ namespace SistemaEMMG_Alpha
                 {
                     string fechaFinalStr = ((DateTime)fechaFinal).ToString("yyyy/MM/dd");
                     query += $"AND {ComprobantesData.NameOf_cm_fecha} <= '{fechaFinalStr}' ";
+                }
+                if (!string.IsNullOrEmpty(numero.Trim()))
+                {
+                    query += $"AND UPPER({ComprobantesData.NameOf_cm_numero}) LIKE '%{numero.Trim().ToUpper()}%'";
                 }
                 if (CUIT > 0)
                 {
@@ -590,6 +594,35 @@ namespace SistemaEMMG_Alpha
             newMoneda,
             ComprobantesData.CreateFromReader(reader)) { }
 
+        public bool PushToDatabase(MySqlConnection conn, long old_cm_ec_id)
+        {
+            long old_cm_id = GetID();
+            bool wasAbleToPushAndDelete = false;
+            if (!IsLocal() && old_cm_ec_id != GetEntidadComercialID())
+            {
+                MakeLocal();
+            } else
+            {
+                PushToDatabase(conn);
+            }
+            if (InsertIntoToDatabase(conn, old_cm_ec_id, old_cm_id))
+            {
+                DBComprobantes oldComprobante = GetByID(conn, GetCuenta(), old_cm_ec_id, old_cm_id);
+                if (!(oldComprobante is null))
+                {
+                    wasAbleToPushAndDelete = oldComprobante.DeleteFromDatabase(conn);
+                } else
+                {
+                    wasAbleToPushAndDelete = true;
+                }
+                if (!wasAbleToPushAndDelete)
+                {
+                    DeleteFromDatabase(conn);
+                }
+            }
+            return wasAbleToPushAndDelete;
+        }
+
         public override bool PullFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())
@@ -678,13 +711,8 @@ namespace SistemaEMMG_Alpha
             return wasAbleToUpdate;
         }
 
-        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        private bool InsertIntoToDatabase_Raw(MySqlConnection conn)
         {
-            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
-            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
-            {
-                return false;
-            }
             bool wasAbleToInsert = false;
             try
             {
@@ -734,6 +762,26 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error DBComprobantes::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToInsert;
+        }
+
+        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        {
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+            return InsertIntoToDatabase_Raw(conn);
+        }
+
+        public bool InsertIntoToDatabase(MySqlConnection conn, long ignore_ec_id, long ignore_cm_id)
+        {
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn, ignore_ec_id, ignore_cm_id);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+            return InsertIntoToDatabase_Raw(conn);
         }
 
         private bool DeleteAllRelatedData(MySqlConnection conn)
@@ -817,6 +865,32 @@ namespace SistemaEMMG_Alpha
             }
             return duplicatedExistsInDB;
         }
+
+        public bool? DuplicatedExistsInDatabase(MySqlConnection conn, long ignore_ec_id, long ignore_cm_id)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = "";
+                if (_data.cm_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND (({NameOf_cm_ec_id} <> {ignore_ec_id}) OR ({NameOf_id} <> {ignore_cm_id})) AND {NameOf_id} <> {GetID()} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{Regex.Replace(_data.cm_numero.Trim().ToUpper(), @"\s+", " ")}'";
+                }
+                else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_cm_em_id} = {GetCuentaID()} AND {NameOf_cm_ec_id} = {GetEntidadComercialID()} AND {NameOf_id} <> {GetID()} AND (({NameOf_cm_ec_id} <> {ignore_ec_id}) OR ({NameOf_id} <> {ignore_cm_id})) AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{Regex.Replace(_data.cm_numero.Trim().ToUpper(), @"\s+", " ")}'";
+                }
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBCuenta::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
+        }
+
         public override bool? ExistsInDatabase(MySqlConnection conn)
         {
             if (IsLocal())

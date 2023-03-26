@@ -60,53 +60,60 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Estado
+                    Numero
                 </Label>
                 <Label Grid.Row="0" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Tipo
+                    Estado
                 </Label>
                 <Label Grid.Row="0" Grid.Column="2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Tipo Ent.
+                    Tipo
                 </Label>
                 <Label Grid.Row="0" Grid.Column="3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Fecha inicio
+                    Tipo Ent.
                 </Label>
                 <Label Grid.Row="0" Grid.Column="4" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Fecha final
+                    Fecha inicio
                 </Label>
                 <Label Grid.Row="0" Grid.Column="5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    CUIT
+                    Fecha final
                 </Label>
                 <Label Grid.Row="0" Grid.Column="6" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    CUIT
+                </Label>
+                <Label Grid.Row="0" Grid.Column="7" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
                     Pago
                 </Label>
-                <ComboBox x:Name="cmbFiltroEstado" Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
+                <TextBox x:Name="txtNumeroFiltro" Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+
+                </TextBox>
+                <ComboBox x:Name="cmbFiltroEstado" Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
                     <ComboBoxItem>Todos</ComboBoxItem>
                     <ComboBoxItem>Recibido</ComboBoxItem>
                     <ComboBoxItem>Emitido</ComboBoxItem>
                 </ComboBox>
-                <ComboBox x:Name="cmbFiltroTipoComp" Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
+                <ComboBox x:Name="cmbFiltroTipoComp" Grid.Row="1" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
 
                 </ComboBox>
-                <ComboBox x:Name="cmbFiltroTipoEnt" Grid.Row="1" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
+                <ComboBox x:Name="cmbFiltroTipoEnt" Grid.Row="1" Grid.Column="3" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
 
                 </ComboBox>
-                <TextBox x:Name="txtFiltroFechaInicial" Grid.Row="1" Grid.Column="3" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtFiltroFechaInicial" Grid.Row="1" Grid.Column="4" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <TextBox x:Name="txtFiltroFechaFinal" Grid.Row="1" Grid.Column="4" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtFiltroFechaFinal" Grid.Row="1" Grid.Column="5" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <TextBox x:Name="textFiltroCUIT" Grid.Row="1" Grid.Column="5" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="textFiltroCUIT" Grid.Row="1" Grid.Column="6" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <ComboBox x:Name="cmbFiltroEstadoPago" Grid.Row="1" Grid.Column="6" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
+                <ComboBox x:Name="cmbFiltroEstadoPago" Grid.Row="1" Grid.Column="7" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
                     <ComboBoxItem>Todos</ComboBoxItem>
                     <ComboBoxItem>Impago</ComboBoxItem>
                     <ComboBoxItem>Pagado</ComboBoxItem>

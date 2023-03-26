@@ -144,10 +144,11 @@ namespace SistemaEMMG_Alpha.ui
                 cmbFiltroEstado.SelectedIndex,
                 fechaInicial,
                 fechaFinal,
-                SafeConvert.ToInt64(textFiltroCUIT.Text),
+                SafeConvert.ToInt64(textFiltroCUIT.Text.Trim()),
                 cmbFiltroEstadoPago.SelectedIndex,
                 ((KeyValuePair<long, string>)cmbFiltroTipoComp.SelectedItem).Key,
-                ((KeyValuePair<long, string>)cmbFiltroTipoEnt.SelectedItem).Key);
+                ((KeyValuePair<long, string>)cmbFiltroTipoEnt.SelectedItem).Key, 
+                txtNumeroFiltro.Text.Trim());
 
             dgComprobantes.Items.Clear();
 

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace SistemaEMMG_Alpha.ui.comprobantes
 {
@@ -95,6 +96,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
 
             dbData.RefreshBasicDataDB(dbCon.Connection);
+            _comprobanteSeleccionado = selectedComprobante;
 
             List<DBEntidades> entidadesComerciales = DBEntidades.GetAll(dbCon.Connection, GetCuentaSeleccionada());
             List<DBTiposComprobantes> listTiposComprobantes = DBTiposComprobantes.GetAll();
@@ -122,19 +124,14 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 cmbMoneda.Items.Add(new KeyValuePair<long, string>(moneda.GetID(), moneda.GetName()));
             }
 
-
-
-
-            _comprobanteSeleccionado = selectedComprobante;
             listEntidadesComerciales.Items.Clear();
+            listSelectedEntidadComercial.Items.Clear();
+            listSelectedEntidadComercial.SelectedValuePath = "Key";
+            listSelectedEntidadComercial.DisplayMemberPath = "Value";
 
             if (_comprobanteSeleccionado is null)
             {
                 _comprobanteSeleccionado = new DBComprobantes(entidadesComerciales[0], listTiposComprobantes[0], listMonedas[0], true, null, "-1", 0.0, 0.0); //Created to handle pagos/remitos relations.
-
-                listSelectedEntidadComercial.Items.Clear();
-                listSelectedEntidadComercial.SelectedValuePath = "Key";
-                listSelectedEntidadComercial.DisplayMemberPath = "Value";
                 listSelectedEntidadComercial.Items.Add(new KeyValuePair<long, string>(-1, "Seleccione una entidad comercial..."));
                 rdbRecibido.IsChecked = false;
                 rdbEmitido.IsChecked = true;
@@ -147,31 +144,115 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 txtIVA.Text = "";
                 txtPercepcion.Text = "";
                 txtObservacion.Text = "";
-                if (listMonedas.Count > 0)
-                {
-                    cmbMoneda.SelectedIndex = 0;
-                }
+                cmbMoneda.SelectedIndex = 0;
                 RefreshMonedaSelected();
-
-                if (listTiposComprobantes.Count > 0)
-                {
-                    cmbTipoComprobante.SelectedIndex = 0;
-                }
-
+                cmbTipoComprobante.SelectedIndex = 0;
             } else
             {
+                listSelectedEntidadComercial.Items.Add(
+                    new KeyValuePair<long, string>(_comprobanteSeleccionado.GetEntidadComercialID(),
+                    $"{_comprobanteSeleccionado.GetEntidadComercial().GetCUIT()}: {_comprobanteSeleccionado.GetEntidadComercial().GetRazonSocial()}")
+                    );
 
+                rdbRecibido.IsChecked = !_comprobanteSeleccionado.IsEmitido();
+                rdbEmitido.IsChecked = _comprobanteSeleccionado.IsEmitido();
+                txNumeroComprobante.Text = _comprobanteSeleccionado.GetNumeroComprobante();
+                listEntidadesComerciales.Items.Clear();
+                txtFiltroBusquedaEntidad.Text = "";
+                txtFechaEmitido.Text = _comprobanteSeleccionado.GetFechaEmitido().HasValue ? ((DateTime)_comprobanteSeleccionado.GetFechaEmitido()).ToString("dd/MM/yyyy") : "";
+                txtGravado.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetGravado());
+                txtNoGravado.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetNoGravado());
+                txtIVA.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetIVA());
+                txtPercepcion.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetPercepcion());
+                txtObservacion.Text = _comprobanteSeleccionado.GetObservacion();
+                cmbMoneda.SelectedValue = _comprobanteSeleccionado.GetMoneda().GetID();
+                RefreshMonedaSelected();
+                cmbTipoComprobante.SelectedValue = _comprobanteSeleccionado.GetTipoComprobante().GetID();
+                txtCambio.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetCambio());
             }
+
+            listSelectedEntidadComercial.SelectedIndex = 0;
         }
+
 
         private void btnGuardar_Click(object sender, RoutedEventArgs e)
         {
+            Trace.Assert(!(_ownerControl is null));
 
+            long old_cm_ec_id = _comprobanteSeleccionado.GetEntidadComercialID();
+
+            DateTime fechaEmitido = new DateTime();
+            DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido);
+
+            _comprobanteSeleccionado.SetFechaEmitido(fechaEmitido);
+            _comprobanteSeleccionado.SetEmitido(SafeConvert.ToBoolean(rdbEmitido.IsChecked));
+            _comprobanteSeleccionado.SetEntidadComercial(((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key, dbCon.Connection);
+            _comprobanteSeleccionado.SetTipoComprobante(((KeyValuePair<long, string>)cmbTipoComprobante.SelectedItem).Key);
+            _comprobanteSeleccionado.SetMoneda(DBMoneda.GetByID(((KeyValuePair<long, string>)cmbMoneda.SelectedItem).Key));
+            _comprobanteSeleccionado.SetNumeroComprobante(txNumeroComprobante.Text);
+            _comprobanteSeleccionado.SetGravado(SafeConvert.ToDouble(txtGravado.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetIVA(SafeConvert.ToDouble(txtIVA.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetNoGravado(SafeConvert.ToDouble(txtNoGravado.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetPercepcion(SafeConvert.ToDouble(txtPercepcion.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetCambio(SafeConvert.ToDouble(txtCambio.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetObservacion(txtObservacion.Text);
+
+            if (_comprobanteSeleccionado.PushToDatabase(dbCon.Connection, old_cm_ec_id))
+            {
+                MessageBox.Show("Comprobante agregado / modificado a la base de datos correctamente!");
+                _ownerControl.RefreshData();
+                Visibility = Visibility.Collapsed;
+            } else
+            {
+                MessageBox.Show("Error al tratar de agregar / modificar este comprobante. ¿Ya existe un comprobante con el mismo número?.");
+            }
         }
 
         private void btnCancelar_Click(object sender, RoutedEventArgs e)
         {
             Visibility = Visibility.Collapsed;
+        }
+
+        private void btnBuscarEntidad_Click(object sender, RoutedEventArgs e)
+        {
+            List<DBEntidades> entidadesComercialesList = DBEntidades.Search(dbCon.Connection, GetCuentaSeleccionada(), txtFiltroBusquedaEntidad.Text);
+
+            listEntidadesComerciales.Items.Clear();
+            listEntidadesComerciales.SelectedValuePath = "Key";
+            listEntidadesComerciales.DisplayMemberPath = "Value";
+
+            foreach (DBEntidades entidad in entidadesComercialesList)
+            {
+                listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(entidad.GetID(), $"{entidad.GetCUIT()}: {entidad.GetRazonSocial()}"));
+            }
+        }
+
+        private void listEntidadesComerciales_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (listEntidadesComerciales.SelectedItem is null)
+            {
+                return;
+            }
+            if (GetCuentaSeleccionada() is null)
+            {
+                return;
+            }
+            long listECSelectedID = ((KeyValuePair<long, string>)listEntidadesComerciales.SelectedItem).Key;
+            if (listECSelectedID < 0)
+            {
+                return;
+            }
+            DBEntidades selectedEntidad = DBEntidades.GetByID(dbCon.Connection, GetCuentaSeleccionada(), (int)listECSelectedID);
+            if (selectedEntidad is null)
+            {
+                return;
+            }
+            listSelectedEntidadComercial.Items.Clear();
+            listSelectedEntidadComercial.SelectedValuePath = "Key";
+            listSelectedEntidadComercial.DisplayMemberPath = "Value";
+            listSelectedEntidadComercial.Items.Add(new KeyValuePair<long, string>(selectedEntidad.GetID(),
+                $"{selectedEntidad.GetCUIT()}: {selectedEntidad.GetRazonSocial()}"));
+            listSelectedEntidadComercial.SelectedIndex = 0;
         }
     }
 }
