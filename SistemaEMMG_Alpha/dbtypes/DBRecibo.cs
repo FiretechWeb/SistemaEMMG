@@ -205,6 +205,56 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
+        /************************
+         * Filter/Search methods
+         * **********************/
+
+        public static List<DBRecibo> SearchByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroRecibo, bool isEmitido)
+        {
+            List<DBRecibo> returnList = new List<DBRecibo>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rc_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {entidadComercial.GetID()} AND {ReciboData.NameOf_rc_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({ReciboData.NameOf_rc_nro}) LIKE '%{numeroRecibo.Trim().ToUpper()}%'";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBRecibo::SearchByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static DBRecibo GetByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroRecibo, bool isEmitido)
+        {
+            DBRecibo returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rc_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {entidadComercial.GetID()} AND {ReciboData.NameOf_rc_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({ReciboData.NameOf_rc_nro}) = '{numeroRecibo.Trim().ToUpper()}'";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnEnt = new DBRecibo(entidadComercial, new DBTipoRecibo(reader), reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBRecibo::GetByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
         public DBRecibo(DBEntidades entidadComercial, long id, DBTipoRecibo newTipo, ReciboData newData) : base (id)
         {
             _entidadComercial = entidadComercial;

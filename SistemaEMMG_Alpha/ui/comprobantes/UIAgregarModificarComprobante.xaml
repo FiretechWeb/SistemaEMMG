@@ -58,7 +58,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Numero:</Label>
-                        <TextBox x:Name="txNumeroComprobante" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txNumeroComprobante" Grid.Column="1" VerticalAlignment="Center" TextChanged="txNumeroComprobante_TextChanged"></TextBox>
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
@@ -93,7 +93,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Fecha:</Label>
-                        <TextBox x:Name="txtFechaEmitido" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txtFechaEmitido" Grid.Column="1" VerticalAlignment="Center" TextChanged="txtFechaEmitido_TextChanged"></TextBox>
                     </Grid>
                 </Grid>
                 <Grid Grid.Column="1" Margin="10, 10, 10, 10">
@@ -114,7 +114,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Gravado:</Label>
-                        <TextBox x:Name="txtGravado" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txtGravado" Grid.Column="1" VerticalAlignment="Center" TextChanged="txtGravado_TextChanged" PreviewTextInput="txtGravado_PreviewTextInput"></TextBox>
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -122,7 +122,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">IVA:</Label>
-                        <TextBox x:Name="txtIVA" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txtIVA" Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtIVA_PreviewTextInput"></TextBox>
                     </Grid>
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
@@ -130,7 +130,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">No Gravado:</Label>
-                        <TextBox x:Name="txtNoGravado" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txtNoGravado" Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtNoGravado_PreviewTextInput"></TextBox>
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
@@ -138,7 +138,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
-                        <TextBox x:Name="txtPercepcion"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txtPercepcion"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtPercepcion_PreviewTextInput"></TextBox>
                     </Grid>
                     <Grid Grid.Row="4">
                         <Grid.ColumnDefinitions>
@@ -154,7 +154,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Cambio:</Label>
-                        <TextBox x:Name="txtCambio"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                        <TextBox x:Name="txtCambio"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtCambio_PreviewTextInput"></TextBox>
                     </Grid>
                     <Grid Grid.Row="6">
                         <Grid.ColumnDefinitions>
@@ -171,10 +171,10 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="btnRecibos" Grid.Column="1" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                        <Button x:Name="btnRecibos" Grid.Column="1" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnRecibos_Click" >
                             Recibos
                         </Button>
-                        <Button x:Name="btnRemitos" Grid.Column="2" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                        <Button x:Name="btnRemitos" Grid.Column="2" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnRemitos_Click" >
                             Remitos
                         </Button>
                     </Grid>
@@ -191,7 +191,7 @@
                 <Button x:Name="btnGuardar" Grid.Column="2"  Padding="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnGuardar_Click" >Guardar</Button>
             </Grid>
         </Grid>
-        <local:UIRecibo Visibility="Collapsed"></local:UIRecibo>
-        <local:UICRemito Visibility="Collapsed"></local:UICRemito>
+        <local:UIRecibo x:Name="uiRecibosPanel" Visibility="Collapsed"></local:UIRecibo>
+        <local:UICRemito x:Name="uiRemitosPanel" Visibility="Collapsed"></local:UICRemito>
     </Grid>
 </UserControl>

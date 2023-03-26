@@ -204,6 +204,56 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
+        /************************
+         * Filter/Search methods
+         * **********************/
+
+        public static List<DBRemito> SearchByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroRemito, bool isEmitido)
+        {
+            List<DBRemito> returnList = new List<DBRemito>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_rm_ec_id} = {entidadComercial.GetID()} AND {RemitoData.NameOf_rm_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({RemitoData.NameOf_rm_nro}) LIKE '%{numeroRemito.Trim().ToUpper()}%'";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBRemito(entidadComercial, new DBTipoRemito(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBRemito::SearchByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static DBRemito GetByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroRemito, bool isEmitido)
+        {
+            DBRemito returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_rm_ec_id} = {entidadComercial.GetID()} AND {RemitoData.NameOf_rm_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({RemitoData.NameOf_rm_nro}) = '{numeroRemito.Trim().ToUpper()}'";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnEnt = new DBRemito(entidadComercial, new DBTipoRemito(reader), reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBRemito::GetByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
         public DBRemito(DBEntidades entidadComercial, long id, DBTipoRemito newTipo, RemitoData newData) : base(id)
         {
             _entidadComercial = entidadComercial;

@@ -187,16 +187,6 @@ namespace SistemaEMMG_Alpha
                     row++;
                 }
 
-                /*
-                 *                 for (int i=1; i < 20; i++)
-                {
-                    sl.SetCellStyle(row, i, styleTitle);
-                    SLStyle headerStyle = sl.GetCellStyle(row, i);
-                    headerStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightSeaGreen, System.Drawing.Color.LightSeaGreen);
-                    sl.SetCellStyle(row, i, headerStyle);
-                }
-                */
-
                 //Applying borders & background colors.
                 for (int i = 1; i < row; i++)
                 {

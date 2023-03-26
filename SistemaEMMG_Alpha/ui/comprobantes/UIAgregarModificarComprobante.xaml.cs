@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha.ui.comprobantes
 {
@@ -47,7 +48,31 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             InitializeComponent();
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
+            uiRecibosPanel.SetUIOwner(this);
+            uiRemitosPanel.SetUIOwner(this);
         }
+
+        private void CheckIfAbleToSubmit()
+        {
+            DateTime fechaEmitido = new DateTime();
+            if (!DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido))
+            {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (txNumeroComprobante.Text.Trim().Length < 1)
+            {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (txtGravado.Text.Trim().Length < 1)
+            {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            btnGuardar.IsEnabled = true;
+        }
+
         private void RefreshMonedaSelected()
         {
             if (cmbMoneda.SelectedIndex == -1 || (cmbMoneda.SelectedItem is null))
@@ -172,6 +197,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
 
             listSelectedEntidadComercial.SelectedIndex = 0;
+            CheckIfAbleToSubmit();
         }
 
 
@@ -197,8 +223,14 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             _comprobanteSeleccionado.SetCambio(SafeConvert.ToDouble(txtCambio.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetObservacion(txtObservacion.Text);
 
+            bool comprobanteWasLocal = _comprobanteSeleccionado.IsLocal();
+
             if (_comprobanteSeleccionado.PushToDatabase(dbCon.Connection, old_cm_ec_id))
             {
+                if (comprobanteWasLocal)
+                {
+                    _comprobanteSeleccionado.PushAllRelationshipsWithRecibosDB(dbCon.Connection);
+                }
                 MessageBox.Show("Comprobante agregado / modificado a la base de datos correctamente!");
                 _ownerControl.RefreshData();
                 Visibility = Visibility.Collapsed;
@@ -253,6 +285,71 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             listSelectedEntidadComercial.Items.Add(new KeyValuePair<long, string>(selectedEntidad.GetID(),
                 $"{selectedEntidad.GetCUIT()}: {selectedEntidad.GetRazonSocial()}"));
             listSelectedEntidadComercial.SelectedIndex = 0;
+        }
+
+        private void txNumeroComprobante_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
+        }
+
+        private void txtFechaEmitido_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
+        }
+
+        private void txtGravado_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
+        }
+
+        private void txtGravado_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txtIVA_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txtNoGravado_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txtPercepcion_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txtCambio_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void btnRecibos_Click(object sender, RoutedEventArgs e)
+        {
+            if (_comprobanteSeleccionado is null)
+            {
+                return;
+            }
+            uiRecibosPanel.RefreshData(_comprobanteSeleccionado);
+            uiRecibosPanel.Visibility = Visibility.Visible;
+        }
+
+        private void btnRemitos_Click(object sender, RoutedEventArgs e)
+        {
+            if (_comprobanteSeleccionado is null)
+            {
+                return;
+            }
+            uiRemitosPanel.RefreshData(_comprobanteSeleccionado);
+            uiRemitosPanel.Visibility = Visibility.Visible;
         }
     }
 }

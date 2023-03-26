@@ -20,6 +20,7 @@
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="25"></RowDefinition>
                 <RowDefinition MinHeight="120"></RowDefinition>
                 <RowDefinition Height="30"></RowDefinition>
                 <RowDefinition Height="30"></RowDefinition>
@@ -30,8 +31,20 @@
             <Label Grid.Row="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
                 Recibos asociados
             </Label>
-            <ListBox x:Name="listRecibosAsociados" Grid.Row="1" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
+                   Seleccionado: 
+                </Label>
+                <Label x:Name="lblReciboSeleccionado" Grid.Column="1" FontFamily="Helvetica" Foreground="Black" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    Ninguno.
+                </Label>
+            </Grid>
+            <ListBox x:Name="listRecibosAsociados" Grid.Row="2" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listRecibosAsociados_SelectionChanged"></ListBox>
+            <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -44,18 +57,18 @@
                 <TextBox x:Name="txtNumeroRecibo" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <Button x:Name="btnAsociar" Grid.Column="2" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnAsociar" Grid.Column="2" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnAsociar_Click">
                     Asociar
                 </Button>
-                <Button x:Name="btnQuitar" Grid.Column="3" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnQuitar" Grid.Column="3" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnQuitar_Click">
                     Quitar
                 </Button>
             </Grid>
-            <Label Grid.Row="3" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Grid.Row="4" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
                 Recibos similares al ingresado.
             </Label>
-            <ListBox x:Name="listRecibosSimilares" Grid.Row="4" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
-            <Button x:Name="btnVolver" Grid.Row="5" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+            <ListBox x:Name="listRecibosSimilares" Grid.Row="5" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listRecibosSimilares_SelectionChanged"></ListBox>
+            <Button x:Name="btnVolver" Grid.Row="6" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnVolver_Click">
                 Volver
             </Button>
         </Grid>

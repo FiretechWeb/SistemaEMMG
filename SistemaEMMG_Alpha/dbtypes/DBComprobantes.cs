@@ -1233,6 +1233,10 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
+            if (!newRecibo.IsLocal() && _db_recibos.Where(x => x.GetID() == newRecibo.GetID()).ToList().Count > 0) //already exists with this ID
+            {
+                return false;
+            }
             _db_recibos.Add(newRecibo);
             return true;
         }
@@ -1305,6 +1309,10 @@ namespace SistemaEMMG_Alpha
                 return false;
             }
             if (_db_remitos.Contains(newRemito))
+            {
+                return false;
+            }
+            if (!newRemito.IsLocal() && _db_remitos.Where(x => x.GetID() == newRemito.GetID()).ToList().Count > 0) //already exists with this ID
             {
                 return false;
             }
@@ -1572,24 +1580,76 @@ namespace SistemaEMMG_Alpha
             GetAllRecibos(conn);
 
             double totalPago = 0.0;
+            double totalPagoDirecto = 0.0;
             double totalImporte = 0.0;
+            double totalPagoLocal = 0.0; //pagos que estoy seguro que fueron para solo esta factura.
             List<DBComprobantes> listaComprobantes = new List<DBComprobantes>();
+            List<DBRecibo> listaRecibos = GetAllRecibos(conn);
+
+            List<DBComprobantes> listaComprobantesAnalizados = new List<DBComprobantes>();
+            List<DBRecibo> listaRecibosAnalizados = new List<DBRecibo>();
+
             listaComprobantes.Add(this);
-            totalImporte += GetTotal_MonedaLocal();
-            foreach (DBRecibo recibo in _db_recibos)
+            bool searchFinished;
+            do
             {
-                List<DBComprobantes> comprobantesRecibo = recibo.GetAllComprobantes(conn);
-                foreach (DBComprobantes comprobante in comprobantesRecibo)
+                searchFinished = true;
+                foreach (DBComprobantes comprobante in listaComprobantes)
                 {
-                    if (!CheckIfExistsInList(listaComprobantes, comprobante))
+                    if (CheckIfExistsInList(listaComprobantesAnalizados, comprobante))
                     {
-                        listaComprobantes.Add(comprobante);
-                        totalImporte += comprobante.GetTotal_MonedaLocal();
+                        continue;
                     }
+                    List<DBRecibo> recibos = comprobante.GetAllRecibos(conn);
+                    foreach (DBRecibo recibo in recibos)
+                    {
+                        if (!DBRecibo.CheckIfExistsInList(listaRecibos, recibo))
+                        {
+                            searchFinished = false;
+                            listaRecibos.Add(recibo);
+                        }
+                    }
+
+                    listaComprobantesAnalizados.Add(comprobante);
                 }
-                totalPago += recibo.GetPagosTotal_MonedaLocal(conn);
+                foreach (DBRecibo recibo in listaRecibos)
+                {
+                    if (DBRecibo.CheckIfExistsInList(listaRecibosAnalizados, recibo))
+                    {
+                        continue;
+                    }
+                    List<DBComprobantes> comprobantes = recibo.GetAllComprobantes(conn);
+                    foreach (DBComprobantes comprobante in comprobantes)
+                    {
+                        if (comprobantes.Count == 1 && comprobante.GetID() == GetID())
+                        {
+                            totalPagoLocal += recibo.GetPagosTotal_MonedaLocal(conn);
+                        } 
+                        if (!CheckIfExistsInList(listaComprobantes, comprobante))
+                        {
+                            searchFinished = false;
+                            listaComprobantes.Add(comprobante);
+                        }
+                    }
+
+                    listaRecibosAnalizados.Add(recibo);
+                }
+            } while (!searchFinished);
+
+            foreach (DBComprobantes comprobante in listaComprobantes) {
+                totalImporte += comprobante.GetTotal_MonedaLocal();
             }
-            return totalPago >= totalImporte;
+            foreach (DBRecibo recibo in listaRecibos)
+            {
+                double pagoTotalRecibo = recibo.GetPagosTotal_MonedaLocal(conn);
+                totalPago += pagoTotalRecibo;
+                List<DBComprobantes> comprobantes = recibo.GetAllComprobantes(conn);
+                if (CheckIfExistsInList(comprobantes, this))
+                {
+                    totalPagoDirecto += pagoTotalRecibo;
+                }
+            }
+            return (totalPago >= totalImporte && totalPagoDirecto >= GetTotal_MonedaLocal()) || (totalPagoLocal >= GetTotal_MonedaLocal());
         }
 
         /**********************
