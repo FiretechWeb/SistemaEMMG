@@ -6,188 +6,192 @@
              xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.comprobantes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="White">
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="40"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="1" BorderBrush="Black" BorderThickness="2"></Border>
-            <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2"></Border>
-            <Grid Grid.Column="0" Margin="10, 10, 10, 10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="140"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Estado:</Label>
-                    <Grid Grid.Column="1">
+    <Grid>
+        <Grid Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="1" BorderBrush="Black" BorderThickness="2"></Border>
+                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2"></Border>
+                <Grid Grid.Column="0" Margin="10, 10, 10, 10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="140"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80"></ColumnDefinition>
-                            <ColumnDefinition Width="80"></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <RadioButton VerticalAlignment="Center" HorizontalAlignment="Center"  Grid.Column="0" GroupName="group_estado" IsChecked="True">Recibido</RadioButton>
-                        <RadioButton VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" GroupName="group_estado" IsChecked="False">Emitido</RadioButton>
-                    </Grid>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Tipo:</Label>
-                    <ComboBox Grid.Column="1" MinWidth="125" HorizontalAlignment="Left"></ComboBox>
-                </Grid>
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Numero:</Label>
-                    <TextBox Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Top" HorizontalAlignment="Left">Entidad:</Label>
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition  Height="25"></RowDefinition>
-                            <RowDefinition Height="85"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <ListBox Grid.Row="0" Height="25" IsEnabled="False">
-                            <ListBoxItem >Seleccione una entidad comercial...</ListBoxItem>
-                        </ListBox>
-                        <ListBox Grid.Row="1" Height="80"></ListBox>
-                        <Grid Grid.Row="2">
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Estado:</Label>
+                        <Grid Grid.Column="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition Width="80"></ColumnDefinition>
+                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Height="25"></TextBox>
-                            <Button Grid.Column="1">Buscar</Button>
+                            <RadioButton x:Name="rdbRecibido" VerticalAlignment="Center" HorizontalAlignment="Center"  Grid.Column="0" GroupName="group_estado" IsChecked="True">Recibido</RadioButton>
+                            <RadioButton x:Name="rdbEmitido" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" GroupName="group_estado" IsChecked="False">Emitido</RadioButton>
                         </Grid>
                     </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Tipo:</Label>
+                        <ComboBox x:Name="cmbTipoComprobante" Grid.Column="1" MinWidth="125" HorizontalAlignment="Left"></ComboBox>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Numero:</Label>
+                        <TextBox x:Name="txNumeroComprobante" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Top" HorizontalAlignment="Left">Entidad:</Label>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition  Height="25"></RowDefinition>
+                                <RowDefinition Height="85"></RowDefinition>
+                                <RowDefinition Height="25"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <ListBox x:Name="listSelectedEntidadComercial"  Grid.Row="0" Height="25" IsEnabled="False">
+                                <ListBoxItem >Seleccione una entidad comercial...</ListBoxItem>
+                            </ListBox>
+                            <ListBox x:Name="listEntidadesComerciales" Grid.Row="1" Height="80"></ListBox>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition Width="80"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="txtFiltroBusquedaEntidad" Grid.Column="0" Height="25"></TextBox>
+                                <Button x:Name="btnBuscarEntidad" Grid.Column="1">Buscar</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Fecha:</Label>
+                        <TextBox x:Name="txtFechaEmitido" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
                 </Grid>
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Fecha:</Label>
-                    <TextBox Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                <Grid Grid.Column="1" Margin="10, 10, 10, 10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Gravado:</Label>
+                        <TextBox x:Name="txtGravado" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">IVA:</Label>
+                        <TextBox x:Name="txtIVA" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">No Gravado:</Label>
+                        <TextBox x:Name="txtNoGravado" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
+                        <TextBox x:Name="txtPercepcion"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Moneda:</Label>
+                        <ComboBox x:Name="cmbMoneda" Grid.Column="1" MinWidth="125" HorizontalAlignment="Left"></ComboBox>
+                    </Grid>
+                    <Grid x:Name="gridCambio" Grid.Row="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Cambio:</Label>
+                        <TextBox x:Name="txtCambio"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Observación:</Label>
+                        <TextBox x:Name="txtObservacion"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    </Grid>
+                    <Grid Grid.Row="7">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="btnRecibos" Grid.Column="1" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                            Recibos
+                        </Button>
+                        <Button x:Name="btnRemitos" Grid.Column="2" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                            Remitos
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
-            <Grid Grid.Column="1" Margin="10, 10, 10, 10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Gravado:</Label>
-                    <TextBox Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">IVA:</Label>
-                    <TextBox Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">No Gravado:</Label>
-                    <TextBox Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
-                    <TextBox  Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Moneda:</Label>
-                    <ComboBox Grid.Column="1" MinWidth="125" HorizontalAlignment="Left"></ComboBox>
-                </Grid>
-                <Grid Grid.Row="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Cambio:</Label>
-                    <TextBox  Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Observación:</Label>
-                    <TextBox  Grid.Column="1" VerticalAlignment="Center"></TextBox>
-                </Grid>
-                <Grid Grid.Row="7">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="1" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                        Recibos
-                    </Button>
-                    <Button Grid.Column="2" Padding="2, 2, 2, 2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                        Remitos
-                    </Button>
-                </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="90"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnCancelar" Grid.Column="1" Padding="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnCancelar_Click" >Cancelar</Button>
+                <Button x:Name="btnGuardar" Grid.Column="2"  Padding="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnGuardar_Click" >Guardar</Button>
             </Grid>
         </Grid>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="90"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="90"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" Padding="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >Cancelar</Button>
-            <Button Grid.Column="2"  Padding="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" >Guardar</Button>
-        </Grid>
+        <local:UIRecibo Visibility="Collapsed"></local:UIRecibo>
+        <local:UICRemito Visibility="Collapsed"></local:UICRemito>
     </Grid>
 </UserControl>

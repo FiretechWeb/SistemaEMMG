@@ -266,6 +266,83 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
+        /***********************
+         * Filter/Search methods
+         * *********************/
+
+        /************
+         *  estadoEmision:
+         *      -1: Todos
+         *      0: Recibido
+         *      1: Emitido
+         *  estadoPago
+         *      -1: Todos
+         *      0: No pago
+         *      1: Pago
+         *************/
+        public static List<DBComprobantes> Search(MySqlConnection conn, DBCuenta cuenta, int estadoEmision, DateTime? fechaComienzo, DateTime? fechaFinal, long CUIT, int estadoPago, long cm_tc_id, long ec_te_id)
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {cuenta.GetID()} ";
+                estadoEmision -= 1;
+                estadoPago -= 1;
+                if (cm_tc_id > -1)
+                {
+                    query += $"AND {NameOf_cm_tc_id} = {cm_tc_id} ";
+                }
+                if (ec_te_id > -1)
+                {
+                    query += $"AND {DBEntidades.NameOf_ec_te_id} = {ec_te_id} ";
+                }
+                if (estadoEmision >= 0)
+                {
+                    query += $"AND {ComprobantesData.NameOf_cm_emitido} = {estadoEmision} ";
+                }
+                if (!(fechaComienzo is null))
+                {
+                    string fechaComienzoStr = ((DateTime)fechaComienzo).ToString("yyyy/MM/dd");
+                    query += $"AND {ComprobantesData.NameOf_cm_fecha} >= '{fechaComienzoStr}' ";
+                }
+                if (!(fechaFinal is null))
+                {
+                    string fechaFinalStr = ((DateTime)fechaFinal).ToString("yyyy/MM/dd");
+                    query += $"AND {ComprobantesData.NameOf_cm_fecha} <= '{fechaFinalStr}' ";
+                }
+                if (CUIT > 0)
+                {
+                    //'%{toFind.Trim().ToLower()}%'
+                    query += $"AND {EntidadesComercialesData.NameOf_ec_cuit} LIKE '%{CUIT}%'";
+                }
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBComprobantes(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTiposComprobantes(reader), new DBMoneda(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBComprobantes::Search. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            if (estadoPago == 0)
+            {
+                returnList = returnList.Where(x => !x.IsPago(conn)).ToList();
+            } else if (estadoPago == 1)
+            {
+                returnList = returnList.Where(x => x.IsPago(conn)).ToList();
+            }
+
+            return returnList;
+        }
+
+        /****************
+         * Constructors 
+         * **************/
         public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData) : base (id)
         {
             _entidadComercial = entidadComercial;

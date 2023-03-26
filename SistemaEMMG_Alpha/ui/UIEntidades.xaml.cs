@@ -87,11 +87,13 @@ namespace SistemaEMMG_Alpha.ui
             {
                 return;
             }
+
             dbData.RefreshBasicDataDB(dbCon.Connection);
             _listaEntidades = DBEntidades.GetAll(dbCon.Connection, GetCuentaSeleccionada());
             listEntidadesComerciales.Items.Clear();
             listEntidadesComerciales.SelectedValuePath = "Key";
             listEntidadesComerciales.DisplayMemberPath = "Value";
+
             foreach (DBEntidades entidadComercial in _listaEntidades)
             {
                 listEntidadesComerciales.Items.Add(new KeyValuePair<long, string>(entidadComercial.GetID(), $"{entidadComercial.GetCUIT()}: {entidadComercial.GetRazonSocial()}"));

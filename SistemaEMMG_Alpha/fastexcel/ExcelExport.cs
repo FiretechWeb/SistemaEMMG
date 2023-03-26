@@ -658,7 +658,11 @@ namespace SistemaEMMG_Alpha
                 {
                     sl.AutoFitColumn(i);
                 }
-                sl.SaveAs($"{fileName}.xlsx");
+                if (!fileName.Trim().ToLower().EndsWith(".xlsx"))
+                {
+                    fileName += ".xlsx";
+                }
+                sl.SaveAs($"{fileName}");
             }
             //sl.SelectWorksheet("Sheet1");
         }

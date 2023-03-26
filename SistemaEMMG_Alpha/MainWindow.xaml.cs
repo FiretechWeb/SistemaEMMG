@@ -130,6 +130,7 @@ namespace SistemaEMMG_Alpha
             errorScreen.SetMainWindow(this);
             uiCuentasPanel.SetMainWindow(this);
             uiEntidadesPanel.SetMainWindow(this);
+            uiComprobantespanel.SetMainWindow(this);
         }
         
         public MainWindow()
