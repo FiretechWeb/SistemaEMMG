@@ -78,8 +78,15 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             listRemitosSimilares.SelectedValuePath = "Key";
             listRemitosSimilares.DisplayMemberPath = "Value";
 
-            List<DBRemito> remitosAsociados = selectedComprobante.GetAllRemitos(dbCon.Connection);
+            List<DBRemito> remitosAsociados;
 
+            if (_comprobanteSeleccionado.IsLocal())
+            {
+                remitosAsociados = selectedComprobante.GetAllRemitos();
+            } else
+            {
+                remitosAsociados = selectedComprobante.GetAllRemitos(dbCon.Connection);
+            }
             foreach (DBRemito remito in remitosAsociados)
             {
                 listRemitosAsociados.Items.Add(new KeyValuePair<long, string>(remito.GetID(), remito.GetNumero()));

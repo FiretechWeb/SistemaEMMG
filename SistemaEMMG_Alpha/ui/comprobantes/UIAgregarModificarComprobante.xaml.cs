@@ -230,6 +230,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 if (comprobanteWasLocal)
                 {
                     _comprobanteSeleccionado.PushAllRelationshipsWithRecibosDB(dbCon.Connection);
+                    _comprobanteSeleccionado.PushAllRelationshipsWithRemitosDB(dbCon.Connection);
                 }
                 MessageBox.Show("Comprobante agregado / modificado a la base de datos correctamente!");
                 _ownerControl.RefreshData();
@@ -284,6 +285,10 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             listSelectedEntidadComercial.DisplayMemberPath = "Value";
             listSelectedEntidadComercial.Items.Add(new KeyValuePair<long, string>(selectedEntidad.GetID(),
                 $"{selectedEntidad.GetCUIT()}: {selectedEntidad.GetRazonSocial()}"));
+
+            if (_comprobanteSeleccionado.IsLocal()) {
+                _comprobanteSeleccionado.SetEntidadComercial(selectedEntidad);
+            }
             listSelectedEntidadComercial.SelectedIndex = 0;
         }
 
@@ -350,6 +355,30 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
             uiRemitosPanel.RefreshData(_comprobanteSeleccionado);
             uiRemitosPanel.Visibility = Visibility.Visible;
+        }
+
+        private void rdbEmitido_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_comprobanteSeleccionado is null)
+            {
+                return;
+            }
+            if (_comprobanteSeleccionado.IsLocal())
+            {
+                _comprobanteSeleccionado.SetEmitido(true);
+            }
+        }
+
+        private void rdbRecibido_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_comprobanteSeleccionado is null)
+            {
+                return;
+            }
+            if (_comprobanteSeleccionado.IsLocal())
+            {
+                _comprobanteSeleccionado.SetEmitido(false);
+            }
         }
     }
 }

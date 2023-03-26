@@ -603,7 +603,7 @@ namespace SistemaEMMG_Alpha
                 MakeLocal();
             } else
             {
-                PushToDatabase(conn);
+                return PushToDatabase(conn);
             }
             if (InsertIntoToDatabase(conn, old_cm_ec_id, old_cm_id))
             {

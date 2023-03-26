@@ -40,8 +40,8 @@
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <RadioButton x:Name="rdbRecibido" VerticalAlignment="Center" HorizontalAlignment="Center"  Grid.Column="0" GroupName="group_estado" IsChecked="True">Recibido</RadioButton>
-                            <RadioButton x:Name="rdbEmitido" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" GroupName="group_estado" IsChecked="False">Emitido</RadioButton>
+                            <RadioButton x:Name="rdbRecibido" VerticalAlignment="Center" HorizontalAlignment="Center"  Grid.Column="0" GroupName="group_estado" IsChecked="True" Checked="rdbRecibido_Checked">Recibido</RadioButton>
+                            <RadioButton x:Name="rdbEmitido" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" GroupName="group_estado" IsChecked="False" Checked="rdbEmitido_Checked">Emitido</RadioButton>
                         </Grid>
                     </Grid>
                     <Grid Grid.Row="1">

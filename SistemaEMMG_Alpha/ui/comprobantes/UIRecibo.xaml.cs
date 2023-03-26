@@ -77,7 +77,16 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             listRecibosSimilares.SelectedValuePath = "Key";
             listRecibosSimilares.DisplayMemberPath = "Value";
 
-            List<DBRecibo> recibosAsociados = selectedComprobante.GetAllRecibos(dbCon.Connection);
+
+            List<DBRecibo> recibosAsociados;
+            if (_comprobanteSeleccionado.IsLocal())
+            {
+                recibosAsociados = selectedComprobante.GetAllRecibos();
+            } else
+            {
+                recibosAsociados = selectedComprobante.GetAllRecibos(dbCon.Connection);
+            }
+            
 
             foreach (DBRecibo recibo in recibosAsociados)
             {
