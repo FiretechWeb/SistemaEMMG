@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.remitos.UIARComprobante"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.remitos"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition MinWidth="400"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition MinHeight="360"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="25"></RowDefinition>
+                <RowDefinition MinHeight="120"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="60"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
+                Comprobantes asociados
+            </Label>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    Seleccionado:
+                </Label>
+                <Label x:Name="lblComprobanteSeleccionado" Grid.Column="1" FontFamily="Helvetica" Foreground="Black" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    Ninguno.
+                </Label>
+            </Grid>
+            <ListBox x:Name="listComprobantesAsociados" Grid.Row="2" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    Importe total:
+                </Label>
+                <Label x:Name="lblComprobantesImporte"  Grid.Column="1" FontFamily="Helvetica" Foreground="Black" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    0 ARS
+                </Label>
+            </Grid>
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    Numero:
+                </Label>
+                <TextBox x:Name="txtNumeroComprobante" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" >
+
+                </TextBox>
+                <Button x:Name="btnAsociar" Grid.Column="2" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                    Asociar
+                </Button>
+                <Button x:Name="btnQuitar" Grid.Column="3" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                    Quitar
+                </Button>
+            </Grid>
+            <Label Grid.Row="5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
+                Comprobantes similares al ingresado.
+            </Label>
+            <ListBox x:Name="listComprobantesSimilares" Grid.Row="6" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+            <Button x:Name="btnVolver" Grid.Row="7" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+                Volver
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

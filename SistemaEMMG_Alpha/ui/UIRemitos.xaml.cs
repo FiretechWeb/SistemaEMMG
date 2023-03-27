@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace SistemaEMMG_Alpha.ui
 {
@@ -206,6 +208,27 @@ namespace SistemaEMMG_Alpha.ui
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error with Dynamic...");
+                }
+            }
+        }
+
+        private void btnEliminar_Click(object sender, RoutedEventArgs e)
+        {
+            DBRemito remitoAEliminar = GetRemitoSeleccionado();
+
+            Trace.Assert(!(remitoAEliminar is null));
+
+            MessageBoxResult msgBoxConfirmationResult = System.Windows.MessageBox.Show("¿Está seguro que desea eliminar este remito?, todos los comprobantes contengan a este remito van a eliminarlo de sus listas.", "Confirmar eliminación", System.Windows.MessageBoxButton.YesNo);
+            if (msgBoxConfirmationResult == MessageBoxResult.Yes)
+            {
+                if (remitoAEliminar.DeleteFromDatabase(dbCon.Connection))
+                {
+                    MessageBox.Show("Remito eliminado exitosamente");
+                    RefreshData();
+                }
+                else
+                {
+                    MessageBox.Show("Error tratando de eliminar el remito.");
                 }
             }
         }

@@ -73,7 +73,7 @@
                                 <RowDefinition Height="85"></RowDefinition>
                                 <RowDefinition Height="25"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <ListBox x:Name="listSelectedEntidadComercial"  Grid.Row="0" Height="25" IsEnabled="False">
+                            <ListBox x:Name="listSelectedEntidadComercial"  Grid.Row="0" Height="25">
                                 <ListBoxItem >Seleccione una entidad comercial...</ListBoxItem>
                             </ListBox>
                             <ListBox x:Name="listEntidadesComerciales" Grid.Row="1" Height="80" SelectionChanged="listEntidadesComerciales_SelectionChanged"></ListBox>
