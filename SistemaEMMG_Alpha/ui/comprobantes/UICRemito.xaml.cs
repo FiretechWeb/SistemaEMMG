@@ -91,7 +91,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             {
                 listRemitosAsociados.Items.Add(new KeyValuePair<long, string>(remito.GetID(), remito.GetNumero()));
             }
-            listRemitosSimilares.SelectedIndex = -1;
+            listRemitosAsociados.SelectedIndex = -1;
             listRemitosSimilares.SelectedIndex = -1;
             SetRemitoSeleccionado(null);
         }

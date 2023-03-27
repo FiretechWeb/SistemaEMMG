@@ -344,6 +344,52 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
+        public static List<DBComprobantes> SearchByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido)
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()} AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({ComprobantesData.NameOf_cm_numero}) LIKE '%{numeroComprobante.Trim().ToUpper()}%'";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), new DBMoneda(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBComprobantes::SearchByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnList;
+        }
+
+        public static DBComprobantes GetByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido)
+        {
+            DBComprobantes returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()} AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{numeroComprobante.Trim().ToUpper()}'";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnEnt = new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), new DBMoneda(reader), reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBComprobantes::GetByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
         /****************
          * Constructors 
          * **************/

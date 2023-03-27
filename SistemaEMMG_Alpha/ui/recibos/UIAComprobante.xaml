@@ -44,7 +44,7 @@
                     Ninguno.
                 </Label>
             </Grid>
-            <ListBox x:Name="listComprobantesAsociados" Grid.Row="2" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+            <ListBox x:Name="listComprobantesAsociados" Grid.Row="2" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listComprobantesAsociados_SelectionChanged"></ListBox>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -70,18 +70,18 @@
                 <TextBox x:Name="txtNumeroComprobante" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <Button x:Name="btnAsociar" Grid.Column="2" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnAsociar" Grid.Column="2" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnAsociar_Click">
                     Asociar
                 </Button>
-                <Button x:Name="btnQuitar" Grid.Column="3" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnQuitar" Grid.Column="3" FontFamily="Helvetica" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnQuitar_Click">
                     Quitar
                 </Button>
             </Grid>
             <Label Grid.Row="5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center">
                 Comprobantes similares al ingresado.
             </Label>
-            <ListBox x:Name="listComprobantesSimilares" Grid.Row="6" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
-            <Button x:Name="btnVolver" Grid.Row="7" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+            <ListBox x:Name="listComprobantesSimilares" Grid.Row="6" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listComprobantesSimilares_SelectionChanged"></ListBox>
+            <Button x:Name="btnVolver" Grid.Row="7" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnVolver_Click">
                 Volver
             </Button>
         </Grid>

@@ -48,6 +48,7 @@ namespace SistemaEMMG_Alpha.ui.remitos
             InitializeComponent();
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
+            uiComprobantePanel.SetUIOwner(this);
         }
 
         private void CheckIfAbleToSubmit()
@@ -269,6 +270,16 @@ namespace SistemaEMMG_Alpha.ui.remitos
             {
                 _remitoSeleccionado.SetEmitido(true);
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (_remitoSeleccionado is null)
+            {
+                return;
+            }
+            uiComprobantePanel.RefreshData(_remitoSeleccionado);
+            uiComprobantePanel.Visibility = Visibility.Visible;
         }
     }
 }
