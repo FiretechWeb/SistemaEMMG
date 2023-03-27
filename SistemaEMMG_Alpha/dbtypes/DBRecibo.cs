@@ -493,6 +493,37 @@ namespace SistemaEMMG_Alpha
             ReciboData.CreateFromReader(reader))
         { }
 
+        public bool PushToDatabase(MySqlConnection conn, long old_rc_ec_id)
+        {
+            long old_cm_id = GetID();
+            bool wasAbleToPushAndDelete = false;
+            if (!IsLocal() && old_rc_ec_id != GetEntidadComercialID())
+            {
+                MakeLocal();
+            }
+            else
+            {
+                return PushToDatabase(conn);
+            }
+            if (InsertIntoToDatabase(conn, old_rc_ec_id, old_cm_id))
+            {
+                DBRecibo oldRecibo = GetByID(conn, GetCuenta(), old_rc_ec_id, old_cm_id);
+                if (!(oldRecibo is null))
+                {
+                    wasAbleToPushAndDelete = oldRecibo.DeleteFromDatabase(conn);
+                }
+                else
+                {
+                    wasAbleToPushAndDelete = true;
+                }
+                if (!wasAbleToPushAndDelete)
+                {
+                    DeleteFromDatabase(conn);
+                }
+            }
+            return wasAbleToPushAndDelete;
+        }
+
         public override bool PullFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())
@@ -555,7 +586,7 @@ namespace SistemaEMMG_Alpha
                                 {ReciboData.NameOf_rc_fecha} = {fechaEmitido}, 
                                 {ReciboData.NameOf_rc_nro} = '{Regex.Replace(_data.rc_nro.Trim(), @"\s+", " ")}', 
                                 {ReciboData.NameOf_rc_obs} = '{_data.rc_obs}', 
-                                {ReciboData.NameOf_rc_emitido} = {Convert.ToInt32(_data.rc_emitido)}, 
+                                {ReciboData.NameOf_rc_emitido} = {Convert.ToInt32(_data.rc_emitido)} 
                                 WHERE {NameOf_rc_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rc_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -569,13 +600,8 @@ namespace SistemaEMMG_Alpha
             return wasAbleToUpdate;
         }
 
-        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        public bool InsertIntoToDatabase_Raw(MySqlConnection conn)
         {
-            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
-            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
-            {
-                return false;
-            }
             bool wasAbleToInsert = false;
             try
             {
@@ -613,6 +639,24 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error DBRecibo::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToInsert;
+        }
+        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        {
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+            return InsertIntoToDatabase_Raw(conn);
+        }
+        public bool InsertIntoToDatabase(MySqlConnection conn, long ignore_ec_id, long ignore_cm_id)
+        {
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn, ignore_ec_id, ignore_cm_id);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+            return InsertIntoToDatabase_Raw(conn);
         }
 
         private bool DeleteAllRelatedData(MySqlConnection conn)
@@ -670,6 +714,32 @@ namespace SistemaEMMG_Alpha
             }
             return deletedCorrectly;
         }
+
+        public bool? DuplicatedExistsInDatabase(MySqlConnection conn, long ignore_ec_id, long ignore_rc_id)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = "";
+                if (_data.rc_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND (({NameOf_rc_ec_id} <> {ignore_ec_id}) OR ({NameOf_id} <> {ignore_rc_id})) AND {NameOf_id} <> {GetID()} AND UPPER({ReciboData.NameOf_rc_nro}) = '{Regex.Replace(_data.rc_nro.Trim().ToUpper(), @"\s+", " ")}'";
+                }
+                else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rc_em_id} = {GetCuentaID()} AND {NameOf_rc_ec_id} = {GetEntidadComercialID()} AND {NameOf_id} <> {GetID()} AND (({NameOf_rc_ec_id} <> {ignore_ec_id}) OR ({NameOf_id} <> {ignore_rc_id})) AND UPPER({ReciboData.NameOf_rc_nro}) = '{Regex.Replace(_data.rc_nro.Trim().ToUpper(), @"\s+", " ")}'";
+                }
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBRecibo::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
+        }
+
         public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
         {
             bool? duplicatedExistsInDB = null;

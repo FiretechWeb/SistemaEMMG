@@ -135,6 +135,21 @@
     <Compile Include="ui\ent_comerciales\UIAgregarModificarEntidadComercial.xaml.cs">
       <DependentUpon>UIAgregarModificarEntidadComercial.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\recibos\UIAComprobante.xaml.cs">
+      <DependentUpon>UIAComprobante.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\recibos\UIAgregarModificarRecibo.xaml.cs">
+      <DependentUpon>UIAgregarModificarRecibo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\recibos\UIPagos.xaml.cs">
+      <DependentUpon>UIPagos.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\remitos\UIAgregarModificarRemito.xaml.cs">
+      <DependentUpon>UIAgregarModificarRemito.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\remitos\UIARComprobante.xaml.cs">
+      <DependentUpon>UIARComprobante.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\UIComprobantes.xaml.cs">
       <DependentUpon>UIComprobantes.xaml</DependentUpon>
     </Compile>
@@ -196,6 +211,26 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\ent_comerciales\UIAgregarModificarEntidadComercial.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\recibos\UIAComprobante.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\recibos\UIAgregarModificarRecibo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\recibos\UIPagos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\remitos\UIAgregarModificarRemito.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\remitos\UIARComprobante.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

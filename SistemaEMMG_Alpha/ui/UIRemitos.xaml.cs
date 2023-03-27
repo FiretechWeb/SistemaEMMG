@@ -69,6 +69,7 @@ namespace SistemaEMMG_Alpha.ui
             InitializeComponent();
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
+            uiAgregarModificarPanel.SetUIOwner(this);
         }
 
         public void RefreshData()
@@ -231,6 +232,22 @@ namespace SistemaEMMG_Alpha.ui
                     MessageBox.Show("Error tratando de eliminar el remito.");
                 }
             }
+        }
+
+        private void btnAgregar_Click(object sender, RoutedEventArgs e)
+        {
+            uiAgregarModificarPanel.RefreshData();
+            uiAgregarModificarPanel.Visibility = Visibility.Visible;
+        }
+
+        private void btnModificar_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetRemitoSeleccionado() is null)
+            {
+                return;
+            }
+            uiAgregarModificarPanel.RefreshData(GetRemitoSeleccionado());
+            uiAgregarModificarPanel.Visibility = Visibility.Visible;
         }
     }
 }

@@ -492,6 +492,37 @@ namespace SistemaEMMG_Alpha
             RemitoData.CreateFromReader(reader))
         { }
 
+        public bool PushToDatabase(MySqlConnection conn, long old_rm_ec_id)
+        {
+            long old_cm_id = GetID();
+            bool wasAbleToPushAndDelete = false;
+            if (!IsLocal() && old_rm_ec_id != GetEntidadComercialID())
+            {
+                MakeLocal();
+            }
+            else
+            {
+                return PushToDatabase(conn);
+            }
+            if (InsertIntoToDatabase(conn, old_rm_ec_id, old_cm_id))
+            {
+                DBRemito oldRemito = GetByID(conn, GetCuenta(), old_rm_ec_id, old_cm_id);
+                if (!(oldRemito is null))
+                {
+                    wasAbleToPushAndDelete = oldRemito.DeleteFromDatabase(conn);
+                }
+                else
+                {
+                    wasAbleToPushAndDelete = true;
+                }
+                if (!wasAbleToPushAndDelete)
+                {
+                    DeleteFromDatabase(conn);
+                }
+            }
+            return wasAbleToPushAndDelete;
+        }
+
         public override bool PullFromDatabase(MySqlConnection conn)
         {
             if (IsLocal())
@@ -554,7 +585,7 @@ namespace SistemaEMMG_Alpha
                                 {RemitoData.NameOf_rm_fecha} = {fechaEmitido}, 
                                 {RemitoData.NameOf_rm_nro} = '{Regex.Replace(_data.rm_nro.Trim(), @"\s+", " ")}', 
                                 {RemitoData.NameOf_rm_obs} = '{_data.rm_obs}', 
-                                {RemitoData.NameOf_rm_emitido} = {Convert.ToInt32(_data.rm_emitido)}, 
+                                {RemitoData.NameOf_rm_emitido} = {Convert.ToInt32(_data.rm_emitido)} 
                                 WHERE {NameOf_rm_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_rm_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -568,13 +599,8 @@ namespace SistemaEMMG_Alpha
             return wasAbleToUpdate;
         }
 
-        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        public bool InsertIntoToDatabase_Raw(MySqlConnection conn)
         {
-            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
-            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
-            {
-                return false;
-            }
             bool wasAbleToInsert = false;
             try
             {
@@ -612,6 +638,24 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error DBRemito::InsertIntoToDatabase " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return wasAbleToInsert;
+        }
+        public override bool InsertIntoToDatabase(MySqlConnection conn)
+        {
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+            return InsertIntoToDatabase_Raw(conn);
+        }
+        public bool InsertIntoToDatabase(MySqlConnection conn, long ignore_ec_id, long ignore_cm_id)
+        {
+            bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn, ignore_ec_id, ignore_cm_id);
+            if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
+            {
+                return false;
+            }
+            return InsertIntoToDatabase_Raw(conn);
         }
 
         private bool DeleteAllRelatedData(MySqlConnection conn)
@@ -665,6 +709,31 @@ namespace SistemaEMMG_Alpha
             }
             return deletedCorrectly;
         }
+        public bool? DuplicatedExistsInDatabase(MySqlConnection conn, long ignore_ec_id, long ignore_rm_id)
+        {
+            bool? duplicatedExistsInDB = null;
+            try
+            {
+                string query = "";
+                if (_data.rm_emitido) //IF emitido, then the number should be unique across ALL DBEntidades belonging to this account
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rm_em_id} = {GetCuentaID()} AND (({NameOf_rm_ec_id} <> {ignore_ec_id}) OR ({NameOf_id} <> {ignore_rm_id})) AND {NameOf_id} <> {GetID()} AND UPPER({RemitoData.NameOf_rm_nro}) = '{Regex.Replace(_data.rm_nro.Trim().ToUpper(), @"\s+", " ")}'";
+                }
+                else //If not emitido (recibido) then the number should be unique only for this specific DBEntidades
+                {
+                    query = $"SELECT COUNT(*) FROM {db_table} WHERE {NameOf_rm_em_id} = {GetCuentaID()} AND {NameOf_rm_ec_id} = {GetEntidadComercialID()} AND {NameOf_id} <> {GetID()} AND (({NameOf_rm_ec_id} <> {ignore_ec_id}) OR ({NameOf_id} <> {ignore_rm_id})) AND UPPER({RemitoData.NameOf_rm_nro}) = '{Regex.Replace(_data.rm_nro.Trim().ToUpper(), @"\s+", " ")}'";
+                }
+                var cmd = new MySqlCommand(query, conn);
+                duplicatedExistsInDB = int.Parse(cmd.ExecuteScalar().ToString()) > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBRemito::DuplicatedExistsInDatabase: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                duplicatedExistsInDB = null;
+            }
+            return duplicatedExistsInDB;
+        }
+
         public override bool? DuplicatedExistsInDatabase(MySqlConnection conn)
         {
             bool? duplicatedExistsInDB = null;
@@ -957,17 +1026,17 @@ namespace SistemaEMMG_Alpha
             _shouldPush = _shouldPush || (ec_id != GetEntidadComercialID());
             _entidadComercial = DBEntidades.GetByID(conn, GetCuenta(), ec_id);
         }
-        public void SetTiporemito(DBTipoRemito newType)
+        public void SetTipoRemito(DBTipoRemito newType)
         {
             _shouldPush = _shouldPush || (_tipoRemito != newType);
             _tipoRemito = newType;
         }
-        public void SetTiporemito(long tc_id)
+        public void SetTipoRemito(long tc_id)
         {
             _shouldPush = _shouldPush || (tc_id != _tipoRemito.GetID());
             _tipoRemito = DBTipoRemito.GetByID(tc_id);
         }
-        public void SetTiporemito(long tc_id, MySqlConnection conn)
+        public void SetTipoRemito(long tc_id, MySqlConnection conn)
         {
             _shouldPush = _shouldPush || (tc_id != _tipoRemito.GetID());
             _tipoRemito = DBTipoRemito.GetByID(tc_id, conn);

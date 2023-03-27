@@ -69,6 +69,7 @@ namespace SistemaEMMG_Alpha.ui
             InitializeComponent();
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
+            uiAgregarModificarReciboPanel.SetUIOwner(this);
         }
 
         public void RefreshData()
@@ -235,6 +236,22 @@ namespace SistemaEMMG_Alpha.ui
                     MessageBox.Show("Error tratando de eliminar el recibo.");
                 }
             }
+        }
+
+        private void btnAgregar_Click(object sender, RoutedEventArgs e)
+        {
+            uiAgregarModificarReciboPanel.RefreshData();
+            uiAgregarModificarReciboPanel.Visibility = Visibility.Visible;
+        }
+
+        private void btnModificar_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetReciboSeleccionado() is null)
+            {
+                return;
+            }
+            uiAgregarModificarReciboPanel.RefreshData(GetReciboSeleccionado());
+            uiAgregarModificarReciboPanel.Visibility = Visibility.Visible;
         }
     }
 }
