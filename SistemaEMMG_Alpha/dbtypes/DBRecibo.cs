@@ -205,9 +205,69 @@ namespace SistemaEMMG_Alpha
             return false;
         }
 
-        /************************
+        /***********************
          * Filter/Search methods
-         * **********************/
+         * *********************/
+
+        /************
+         *  estadoEmision:
+         *      -1: Todos
+         *      0: Recibido
+         *      1: Emitido
+         *************/
+        public static List<DBRecibo> Search(MySqlConnection conn, DBCuenta cuenta, int estadoEmision, DateTime? fechaComienzo, DateTime? fechaFinal, long CUIT, long rc_tr_id, long ec_te_id, string numero)
+        {
+            List<DBRecibo> returnList = new List<DBRecibo>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_rc_em_id} = {cuenta.GetID()} ";
+                estadoEmision -= 1;
+                if (rc_tr_id > -1)
+                {
+                    query += $"AND {NameOf_rc_tr_id} = {rc_tr_id} ";
+                }
+                if (ec_te_id > -1)
+                {
+                    query += $"AND {DBEntidades.NameOf_ec_te_id} = {ec_te_id} ";
+                }
+                if (estadoEmision >= 0)
+                {
+                    query += $"AND {ReciboData.NameOf_rc_emitido} = {estadoEmision} ";
+                }
+                if (!(fechaComienzo is null))
+                {
+                    string fechaComienzoStr = ((DateTime)fechaComienzo).ToString("yyyy/MM/dd");
+                    query += $"AND {ReciboData.NameOf_rc_fecha} >= '{fechaComienzoStr}' ";
+                }
+                if (!(fechaFinal is null))
+                {
+                    string fechaFinalStr = ((DateTime)fechaFinal).ToString("yyyy/MM/dd");
+                    query += $"AND {ReciboData.NameOf_rc_fecha} <= '{fechaFinalStr}' ";
+                }
+                if (!string.IsNullOrEmpty(numero.Trim()))
+                {
+                    query += $"AND UPPER({ReciboData.NameOf_rc_nro}) LIKE '%{numero.Trim().ToUpper()}%'";
+                }
+                if (CUIT > 0)
+                {
+                    query += $"AND {EntidadesComercialesData.NameOf_ec_cuit} LIKE '%{CUIT}%'";
+                }
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBRecibo(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTipoRecibo(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBRecibo::Search. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return returnList;
+        }
 
         public static List<DBRecibo> SearchByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroRecibo, bool isEmitido)
         {
@@ -923,6 +983,8 @@ namespace SistemaEMMG_Alpha
         public long GetCuentaID() => _entidadComercial.GetCuentaID();
 
         public DBCuenta GetCuenta() => _entidadComercial.GetCuenta();
+
+        public DBTipoRecibo GetTipoRecibo() => _tipoRecibo;
 
         public void SetEntidadComercial(DBEntidades newEntidadComercial)
         {

@@ -78,19 +78,16 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             if (cmbMoneda.SelectedIndex == -1 || (cmbMoneda.SelectedItem is null))
             {
                 gridCambio.Visibility = Visibility.Collapsed;
-                txtCambio.Text = "";
                 return;
             }
             DBMoneda monedaSeleccionada = DBMoneda.GetByID(((KeyValuePair<long, string>)cmbMoneda.SelectedItem).Key);
             if ((monedaSeleccionada is null) || !monedaSeleccionada.IsExtranjera())
             {
                 gridCambio.Visibility = Visibility.Collapsed;
-                txtCambio.Text = "";
             }
             else
             {
                 gridCambio.Visibility = Visibility.Visible;
-                txtCambio.Text = "";
             }
         }
         public void RefreshData(DBComprobantes selectedComprobante = null)
@@ -169,6 +166,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 txtIVA.Text = "";
                 txtPercepcion.Text = "";
                 txtObservacion.Text = "";
+                txtCambio.Text = "1.0";
                 cmbMoneda.SelectedIndex = 0;
                 RefreshMonedaSelected();
                 cmbTipoComprobante.SelectedIndex = 0;
@@ -220,8 +218,16 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             _comprobanteSeleccionado.SetIVA(SafeConvert.ToDouble(txtIVA.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetNoGravado(SafeConvert.ToDouble(txtNoGravado.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetPercepcion(SafeConvert.ToDouble(txtPercepcion.Text.Replace(".", ",")));
-            _comprobanteSeleccionado.SetCambio(SafeConvert.ToDouble(txtCambio.Text.Replace(".", ",")));
+
             _comprobanteSeleccionado.SetObservacion(txtObservacion.Text);
+
+            if (!_comprobanteSeleccionado.GetMoneda().IsExtranjera())
+            {
+                _comprobanteSeleccionado.SetCambio(1.0);
+            } else
+            {
+                _comprobanteSeleccionado.SetCambio(SafeConvert.ToDouble(txtCambio.Text.Replace(".", ",")));
+            }
 
             bool comprobanteWasLocal = _comprobanteSeleccionado.IsLocal();
 
@@ -379,6 +385,19 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             {
                 _comprobanteSeleccionado.SetEmitido(false);
             }
+        }
+
+        private void cmbMoneda_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbMoneda.SelectedItem is null)
+            {
+                return;
+            }
+            if (GetCuentaSeleccionada() is null)
+            {
+                return;
+            }
+            RefreshMonedaSelected();
         }
     }
 }

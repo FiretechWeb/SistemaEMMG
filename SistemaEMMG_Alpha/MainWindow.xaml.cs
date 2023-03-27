@@ -131,6 +131,8 @@ namespace SistemaEMMG_Alpha
             uiCuentasPanel.SetMainWindow(this);
             uiEntidadesPanel.SetMainWindow(this);
             uiComprobantespanel.SetMainWindow(this);
+            uiRecibosPanel.SetMainWindow(this);
+            uiRemitosPanel.SetMainWindow(this);
         }
         
         public MainWindow()
@@ -227,9 +229,11 @@ namespace SistemaEMMG_Alpha
                         Console.WriteLine("TI_COMPROBANTES");
                         break;
                     case TabItemsSelections.TI_REMITOS:
+                        uiRemitosPanel.RefreshData();
                         Console.WriteLine("TI_REMITOS");
                         break;
                     case TabItemsSelections.TI_RECIBOS:
+                        uiRecibosPanel.RefreshData();
                         Console.WriteLine("TI_RECIBOS");
                         break;
                     case TabItemsSelections.TI_LISTADOS:

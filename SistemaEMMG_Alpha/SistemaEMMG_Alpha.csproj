@@ -150,6 +150,12 @@
     <Compile Include="ui\UIErrorScreen.xaml.cs">
       <DependentUpon>UIErrorScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\UIRecibos.xaml.cs">
+      <DependentUpon>UIRecibos.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\UIRemitos.xaml.cs">
+      <DependentUpon>UIRemitos.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -210,6 +216,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\UIErrorScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\UIRecibos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\UIRemitos.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

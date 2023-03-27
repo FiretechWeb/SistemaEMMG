@@ -198,6 +198,14 @@ namespace SistemaEMMG_Alpha.ui
 
         private void dgComprobantes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_mainWin is null)
+            {
+                return;
+            }
+            if (GetCuentaSeleccionada() is null)
+            {
+                return;
+            }
             if (e.Source is DataGrid)
             {
                 DataGrid senderDG = sender as DataGrid;
