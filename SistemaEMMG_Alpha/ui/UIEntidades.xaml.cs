@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
 
 
@@ -53,12 +43,18 @@ namespace SistemaEMMG_Alpha.ui
                 lblEntidadSeleccionada.Content = "No hay entidad seleccionada";
                 btnEliminarEntidad.IsEnabled = false;
                 btnModificarEntidad.IsEnabled = false;
+                btnComprobantes.IsEnabled = false;
+                btnRemitos.IsEnabled = false;
+                btnRecibos.IsEnabled = false;
             }
             else
             {
                 lblEntidadSeleccionada.Content = _entidadSeleccionada.GetRazonSocial();
                 btnEliminarEntidad.IsEnabled = true;
                 btnModificarEntidad.IsEnabled = true;
+                btnComprobantes.IsEnabled = true;
+                btnRemitos.IsEnabled = true;
+                btnRecibos.IsEnabled = true;
             }
         }
 
@@ -190,6 +186,39 @@ namespace SistemaEMMG_Alpha.ui
                     MessageBox.Show("Error tratando de eliminar la entidad comercial.");
                 }
             }
+        }
+
+        private void btnComprobantes_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entidadSeleccionada is null)
+            {
+                return;
+            }
+            GetMainWindow().uiComprobantespanel.textFiltroCUIT.Text = _entidadSeleccionada.GetCUIT().ToString();
+            GetMainWindow().uiComprobantespanel.RefreshData();
+            Dispatcher.BeginInvoke((Action)(() => GetMainWindow().tabControlMain.SelectedIndex = 2));
+        }
+
+        private void btnRecibos_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entidadSeleccionada is null)
+            {
+                return;
+            }
+            GetMainWindow().uiRecibosPanel.textFiltroCUIT.Text = _entidadSeleccionada.GetCUIT().ToString();
+            GetMainWindow().uiRecibosPanel.RefreshData();
+            Dispatcher.BeginInvoke((Action)(() => GetMainWindow().tabControlMain.SelectedIndex = 3));
+        }
+
+        private void btnRemitos_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entidadSeleccionada is null)
+            {
+                return;
+            }
+            GetMainWindow().uiRemitosPanel.textFiltroCUIT.Text = _entidadSeleccionada.GetCUIT().ToString();
+            GetMainWindow().uiRemitosPanel.RefreshData();
+            Dispatcher.BeginInvoke((Action)(() => GetMainWindow().tabControlMain.SelectedIndex = 4));
         }
     }
 }

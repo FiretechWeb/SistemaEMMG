@@ -1,19 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha.ui.recibos
 {
@@ -49,6 +38,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
             uiComprobantesPanel.SetUIOwner(this);
+            uiPagosPanel.SetUIOwner(this);
         }
 
         private void CheckIfAbleToSubmit()
@@ -231,6 +221,11 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 if (reciboWasLocal)
                 {
                     _reciboSeleccionado.PushAllRelationshipsWithComprobantesDB(dbCon.Connection);
+                    List<DBPago> pagos = _reciboSeleccionado.GetAllPagos();
+                    foreach (DBPago pago in pagos)
+                    {
+                        pago.PushToDatabase(dbCon.Connection);
+                    }
                 }
                 MessageBox.Show("Recibo agregado / modificado a la base de datos correctamente!");
                 _ownerControl.RefreshData();
@@ -279,6 +274,16 @@ namespace SistemaEMMG_Alpha.ui.recibos
             }
             uiComprobantesPanel.RefreshData(_reciboSeleccionado);
             uiComprobantesPanel.Visibility = Visibility.Visible;
+        }
+
+        private void btnPagos_Click(object sender, RoutedEventArgs e)
+        {
+            if (_reciboSeleccionado is null)
+            {
+                return;
+            }
+            uiPagosPanel.RefreshData(_reciboSeleccionado);
+            uiPagosPanel.Visibility = Visibility.Visible;
         }
     }
 }

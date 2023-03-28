@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 using System.Text.RegularExpressions;
@@ -1317,8 +1314,19 @@ namespace SistemaEMMG_Alpha
                 _db_recibos.Add(recibo);
             }
         }
-        public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
-
+        public void RemoveRecibo(DBRecibo entRemove)
+        {
+            if (_db_recibos.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_recibos.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
+           
+        }
         public List<DBRemito> GetAllRemitos(MySqlConnection conn)
         {
             List<DBRemito> returnList = DBRemito.GetAll(conn, this);
@@ -1396,8 +1404,19 @@ namespace SistemaEMMG_Alpha
                 _db_remitos.Add(Remito);
             }
         }
-        public void RemoveRemito(DBRemito entRemove) => _db_remitos.Remove(entRemove);
+        public void RemoveRemito(DBRemito entRemove)
+        {
+            if (_db_remitos.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_remitos.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
 
+        }
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
         ///<summary>

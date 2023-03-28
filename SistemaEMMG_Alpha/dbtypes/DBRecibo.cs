@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 using System.Text.RegularExpressions;
@@ -1002,8 +999,19 @@ namespace SistemaEMMG_Alpha
                 _db_comprobantes.Add(comprobante);
             }
         }
-        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
+        public void RemoveComprobante(DBComprobantes entRemove)
+        {
+            if (_db_comprobantes.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_comprobantes.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
 
+        }
         public List<DBPago> GetAllPagos(MySqlConnection conn) //Get directly from database
         {
             List<DBPago> returnList = DBPago.GetAll(conn, this);
@@ -1042,7 +1050,18 @@ namespace SistemaEMMG_Alpha
             _db_pagos.Add(newPago);
             return true;
         }
-        public void RemovePago(DBPago entRemove) => _db_pagos.Remove(entRemove);
+        public void RemovePago(DBPago entRemove)
+        {
+            if (_db_pagos.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_pagos.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetReciboID() == entRemove.GetReciboID() && x.GetID() == entRemove.GetID());
+        }
 
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 

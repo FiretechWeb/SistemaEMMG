@@ -139,7 +139,7 @@
                     <Button x:Name="btnComprobantes" Grid.Column="0" Margin="0, 3, 0, 3" Padding="10, 0, 10, 0" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnComprobantes_Click">
                         Comprobantes
                     </Button>
-                    <Button x:Name="btnPagos" Grid.Column="1" Margin="0, 3, 0, 3" Padding="10, 0, 10, 0" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+                    <Button x:Name="btnPagos" Grid.Column="1" Margin="0, 3, 0, 3" Padding="10, 0, 10, 0" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnPagos_Click">
                         Pagos
                     </Button>
                 </Grid>
@@ -158,5 +158,6 @@
             </Grid>
         </Grid>
         <local:UIAComprobante x:Name="uiComprobantesPanel" Visibility="Collapsed"></local:UIAComprobante>
+        <local:UIPagos x:Name="uiPagosPanel" Visibility="Collapsed"></local:UIPagos>
     </Grid>
 </UserControl>

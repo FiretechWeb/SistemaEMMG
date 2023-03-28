@@ -4,6 +4,8 @@
 *.ilk
 *.aps
 *.user
+*.deploy
+*.pfx
 /build
 /build_vc2015
 /build_vc2015-32
@@ -15,3 +17,4 @@
 /BUILD
 /bin
 /obj
+/publish

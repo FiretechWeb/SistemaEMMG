@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 using System.Text.RegularExpressions;
@@ -458,7 +454,18 @@ namespace SistemaEMMG_Alpha
             _db_comprobantes.Add(newComprobante);
             return true;
         }
-        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
+        public void RemoveComprobante(DBComprobantes entRemove)
+        {
+            if (_db_comprobantes.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_comprobantes.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
+        }
 
         public List<DBRecibo> GetAllRecibos(MySqlConnection conn) //Get directly from database
         {
@@ -498,7 +505,18 @@ namespace SistemaEMMG_Alpha
             _db_recibos.Add(newRecibo);
             return true;
         }
-        public void RemoveRecibo(DBRecibo entRemove) => _db_recibos.Remove(entRemove);
+        public void RemoveRecibo(DBRecibo entRemove)
+        {
+            if (_db_recibos.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_recibos.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
+        }
 
         public List<DBRemito> GetAllRemitos(MySqlConnection conn) //Get directly from database
         {
@@ -538,8 +556,18 @@ namespace SistemaEMMG_Alpha
             _db_remitos.Add(newRecibo);
             return true;
         }
-        public void RemoveRemito(DBRemito entRemove) => _db_remitos.Remove(entRemove);
-
+        public void RemoveRemito(DBRemito entRemove)
+        {
+            if (_db_remitos.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_remitos.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
+        }
         public long GetCuentaID() => _cuenta.GetID();
 
         public DBCuenta GetCuenta() => _cuenta;

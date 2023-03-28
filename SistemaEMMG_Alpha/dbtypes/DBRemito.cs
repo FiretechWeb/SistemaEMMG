@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
 using System.Text.RegularExpressions;
@@ -997,8 +994,19 @@ namespace SistemaEMMG_Alpha
                 _db_comprobantes.Add(comprobante);
             }
         }
-        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
+        public void RemoveComprobante(DBComprobantes entRemove)
+        {
+            if (_db_comprobantes.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_comprobantes.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
 
+        }
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
         ///<summary>

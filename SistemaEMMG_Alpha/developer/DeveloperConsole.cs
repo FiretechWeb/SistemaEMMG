@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using System.Windows;
 
 /*****************************
  *  VERIFICAR QUE TODO EL INGRESO DE DATOS FUNCIONE CORRECTAMENTE, SI ESO SUCEDE, ENTONCES HACER LA CLASE DBRemitos, volver a chekear, limpiar código y empezar la con la interfaz gráfica.

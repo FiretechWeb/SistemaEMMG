@@ -1,22 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MySql.Data;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-
 
 namespace SistemaEMMG_Alpha
 {
@@ -33,8 +19,7 @@ namespace SistemaEMMG_Alpha
             TI_ENTIDADES,
             TI_COMPROBANTES,
             TI_RECIBOS,
-            TI_REMITOS,
-            TI_LISTADOS
+            TI_REMITOS
         };
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
 
@@ -62,7 +47,6 @@ namespace SistemaEMMG_Alpha
         {
             tabComprobantes.IsEnabled = true;
             tabEntidades.IsEnabled = true;
-            tabListados.IsEnabled = true;
             tabRecibos.IsEnabled = true;
             tabRemitos.IsEnabled = true;
         }
@@ -70,7 +54,6 @@ namespace SistemaEMMG_Alpha
         {
             tabComprobantes.IsEnabled = false;
             tabEntidades.IsEnabled = false;
-            tabListados.IsEnabled = false;
             tabRecibos.IsEnabled = false;
             tabRemitos.IsEnabled = false;
         }
@@ -201,10 +184,6 @@ namespace SistemaEMMG_Alpha
                 {
                     newTabItemSelection = (short)TabItemsSelections.TI_REMITOS;
                 }
-                else if (tabListados.IsSelected)
-                {
-                    newTabItemSelection = (short)TabItemsSelections.TI_LISTADOS;
-                }
 
                 if (oldTabItemSelection == newTabItemSelection || oldTabItemSelection == -1)
                 {
@@ -235,9 +214,6 @@ namespace SistemaEMMG_Alpha
                     case TabItemsSelections.TI_RECIBOS:
                         uiRecibosPanel.RefreshData();
                         Console.WriteLine("TI_RECIBOS");
-                        break;
-                    case TabItemsSelections.TI_LISTADOS:
-                        Console.WriteLine("TI_LISTADOS");
                         break;
                 }
             }

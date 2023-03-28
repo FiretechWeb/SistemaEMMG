@@ -47,7 +47,7 @@
                     Ninguno.
                 </Label>
             </Grid>
-            <ListBox x:Name="listPagos" Grid.Row="2" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible"></ListBox>
+            <ListBox x:Name="listPagos" Grid.Row="2" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listPagos_SelectionChanged"></ListBox>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -68,9 +68,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Forma de pago:
                 </Label>
-                <ComboBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="auto" MinWidth="120">
-
-                </ComboBox>
+                <ComboBox x:Name="cmbFormaPago" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="auto" MinWidth="120"/>
             </Grid>
             <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>
@@ -82,13 +80,13 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Moneda:
                 </Label>
-                <ComboBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80">
+                <ComboBox x:Name="cmbMoneda" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" SelectionChanged="cmbMoneda_SelectionChanged">
 
                 </ComboBox>
-                <Label Grid.Column="2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <Label x:Name="lblCambio" Grid.Column="2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Cambio:
                 </Label>
-                <TextBox Grid.Column="3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80">
+                <TextBox x:Name="txtCambio" Grid.Column="3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" PreviewTextInput="txtCambio_PreviewTextInput">
 
                 </TextBox>
             </Grid>
@@ -101,7 +99,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,1">
                     Importe:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" Grid.ColumnSpan="2" Margin="0,5">
+                <TextBox x:Name="txtImporte" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" Grid.ColumnSpan="2" Margin="0,5" TextChanged="txtImporte_TextChanged" PreviewTextInput="txtImporte_PreviewTextInput">
 
                 </TextBox>
             </Grid>
@@ -113,7 +111,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Fecha:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100">
+                <TextBox x:Name="txtFecha" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" TextChanged="txtFecha_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -125,7 +123,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Observación:
                 </Label>
-                <TextBox Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtObservacion" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>
@@ -135,17 +133,17 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+                <Button x:Name="btnAgregar" Grid.Column="0" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnAgregar_Click">
                     Agregar
                 </Button>
-                <Button Grid.Column="1" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+                <Button x:Name="btnModificar" Grid.Column="1" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnModificar_Click">
                     Modificar
                 </Button>
-                <Button Grid.Column="2" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+                <Button x:Name="btnEliminar" Grid.Column="2" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnEliminar_Click">
                     Eliminar
                 </Button>
             </Grid>
-            <Button x:Name="btnVolver" Grid.Row="10" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+            <Button x:Name="btnVolver" Grid.Row="10" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnVolver_Click">
                 Volver
             </Button>
         </Grid>
