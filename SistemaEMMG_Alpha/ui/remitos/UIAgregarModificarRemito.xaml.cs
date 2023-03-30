@@ -270,5 +270,10 @@ namespace SistemaEMMG_Alpha.ui.remitos
             uiComprobantePanel.RefreshData(_remitoSeleccionado);
             uiComprobantePanel.Visibility = Visibility.Visible;
         }
+
+        private void txtFecha_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFecha);
+        }
     }
 }

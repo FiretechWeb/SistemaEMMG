@@ -363,14 +363,17 @@ namespace SistemaEMMG_Alpha.ui.recibos
 
         private void txtCambio_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9,.]+");
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = InputHandler.OnlyMoney(e);
         }
 
         private void txtImporte_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9,.]+");
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = InputHandler.OnlyMoney(e);
+        }
+
+        private void txtFecha_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFecha);
         }
     }
 }

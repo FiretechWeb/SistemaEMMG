@@ -97,13 +97,13 @@
                 <ComboBox x:Name="cmbFiltroTipoEnt" Grid.Row="1" Grid.Column="3" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
 
                 </ComboBox>
-                <TextBox x:Name="txtFiltroFechaInicial" Grid.Row="1" Grid.Column="4" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtFiltroFechaInicial" Grid.Row="1" Grid.Column="4" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" PreviewTextInput="txtFiltroFechaInicial_PreviewTextInput" >
 
                 </TextBox>
-                <TextBox x:Name="txtFiltroFechaFinal" Grid.Row="1" Grid.Column="5" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtFiltroFechaFinal" Grid.Row="1" Grid.Column="5" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" PreviewTextInput="txtFiltroFechaFinal_PreviewTextInput" >
 
                 </TextBox>
-                <TextBox x:Name="textFiltroCUIT" Grid.Row="1" Grid.Column="6" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="textFiltroCUIT" Grid.Row="1" Grid.Column="6" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" PreviewTextInput="textFiltroCUIT_PreviewTextInput" >
 
                 </TextBox>
             </Grid>

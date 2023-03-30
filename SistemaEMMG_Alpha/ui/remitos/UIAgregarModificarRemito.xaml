@@ -115,7 +115,7 @@
                     <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="14" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Fecha:
                     </Label>
-                    <TextBox x:Name="txtFecha" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="14" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" TextChanged="txtFecha_TextChanged">
+                    <TextBox x:Name="txtFecha" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="14" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" TextChanged="txtFecha_TextChanged" PreviewTextInput="txtFecha_PreviewTextInput">
 
                     </TextBox>
                 </Grid>

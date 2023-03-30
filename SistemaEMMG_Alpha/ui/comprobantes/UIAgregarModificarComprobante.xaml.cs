@@ -390,5 +390,10 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
             RefreshMonedaSelected();
         }
+
+        private void txtFechaEmitido_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFechaEmitido);
+        }
     }
 }

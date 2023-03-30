@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha.ui
 {
@@ -253,6 +254,21 @@ namespace SistemaEMMG_Alpha.ui
                     MessageBox.Show("Error tratando de eliminar el comprobante.");
                 }
             }
+        }
+
+        private void txtFiltroFechaInicial_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFiltroFechaInicial);
+        }
+
+        private void txtFiltroFechaFinal_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFiltroFechaFinal);
+        }
+
+        private void textFiltroCUIT_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyNumbers(e);
         }
     }
 }

@@ -238,5 +238,20 @@ namespace SistemaEMMG_Alpha.ui
             uiAgregarModificarPanel.RefreshData(GetRemitoSeleccionado());
             uiAgregarModificarPanel.Visibility = Visibility.Visible;
         }
+
+        private void txtFiltroFechaInicial_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFiltroFechaInicial);
+        }
+
+        private void txtFiltroFechaFinal_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFiltroFechaFinal);
+        }
+
+        private void textFiltroCUIT_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyNumbers(e);
+        }
     }
 }

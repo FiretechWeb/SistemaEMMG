@@ -285,5 +285,10 @@ namespace SistemaEMMG_Alpha.ui.recibos
             uiPagosPanel.RefreshData(_reciboSeleccionado);
             uiPagosPanel.Visibility = Visibility.Visible;
         }
+
+        private void txtFecha_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = InputHandler.OnlyDateTimeText(e, txtFecha); 
+        }
     }
 }
