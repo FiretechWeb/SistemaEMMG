@@ -123,7 +123,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Observación:
                 </Label>
-                <TextBox x:Name="txtObservacion" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtObservacion" MaxLength="126" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>

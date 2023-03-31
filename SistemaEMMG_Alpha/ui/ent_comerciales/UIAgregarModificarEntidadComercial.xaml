@@ -62,7 +62,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,2,0,1">
                     Razón Social:
                 </Label>
-                <TextBox x:Name="txtRazonEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,6,0,5" TextChanged="txtRazonEntidad_TextChanged">
+                <TextBox x:Name="txtRazonEntidad" MaxLength="60" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,6,0,5" TextChanged="txtRazonEntidad_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -74,7 +74,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Email:
                 </Label>
-                <TextBox x:Name="txtEmailEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtEmailEntidad" MaxLength="63" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>
@@ -86,7 +86,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Teléfono:
                 </Label>
-                <TextBox x:Name="txtTelEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtTelEntidad" MaxLength="45" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>
@@ -98,7 +98,7 @@
                 <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Celular:
                 </Label>
-                <TextBox x:Name="txtCelEntidad" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
+                <TextBox x:Name="txtCelEntidad" MaxLength="45" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
             </Grid>

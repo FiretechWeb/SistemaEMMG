@@ -42,7 +42,7 @@
                 <Label Grid.Row="0" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left">
                     Razón Social:
                 </Label>
-                <TextBox x:Name="txtCuentaRazonSocial" Grid.Row="0" Grid.Column="1" FontFamily="Helvetica" FontSize="18" VerticalAlignment="Center" TextChanged="txtCuentaRazonSocial_TextChanged"></TextBox>
+                <TextBox x:Name="txtCuentaRazonSocial" MaxLength="60" Grid.Row="0" Grid.Column="1" FontFamily="Helvetica" FontSize="18" VerticalAlignment="Center" TextChanged="txtCuentaRazonSocial_TextChanged"></TextBox>
             </Grid>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
