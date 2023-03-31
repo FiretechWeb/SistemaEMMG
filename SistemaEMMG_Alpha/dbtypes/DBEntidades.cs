@@ -156,24 +156,27 @@ namespace SistemaEMMG_Alpha
             return null;
         }
 
-        public static bool CheckIfExistsInList(List<DBEntidades> listaEntidades, DBEntidades ent, bool strictNameAndCUIT = false)
+        public static int FindInList(List<DBEntidades> listaEntidades, DBEntidades ent, bool strictNameAndCUIT = false)
         {
-            foreach (DBEntidades entidadComercial in listaEntidades)
+            for (int i=0; i < listaEntidades.Count; i++)
             {
-                if (entidadComercial.GetCuentaID() != ent.GetCuentaID())
+                if (listaEntidades[i].GetCuentaID() != ent.GetCuentaID())
                 {
                     continue;
                 }
-                if (entidadComercial.GetID() == ent.GetID())
+                if (listaEntidades[i].GetID() == ent.GetID())
                 {
-                    return true;
-                } else if (strictNameAndCUIT && entidadComercial.GetCUIT() == ent.GetCUIT() && entidadComercial.GetRazonSocial().Trim().ToLower().Equals(ent.GetRazonSocial().Trim().ToLower()))
+                    return i;
+                }
+                else if (strictNameAndCUIT && listaEntidades[i].GetCUIT() == ent.GetCUIT() && listaEntidades[i].GetRazonSocial().Trim().ToLower().Equals(ent.GetRazonSocial().Trim().ToLower()))
                 {
-                    return true;
+                    return i;
                 }
             }
-            return false;
+            return -1;
         }
+
+        public static bool CheckIfExistsInList(List<DBEntidades> listaEntidades, DBEntidades ent, bool strictNameAndCUIT = false) => FindInList(listaEntidades, ent, strictNameAndCUIT) != -1;
 
         public static List<DBEntidades> Search(MySqlConnection conn, DBCuenta cuenta, string toFind)
         {
@@ -295,7 +298,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
-                    _cuenta.AddNewEntidad(this); //safe to add to since now it belongs to de DB.
+                    _cuenta.AddEntidad(this); //safe to add to since now it belongs to de DB.
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
             }
@@ -437,7 +440,7 @@ namespace SistemaEMMG_Alpha
         }
         public DBComprobantes GetComprobanteByID(long cm_id) => DBComprobantes.GetByID(_db_comprobantes, this, cm_id);
 
-        public bool AddNewComprobante(DBComprobantes newComprobante)
+        public bool AddComprobante(DBComprobantes newComprobante)
         {
             if (newComprobante is null)
             {
@@ -450,6 +453,15 @@ namespace SistemaEMMG_Alpha
             if (_db_comprobantes.Contains(newComprobante))
             {
                 return false;
+            }
+            if (!newComprobante.IsLocal())
+            {
+                int foundIndex = DBComprobantes.FindInList(_db_comprobantes, newComprobante);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_comprobantes[foundIndex] = newComprobante;
+                    return true;
+                }
             }
             _db_comprobantes.Add(newComprobante);
             return true;
@@ -488,7 +500,7 @@ namespace SistemaEMMG_Alpha
         }
         public DBRecibo GetReciboByID(long rc_id) => DBRecibo.GetByID(_db_recibos, this, rc_id);
 
-        public bool AddNewRecibo(DBRecibo newRecibo)
+        public bool AddRecibo(DBRecibo newRecibo)
         {
             if (newRecibo is null)
             {
@@ -501,6 +513,15 @@ namespace SistemaEMMG_Alpha
             if (_db_recibos.Contains(newRecibo))
             {
                 return false;
+            }
+            if (!newRecibo.IsLocal())
+            {
+                int foundIndex = DBRecibo.FindInList(_db_recibos, newRecibo);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_recibos[foundIndex] = newRecibo;
+                    return true;
+                }
             }
             _db_recibos.Add(newRecibo);
             return true;
@@ -539,7 +560,7 @@ namespace SistemaEMMG_Alpha
         }
         public DBRemito GetRemitoByID(long rc_id) => DBRemito.GetByID(_db_remitos, this, rc_id);
 
-        public bool AddNewRemito(DBRemito newRecibo)
+        public bool AddRemito(DBRemito newRecibo)
         {
             if (newRecibo is null)
             {

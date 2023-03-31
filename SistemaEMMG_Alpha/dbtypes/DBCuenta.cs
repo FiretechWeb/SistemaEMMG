@@ -407,7 +407,7 @@ namespace SistemaEMMG_Alpha
 
         public DBEntidades GetEntidadByID(long ec_id) => DBEntidades.GetByID(_db_entidades_comerciales, this, ec_id);
 
-        public bool AddNewEntidad(DBEntidades newEntidadComercial)
+        public bool AddEntidad(DBEntidades newEntidadComercial)
         {
             if (newEntidadComercial.GetCuentaID() != GetID())
             {
@@ -417,27 +417,67 @@ namespace SistemaEMMG_Alpha
             {
                 return false; //already in list
             }
+            if (!newEntidadComercial.IsLocal())
+            {
+                int foundIndex = DBEntidades.FindInList(_db_entidades_comerciales, newEntidadComercial);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_entidades_comerciales[foundIndex] = newEntidadComercial;
+                    return true;
+                }
+            }
             _db_entidades_comerciales.Add(newEntidadComercial);
             return true;
         }
-        public void RemoveEntidad(DBEntidades entRemove) => _db_entidades_comerciales.Remove(entRemove);
+        public void RemoveEntidad(DBEntidades entRemove)
+        {
+            if (_db_entidades_comerciales.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_entidades_comerciales.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetID() == entRemove.GetID());
+        }
 
-        public bool AddNewComprobante(DBComprobantes entAdd)
+        public bool AddComprobante(DBComprobantes entAdd)
         {
             if (entAdd.GetCuentaID() != GetID())
             {
                 return false; //Cannot add an entity from another account like this...
             }
-            if (DBComprobantes.CheckIfExistsInList(_db_comprobantes, entAdd))
+            if (_db_comprobantes.Contains(entAdd))
             {
                 return false;
+            }
+            if (!entAdd.IsLocal())
+            {
+                int foundIndex = DBComprobantes.FindInList(_db_comprobantes, entAdd);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_comprobantes[foundIndex] = entAdd;
+                    return true;
+                }
             }
 
             _db_comprobantes.Add(entAdd);
             return true;
         }
-        public void RemoveComprobante(DBComprobantes entRemove) => _db_comprobantes.Remove(entRemove);
+        public void RemoveComprobante(DBComprobantes entRemove)
+        {
+            if (_db_comprobantes.Remove(entRemove))
+            {
+                return;
+            }
+            if (entRemove.IsLocal())
+            {
+                return;
+            }
+            _db_comprobantes.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
 
+        }
         public void SetRazonSocial(string name)
         {
             _shouldPush = _shouldPush || !_data.em_rs.Equals(name);

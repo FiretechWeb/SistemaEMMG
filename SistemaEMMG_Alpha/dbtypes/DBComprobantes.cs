@@ -251,17 +251,19 @@ namespace SistemaEMMG_Alpha
             return null;
         }
 
-        public static bool CheckIfExistsInList(List<DBComprobantes> listaComprobantes, DBComprobantes ent)
+        public static int FindInList(List<DBComprobantes> listaComprobantes, DBComprobantes ent)
         {
-            foreach (DBComprobantes comprobante in listaComprobantes)
+            for (int i=0; i < listaComprobantes.Count; i++)
             {
-                if (comprobante.GetCuentaID() == ent.GetCuentaID() && comprobante.GetEntidadComercialID() == ent.GetEntidadComercialID() && comprobante.GetID() == ent.GetID())
+                if (listaComprobantes[i].GetCuentaID() == ent.GetCuentaID() && listaComprobantes[i].GetEntidadComercialID() == ent.GetEntidadComercialID() && listaComprobantes[i].GetID() == ent.GetID())
                 {
-                    return true;
+                    return i;
                 }
             }
-            return false;
+            return -1;
         }
+
+        public static bool CheckIfExistsInList(List<DBComprobantes> listaComprobantes, DBComprobantes ent) => FindInList(listaComprobantes, ent) != -1;
 
         /***********************
          * Filter/Search methods
@@ -795,7 +797,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
-                    _entidadComercial.AddNewComprobante(this); //safe to add to since now it belongs to de DB.
+                    _entidadComercial.AddComprobante(this); //safe to add to since now it belongs to de DB.
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
             }
@@ -1276,44 +1278,22 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
-            if (!newRecibo.IsLocal() && _db_recibos.Where(x => x.GetID() == newRecibo.GetID()).ToList().Count > 0) //already exists with this ID
+            if (!newRecibo.IsLocal())
             {
-                return false;
+                int foundIndex = DBRecibo.FindInList(_db_recibos, newRecibo);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_recibos[foundIndex] = newRecibo;
+                    return true;
+                }
             }
             _db_recibos.Add(newRecibo);
             return true;
         }
-        public bool AddRecibo(MySqlConnection conn, long rc_id)
-        {
-            DBRecibo recibo = DBRecibo.GetByID(conn, GetEntidadComercial(), rc_id);
-            if (recibo is null)
-            {
-                return false;
-            }
-            if (recibo.IsEmitido() != IsEmitido())
-            {
-                return false;
-            }
-            for (int i = 0; i < _db_recibos.Count; i++)
-            {
-                if (_db_recibos[i].GetCuentaID() == recibo.GetCuentaID() && _db_recibos[i].GetEntidadComercialID() == recibo.GetEntidadComercialID() && _db_recibos[i].GetID() == recibo.GetID())
-                {
-                    _db_recibos[i] = recibo;
-                    return false;
-                }
-            }
-            return AddRecibo(recibo);
-        }
+        public bool AddRecibo(MySqlConnection conn, long rc_id) => AddRecibo(DBRecibo.GetByID(conn, GetEntidadComercial(), rc_id));
 
-        public void RemoveRecibo(long rc_id)
-        {
-            List<DBRecibo> filteredList = _db_recibos.Where(x => x.GetID() != rc_id).ToList();
-            _db_recibos.Clear();
-            foreach (DBRecibo recibo in filteredList)
-            {
-                _db_recibos.Add(recibo);
-            }
-        }
+        public void RemoveRecibo(long rc_id) => _db_recibos.RemoveAll(x => x.GetID() == rc_id);
+
         public void RemoveRecibo(DBRecibo entRemove)
         {
             if (_db_recibos.Remove(entRemove))
@@ -1366,44 +1346,22 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
-            if (!newRemito.IsLocal() && _db_remitos.Where(x => x.GetID() == newRemito.GetID()).ToList().Count > 0) //already exists with this ID
+            if (!newRemito.IsLocal()) //already exists with this ID
             {
-                return false;
+                int foundIndex = DBRemito.FindInList(_db_remitos, newRemito);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_remitos[foundIndex] = newRemito;
+                    return true;
+                }
             }
             _db_remitos.Add(newRemito);
             return true;
         }
-        public bool AddRemito(MySqlConnection conn, long rc_id)
-        {
-            DBRemito remito = DBRemito.GetByID(conn, GetEntidadComercial(), rc_id);
-            if (remito is null)
-            {
-                return false;
-            }
-            if (remito.IsEmitido() != IsEmitido())
-            {
-                return false;
-            }
-            for (int i = 0; i < _db_remitos.Count; i++)
-            {
-                if (_db_remitos[i].GetCuentaID() == remito.GetCuentaID() && _db_remitos[i].GetEntidadComercialID() == remito.GetEntidadComercialID() && _db_remitos[i].GetID() == remito.GetID())
-                {
-                    _db_remitos[i] = remito;
-                    return false;
-                }
-            }
-            return AddRemito(remito);
-        }
+        public bool AddRemito(MySqlConnection conn, long rc_id) => AddRemito(DBRemito.GetByID(conn, GetEntidadComercial(), rc_id));
 
-        public void RemoveRemito(long rc_id)
-        {
-            List<DBRemito> filteredList = _db_remitos.Where(x => x.GetID() != rc_id).ToList();
-            _db_remitos.Clear();
-            foreach (DBRemito Remito in filteredList)
-            {
-                _db_remitos.Add(Remito);
-            }
-        }
+        public void RemoveRemito(long rc_id) => _db_remitos.RemoveAll(x => x.GetID() == rc_id);
+
         public void RemoveRemito(DBRemito entRemove)
         {
             if (_db_remitos.Remove(entRemove))

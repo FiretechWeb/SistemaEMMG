@@ -179,17 +179,19 @@ namespace SistemaEMMG_Alpha
 
         public static DBPago GetByID(List<DBPago> listaPagos, DBRecibo Recibo, long id) => GetByID(listaPagos, Recibo.GetCuenta(), Recibo.GetEntidadComercialID(), Recibo.GetID(), id);
 
-        public static bool CheckIfExistsInList(List<DBPago> listaPagsRecibos, DBPago ent)
+        public static int FindInList(List<DBPago> listaPagosRecibos, DBPago ent)
         {
-            foreach (DBPago pagoRecibo in listaPagsRecibos)
+            for (int i=0; i < listaPagosRecibos.Count; i++)
             {
-                if (pagoRecibo.GetCuentaID() == ent.GetCuentaID() && pagoRecibo.GetEntidadComercialID() == ent.GetEntidadComercialID() && pagoRecibo.GetReciboID() == ent.GetReciboID() && pagoRecibo.GetID() == ent.GetID())
+                if (listaPagosRecibos[i].GetCuentaID() == ent.GetCuentaID() && listaPagosRecibos[i].GetEntidadComercialID() == ent.GetEntidadComercialID() && listaPagosRecibos[i].GetReciboID() == ent.GetReciboID() && listaPagosRecibos[i].GetID() == ent.GetID())
                 {
-                    return true;
+                    return i;
                 }
             }
-            return false;
+            return -1;
         }
+        public static bool CheckIfExistsInList(List<DBPago> listaPagosRecibos, DBPago ent) => FindInList(listaPagosRecibos, ent) != -1;
+        
 
         public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, DBMoneda moneda, PagoData newData) : base (id)
         {

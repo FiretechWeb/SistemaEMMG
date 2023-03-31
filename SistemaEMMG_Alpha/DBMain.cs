@@ -9,7 +9,6 @@ namespace SistemaEMMG_Alpha
         {
 
         }
-
         public static DBMain Instance()
         {
             if (_instance == null)

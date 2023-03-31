@@ -190,17 +190,19 @@ namespace SistemaEMMG_Alpha
             return null;
         }
 
-        public static bool CheckIfExistsInList(List<DBRecibo> listaRecibos, DBRecibo ent)
+        public static int FindInList(List<DBRecibo> listaRecibos, DBRecibo ent)
         {
-            foreach (DBRecibo Recibo in listaRecibos)
+            for (int i=0; i < listaRecibos.Count; i++)
             {
-                if (Recibo.GetCuentaID() == ent.GetCuentaID() && Recibo.GetEntidadComercialID() == ent.GetEntidadComercialID() && Recibo.GetID() == ent.GetID())
+                if (listaRecibos[i].GetCuentaID() == ent.GetCuentaID() && listaRecibos[i].GetEntidadComercialID() == ent.GetEntidadComercialID() && listaRecibos[i].GetID() == ent.GetID())
                 {
-                    return true;
+                    return i;
                 }
             }
-            return false;
+            return -1;
         }
+
+        public static bool CheckIfExistsInList(List<DBRecibo> listaRecibos, DBRecibo ent) => FindInList(listaRecibos, ent) != -1;
 
         /***********************
          * Filter/Search methods
@@ -626,7 +628,7 @@ namespace SistemaEMMG_Alpha
                 if (wasAbleToInsert)
                 {
                     ChangeID(cmd.LastInsertedId);
-                    _entidadComercial.AddNewRecibo(this);
+                    _entidadComercial.AddRecibo(this);
                 }
                 _shouldPush = _shouldPush && !wasAbleToInsert;
             }
@@ -965,40 +967,23 @@ namespace SistemaEMMG_Alpha
             {
                 return false;
             }
+            if (!newComprobante.IsLocal())
+            {
+                int foundIndex = DBComprobantes.FindInList(_db_comprobantes, newComprobante);
+                if (foundIndex != -1) //Update old data with new in case of match.
+                {
+                    _db_comprobantes[foundIndex] = newComprobante;
+                    return true;
+                }
+            }
             _db_comprobantes.Add(newComprobante);
             return true;
         }
 
-        public bool AddComprobante(MySqlConnection conn, long cm_id)
-        {
-            DBComprobantes comprobante = DBComprobantes.GetByID(conn, GetEntidadComercial(), cm_id);
-            if (comprobante is null)
-            {
-                return false;
-            }
-            if (comprobante.IsEmitido() != _data.rc_emitido)
-            {
-                return false;
-            }
-            for (int i=0; i < _db_comprobantes.Count; i++)
-            {
-                if (_db_comprobantes[i].GetCuentaID() == comprobante.GetCuentaID() && _db_comprobantes[i].GetEntidadComercialID() == comprobante.GetEntidadComercialID() &&  _db_comprobantes[i].GetID() == comprobante.GetID())
-                {
-                    _db_comprobantes[i] = comprobante;
-                    return false;
-                }
-            }
-            return AddComprobante(comprobante);
-        }
-        public void RemoveComprobante(long cm_id)
-        {
-            List<DBComprobantes> filteredList = _db_comprobantes.Where(x => x.GetID() != cm_id).ToList();
-            _db_comprobantes.Clear();
-            foreach(DBComprobantes comprobante in filteredList)
-            {
-                _db_comprobantes.Add(comprobante);
-            }
-        }
+        public bool AddComprobante(MySqlConnection conn, long cm_id) => AddComprobante(DBComprobantes.GetByID(conn, GetEntidadComercial(), cm_id));
+
+        public void RemoveComprobante(long cm_id) => _db_comprobantes.RemoveAll(x => x.GetID() == cm_id);
+
         public void RemoveComprobante(DBComprobantes entRemove)
         {
             if (_db_comprobantes.Remove(entRemove))
