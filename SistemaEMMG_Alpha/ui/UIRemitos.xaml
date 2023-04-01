@@ -34,7 +34,7 @@
                     No ha seleccionado ningun remito.
                 </Label>
             </Grid>
-            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgRemitos"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgRemitos_SelectionChanged">
+            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgRemitos" FontFamily="Helvetica" FontSize="14"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgRemitos_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding rm_id}"  Header="rm_id" Visibility="Collapsed"></DataGridTextColumn>
                     <DataGridTextColumn Binding="{Binding rm_ec_id}" Header="rm_ec_id" Visibility="Collapsed"></DataGridTextColumn>

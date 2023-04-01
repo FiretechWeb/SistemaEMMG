@@ -34,7 +34,7 @@
                     No ha seleccionado ningun comprobante.
                 </Label>
             </Grid>
-            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgComprobantes"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgComprobantes_SelectionChanged">
+            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgComprobantes" FontFamily="Helvetica" FontSize="14"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgComprobantes_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding cm_id}"  Header="cm_id" Visibility="Collapsed"></DataGridTextColumn>
                     <DataGridTextColumn Binding="{Binding cm_ec_id}" Header="ec_id" Visibility="Collapsed"></DataGridTextColumn>

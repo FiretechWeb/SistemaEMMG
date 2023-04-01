@@ -518,7 +518,6 @@ namespace SistemaEMMG_Alpha
          * DEBUG STUFF ONLY
          * ********************/
 
-
         public static DBPago GenerateRandom(DBRecibo Recibo)
         {
             Random r = new Random(Guid.NewGuid().GetHashCode());

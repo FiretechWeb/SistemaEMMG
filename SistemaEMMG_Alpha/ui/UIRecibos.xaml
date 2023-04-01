@@ -34,7 +34,7 @@
                     No ha seleccionado ningun recibo.
                 </Label>
             </Grid>
-            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgRecibos"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgRecibos_SelectionChanged">
+            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgRecibos" FontFamily="Helvetica" FontSize="14"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgRecibos_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding rc_id}"  Header="rc_id" Visibility="Collapsed"></DataGridTextColumn>
                     <DataGridTextColumn Binding="{Binding rc_ec_id}" Header="rc_ec_id" Visibility="Collapsed"></DataGridTextColumn>

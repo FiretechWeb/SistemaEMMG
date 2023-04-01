@@ -7,7 +7,7 @@
         xmlns:uc="clr-namespace:SistemaEMMG_Alpha.ui"
         mc:Ignorable="d"
         Icon="icon.ico"
-        Title="Sistema Compra-Venta (Alpha)" Height="450" Width="800" MinWidth="700" MinHeight="450" ResizeMode="CanResizeWithGrip" KeyDown="Window_KeyDown">
+        Title="Sistema Compra-Venta (Alpha)" Height="520" Width="750" MinWidth="700" MinHeight="520" ResizeMode="CanResizeWithGrip" KeyDown="Window_KeyDown">
     <Grid>
     <DockPanel Canvas.Left="0" Canvas.Top="0" Canvas.Right="0" Canvas.Bottom="0">
         <DockPanel Background="#7093c5"  DockPanel.Dock="Top" Height="40" VerticalAlignment="Top">

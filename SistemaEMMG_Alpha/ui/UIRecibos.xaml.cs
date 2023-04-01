@@ -163,7 +163,6 @@ namespace SistemaEMMG_Alpha.ui
                     pagado = $"{recibo.GetPagosTotal_MonedaLocal(dbCon.Connection).ToString("0.00")} ARS"
                 });
             }
-            //$"{comprobante.GetTotal_MonedaLocal().ToString("0.00")} ARS"
             SetReciboSeleccionado(null);
         }
 
