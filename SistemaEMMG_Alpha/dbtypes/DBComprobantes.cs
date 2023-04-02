@@ -1606,6 +1606,7 @@ namespace SistemaEMMG_Alpha
             double totalPagoDirecto = 0.0;
             double totalImporte = 0.0;
             double totalPagoLocal = 0.0; //pagos que estoy seguro que fueron para solo esta factura.
+            double totalMonedaLocal = GetTotal_MonedaLocal();
             List<DBComprobantes> listaComprobantes = new List<DBComprobantes>();
             List<DBRecibo> listaRecibos = GetAllRecibos(conn);
 
@@ -1672,7 +1673,12 @@ namespace SistemaEMMG_Alpha
                     totalPagoDirecto += pagoTotalRecibo;
                 }
             }
-            return (totalPago >= totalImporte && totalPagoDirecto >= GetTotal_MonedaLocal()) || (totalPagoLocal >= GetTotal_MonedaLocal());
+            totalPago = Math.Round(totalPago, 2);
+            totalImporte = Math.Round(totalImporte, 2);
+            totalMonedaLocal = Math.Round(totalMonedaLocal, 2);
+            totalPagoLocal = Math.Round(totalPagoLocal, 2);
+
+            return (totalPago >= totalImporte && totalPagoDirecto >= totalMonedaLocal) || (totalPagoLocal >= totalMonedaLocal);
         }
 
         /**********************
