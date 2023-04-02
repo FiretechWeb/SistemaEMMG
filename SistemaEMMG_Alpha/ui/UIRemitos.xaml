@@ -81,7 +81,7 @@
                 <Label Grid.Row="0" Grid.Column="6" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
                     CUIT
                 </Label>
-                <TextBox x:Name="txtNumeroFiltro" Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtNumeroFiltro" MaxLength="49" Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
                 <ComboBox x:Name="cmbFiltroEstado" Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">

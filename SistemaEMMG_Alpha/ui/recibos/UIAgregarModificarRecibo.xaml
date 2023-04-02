@@ -43,7 +43,7 @@
                     <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="14" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Numero:
                     </Label>
-                    <TextBox x:Name="txtNumero" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="14" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" TextChanged="txtNumero_TextChanged">
+                    <TextBox x:Name="txtNumero" Grid.Column="1" MaxLength="49" FontFamily="Helvetica"  Foreground="Black" FontSize="14" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Left" Width="100" TextChanged="txtNumero_TextChanged">
 
                     </TextBox>
                 </Grid>
