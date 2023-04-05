@@ -81,6 +81,7 @@ namespace SistemaEMMG_Alpha
         private readonly List<DBComprobantes> _db_comprobantes_asociados = new List<DBComprobantes>(); //Notas de crédito o débitos asociados a este comprobante.
         private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
         private readonly List<DBRemito> _db_remitos = new List<DBRemito>();
+        private long _comprobante_asociado_id = -1;
 
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet)
         {
@@ -126,6 +127,10 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
+            }
             return returnList;
         }
 
@@ -156,8 +161,13 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
+            }
             return returnList;
         }
+
 
         public static List<DBComprobantes> GetAll(MySqlConnection conn, DBCuenta cuenta)
         {
@@ -178,6 +188,10 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
             }
             return returnList;
         }
@@ -202,8 +216,40 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
+            }
             return returnList;
         }
+
+        public static List<DBComprobantes> GetAll(MySqlConnection conn, DBComprobantes comprobanteAsociado)
+        {
+            List<DBComprobantes> returnList = new List<DBComprobantes>();
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {comprobanteAsociado.GetCuentaID()} AND {NameOf_cm_ec_id} = {comprobanteAsociado.GetEntidadComercialID()} AND {NameOf_cm_cm_id} = {comprobanteAsociado.GetID()} AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(comprobanteAsociado.IsEmitido())} AND {NameOf_id} <> {comprobanteAsociado.GetID()}";
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBComprobantes(comprobanteAsociado.GetEntidadComercial(), new DBTiposComprobantes(reader), new DBMoneda(reader), reader));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener todos los comprobantes asociados a otro comprobante, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
+            }
+            return returnList;
+        }
+
 
         public static DBComprobantes GetByID(MySqlConnection conn, DBEntidades entidadComercial, long id)
         {
@@ -224,6 +270,10 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 MessageBox.Show("Error al tratar de obtener todos los comprobantes de una cuenta, problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            if (!(returnEnt is null))
+            {
+                returnEnt.RefreshComprobanteAsociado(conn);
             }
             return returnEnt;
         }
@@ -343,6 +393,11 @@ namespace SistemaEMMG_Alpha
                 returnList = returnList.Where(x => x.IsPago(conn)).ToList();
             }
 
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
+            }
+
             return returnList;
         }
 
@@ -366,6 +421,12 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error en DBComprobantes::SearchByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
+            foreach (DBComprobantes comprobante in returnList)
+            {
+                comprobante.RefreshComprobanteAsociado(conn);
+            }
+
             return returnList;
         }
 
@@ -389,6 +450,13 @@ namespace SistemaEMMG_Alpha
             {
                 MessageBox.Show("Error en DBComprobantes::GetByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
+
+            if (!(returnEnt is null))
+            {
+                returnEnt.RefreshComprobanteAsociado(conn);
+            }
+
             return returnEnt;
         }
 
@@ -402,6 +470,16 @@ namespace SistemaEMMG_Alpha
             _tipoComprobante = newTipo;
             _data = newData;
             _comprobanteAsociado = comprobanteAsociado;
+        }
+
+        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, long comprobanteAsociadoID) : base(id)
+        {
+            _entidadComercial = entidadComercial;
+            _moneda = newMoneda;
+            _tipoComprobante = newTipo;
+            _data = newData;
+            _comprobanteAsociado = null;
+            _comprobante_asociado_id = comprobanteAsociadoID;
         }
 
         public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
@@ -663,7 +741,8 @@ namespace SistemaEMMG_Alpha
             reader.GetInt64Safe(NameOf_id),
             newTipo,
             newMoneda,
-            ComprobantesData.CreateFromReader(reader)) { }
+            ComprobantesData.CreateFromReader(reader), 
+            reader.GetInt64Safe(NameOf_cm_cm_id)) { }
 
         public bool PushToDatabase(MySqlConnection conn, long old_cm_ec_id)
         {
@@ -1419,6 +1498,19 @@ namespace SistemaEMMG_Alpha
             _db_remitos.RemoveAll(x => x.GetCuentaID() == entRemove.GetCuentaID() && x.GetEntidadComercialID() == entRemove.GetEntidadComercialID() && x.GetID() == entRemove.GetID());
 
         }
+
+        public List<DBComprobantes> GetAllComprobantesAsociados(MySqlConnection conn)
+        {
+            List<DBComprobantes> returnList = GetAll(conn, this);
+            _db_comprobantes_asociados.Clear();
+            foreach (DBComprobantes comprobanteAsociado in returnList)
+            {
+                _db_comprobantes_asociados.Add(comprobanteAsociado);
+            }
+            return returnList;
+        }
+        public List<DBComprobantes> GetAllComprobantesAsociados() => _db_comprobantes_asociados;
+
         public long GetEntidadComercialID() => _entidadComercial.GetID();
 
         ///<summary>
@@ -1541,7 +1633,39 @@ namespace SistemaEMMG_Alpha
             _data.cm_obs = obs;
         }
 
-        public override DBBaseClass GetLocalCopy() => new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _moneda, _data);
+        public void SetComprobanteAsociadoID(long newId) => _comprobante_asociado_id = newId;
+
+        public long GetComprobanteAsociadoID()
+        {
+            if (_comprobanteAsociado is null)
+            {
+                return _comprobante_asociado_id;
+            } else {
+                return _comprobanteAsociado.GetID();
+            }
+        }
+
+        public void AsociarAComprobante(DBComprobantes comprobanteAsociado)
+        {
+            if (comprobanteAsociado.GetCuentaID() != GetCuentaID() || comprobanteAsociado.GetEntidadComercialID() != GetEntidadComercialID() || GetID() == comprobanteAsociado.GetID() || IsEmitido() != comprobanteAsociado.IsEmitido())
+            {
+                MessageBox.Show("Error en el método DBComprobantes::AsociarAComprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            _shouldPush = true;
+            _comprobanteAsociado = comprobanteAsociado;
+        }
+
+        public void RefreshComprobanteAsociado(MySqlConnection conn)
+        {
+            if (GetComprobanteAsociadoID() == GetID() || GetComprobanteAsociadoID() == -1)
+            {
+                return;
+            }
+            _comprobanteAsociado = GetByID(conn, GetEntidadComercial(), GetComprobanteAsociadoID());
+        }
+
+        public override DBBaseClass GetLocalCopy() => new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _moneda, _data, _comprobanteAsociado);
 
         public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoComprobante.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
 
