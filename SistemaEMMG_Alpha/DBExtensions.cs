@@ -46,24 +46,24 @@ namespace SistemaEMMG_Alpha
         {
             return GetStringSafe(reader, reader.GetOrdinal(indexName), defaultValue);
         }
-        public static long GetInt32Safe(this MySqlDataReader reader, int colIndex, int defaultValue)
+        public static int GetInt32Safe(this MySqlDataReader reader, int colIndex, int defaultValue)
         {
             if (!reader.IsDBNull(colIndex))
                 return reader.GetInt32(colIndex);
             else
                 return defaultValue;
         }
-        public static long GetInt32Safe(this MySqlDataReader reader, int colIndex)
+        public static int GetInt32Safe(this MySqlDataReader reader, int colIndex)
         {
             return GetInt32Safe(reader, colIndex, 0);
         }
 
-        public static long GetInt32Safe(this MySqlDataReader reader, string indexName)
+        public static int GetInt32Safe(this MySqlDataReader reader, string indexName)
         {
             return GetInt32Safe(reader, reader.GetOrdinal(indexName));
         }
 
-        public static long GetInt32Safe(this MySqlDataReader reader, string indexName, int defaultValue)
+        public static int GetInt32Safe(this MySqlDataReader reader, string indexName, int defaultValue)
         {
             return GetInt32Safe(reader, reader.GetOrdinal(indexName), defaultValue);
         }

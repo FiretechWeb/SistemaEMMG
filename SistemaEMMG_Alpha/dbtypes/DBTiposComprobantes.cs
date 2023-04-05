@@ -8,17 +8,60 @@ using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
+    public enum TipoComprobanteFlag
+    {
+        Gravado = 1 << 0,
+        IVA = 1 << 1,
+        NoGravado = 1 << 2,
+        Percepcion = 1 << 3,
+        Total = 1 << 4,
+        Acredita = 1 << 5,
+        Asociado = 1 << 6 //asociado a otro comprobante o no.
+    }
     public struct TiposComprobantesData
     {
-        public TiposComprobantesData(string nom)
+        public TiposComprobantesData(string nom, int bitflags)
         {
             tc_nombre = nom;
+            tc_bitflags = bitflags;
         }
         public string tc_nombre { get; set; }
 
+        public int tc_bitflags { get; set; }
+
         public static readonly string NameOf_tc_nombre = nameof(tc_nombre);
 
-        public static TiposComprobantesData CreateFromReader(MySqlDataReader reader) => new TiposComprobantesData(reader.GetStringSafe(NameOf_tc_nombre));
+        public static readonly string NameOf_tc_bitflags = nameof(tc_bitflags);
+
+        public void ResetFlags()
+        {
+            tc_bitflags = 0;
+        }
+
+        public void SetAllFlags()
+        {
+            tc_bitflags = 0;
+            foreach (int flag in Enum.GetValues(typeof(TipoComprobanteFlag)))
+            {
+                tc_bitflags |= flag;
+            }
+        }
+
+        public void SetFlag(TipoComprobanteFlag flag)
+        {
+            tc_bitflags |= (int)flag;
+        }
+
+        public void UnsetFlag(TipoComprobanteFlag flag)
+        {
+            tc_bitflags &= ~(int)flag;
+        }
+
+        public bool HasFlag(TipoComprobanteFlag flag)
+        {
+            return (tc_bitflags & (int)flag) == (int)flag;
+        }
+        public static TiposComprobantesData CreateFromReader(MySqlDataReader reader) => new TiposComprobantesData(reader.GetStringSafe(NameOf_tc_nombre), reader.GetInt32Safe(NameOf_tc_bitflags));
 
         public override string ToString() => $"Tipo: {tc_nombre}";
     }
@@ -96,9 +139,9 @@ namespace SistemaEMMG_Alpha
         public DBTiposComprobantes(long id, TiposComprobantesData newData) : base(id) { _data = newData; }
 
         public DBTiposComprobantes(TiposComprobantesData newData) : this(-1, newData) { }
-        public DBTiposComprobantes(long id, string nombre) : this(id, new TiposComprobantesData(nombre)) { }
+        public DBTiposComprobantes(long id, string nombre, int bitflags) : this(id, new TiposComprobantesData(nombre, bitflags)) { }
 
-        public DBTiposComprobantes(string nombre) : this(-1, nombre) { }
+        public DBTiposComprobantes(string nombre, int bitflags) : this(-1, nombre, bitflags) { }
 
         public DBTiposComprobantes(MySqlConnection conn, long id) : base (id)
         {
@@ -166,7 +209,7 @@ namespace SistemaEMMG_Alpha
 
             try
             {
-                string query = $"UPDATE {db_table} SET {TiposComprobantesData.NameOf_tc_nombre} = '{Regex.Replace(_data.tc_nombre.Trim(), @"\s+", " ")}' WHERE {NameOf_id} = {GetID()}";
+                string query = $"UPDATE {db_table} SET {TiposComprobantesData.NameOf_tc_nombre} = '{Regex.Replace(_data.tc_nombre.Trim(), @"\s+", " ")}', {TiposComprobantesData.NameOf_tc_bitflags} = {_data.tc_bitflags} WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 _shouldPush = _shouldPush && !wasAbleToUpdate;
@@ -189,7 +232,7 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({TiposComprobantesData.NameOf_tc_nombre}) VALUES ('{Regex.Replace(_data.tc_nombre.Trim(), @"\s+", " ")}')";
+                string query = $"INSERT INTO {db_table} ({TiposComprobantesData.NameOf_tc_nombre}, {TiposComprobantesData.NameOf_tc_bitflags}) VALUES ('{Regex.Replace(_data.tc_nombre.Trim(), @"\s+", " ")}', {_data.tc_bitflags})";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -279,6 +322,35 @@ namespace SistemaEMMG_Alpha
         }
 
         public string GetName() => _data.tc_nombre;
+
+        public void SetFlag(TipoComprobanteFlag flag)
+        {
+            _shouldPush = _shouldPush || !_data.HasFlag(flag);
+            _data.SetFlag(flag);
+        }
+        public void UnsetFlag(TipoComprobanteFlag flag)
+        {
+            _shouldPush = _shouldPush || _data.HasFlag(flag);
+            _data.UnsetFlag(flag);
+        }
+        public bool HasFlag(TipoComprobanteFlag flag) => _data.HasFlag(flag);
+        public void ResetFlags()
+        {
+            _shouldPush = _shouldPush || (_data.tc_bitflags != 0);
+            _data.ResetFlags();
+        }
+        public void SetAllFlags()
+        {
+            _shouldPush = true;
+            _data.SetAllFlags();
+        }
+        public void SetFlags(int flags)
+        {
+            _shouldPush = _shouldPush || (_data.tc_bitflags != flags);
+            _data.tc_bitflags = flags;
+        }
+        public int GetFlags() => _data.tc_bitflags;
+
 
         public override DBBaseClass GetLocalCopy() => new DBTiposComprobantes(-1, _data);
 

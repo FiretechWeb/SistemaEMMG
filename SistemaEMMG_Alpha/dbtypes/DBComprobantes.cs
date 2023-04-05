@@ -68,6 +68,7 @@ namespace SistemaEMMG_Alpha
         public const string NameOf_cm_ec_id = "cm_ec_id";
         public const string NameOf_cm_tc_id = "cm_tc_id";
         public const string NameOf_cm_mn_id = "cm_mn_id";
+        public const string NameOf_cm_cm_id = "cm_cm_id"; //comprobante asociado
         public const string NameOf_id = "cm_id";
         ///<summary>
         ///Commercial entity associated with this business receipt.
@@ -76,6 +77,8 @@ namespace SistemaEMMG_Alpha
         private DBMoneda _moneda;
         private ComprobantesData _data;
         private DBTiposComprobantes _tipoComprobante = null;
+        private DBComprobantes _comprobanteAsociado = null; //comprobante al cual este comprobante (nota de crédito o débito) está asociado.
+        private readonly List<DBComprobantes> _db_comprobantes_asociados = new List<DBComprobantes>(); //Notas de crédito o débitos asociados a este comprobante.
         private readonly List<DBRecibo> _db_recibos = new List<DBRecibo>();
         private readonly List<DBRemito> _db_remitos = new List<DBRemito>();
 
@@ -392,59 +395,66 @@ namespace SistemaEMMG_Alpha
         /****************
          * Constructors 
          * **************/
-        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData) : base (id)
+        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado=null) : base (id)
         {
             _entidadComercial = entidadComercial;
             _moneda = newMoneda;
             _tipoComprobante = newTipo;
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
 
-        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, DBMoneda newMoneda, ComprobantesData newData) : base(id)
+        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
         {
             _entidadComercial = entidadComercial;
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _moneda = newMoneda;
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
 
-        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, long mn_id, ComprobantesData newData) : base(id)
+        public DBComprobantes(DBEntidades entidadComercial, long id, long tc_id, long mn_id, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
         {
             _entidadComercial = entidadComercial;
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _moneda = DBMoneda.GetByID(mn_id);
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
 
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData) : base(id)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
         {
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = newTipo;
             _moneda = newMoneda;
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
 
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tc_id, long mn_id, ComprobantesData newData) : base(id)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, long id, long ec_id, long tc_id, long mn_id, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
         {
             _entidadComercial = cuentaSeleccioanda.GetEntidadByID(ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _moneda = DBMoneda.GetByID(mn_id);
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, long mn_id, ComprobantesData newData) : base(id)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, long tc_id, long mn_id, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
         {
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = DBTiposComprobantes.GetByID(tc_id);
             _moneda = DBMoneda.GetByID(mn_id);
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
 
-        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData) : base(id)
+        public DBComprobantes(DBCuenta cuentaSeleccioanda, MySqlConnection conn, long id, long ec_id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado = null) : base(id)
         {
             _entidadComercial = DBEntidades.GetByID(conn, cuentaSeleccioanda, ec_id);
             _tipoComprobante = newTipo;
             _moneda = newMoneda;
             _data = newData;
+            _comprobanteAsociado = comprobanteAsociado;
         }
 
         public DBComprobantes(
@@ -460,13 +470,15 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio=1.0,
-            string obs=""
+            string obs="",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         ) { }
 
         public DBComprobantes(
@@ -481,13 +493,15 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             -1,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
 
@@ -504,13 +518,15 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             id,
             tc_id,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
         public DBComprobantes(
@@ -525,13 +541,15 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             -1,
             tc_id,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
         public DBComprobantes(
@@ -548,14 +566,16 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
             id,
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
         public DBComprobantes(
@@ -571,14 +591,16 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
             -1,
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
         public DBComprobantes(
@@ -596,7 +618,8 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
             conn,
@@ -604,7 +627,8 @@ namespace SistemaEMMG_Alpha
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
         public DBComprobantes(
@@ -621,7 +645,8 @@ namespace SistemaEMMG_Alpha
             double no_gravado = 0.0,
             double percepcion = 0.0,
             double cambio = 1.0,
-            string obs = ""
+            string obs = "",
+            DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
             conn,
@@ -629,7 +654,8 @@ namespace SistemaEMMG_Alpha
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs)
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs),
+            comprobanteAsociado
         )
         { }
         public DBComprobantes(DBEntidades entidadComercial, DBTiposComprobantes newTipo, DBMoneda newMoneda, MySqlDataReader reader) : this(
@@ -683,6 +709,7 @@ namespace SistemaEMMG_Alpha
                 var reader = cmd.ExecuteReader();
                 long new_tipo_comprobante_id = -1;
                 long new_entidad_comercial_id = -1;
+                long new_comprobante_asociado_id = -1;
                 long new_moneda_id = -1;
                 while (reader.Read())
                 {
@@ -690,6 +717,7 @@ namespace SistemaEMMG_Alpha
                     new_tipo_comprobante_id = reader.GetInt64Safe(NameOf_cm_tc_id);
                     new_entidad_comercial_id = reader.GetInt64Safe(NameOf_cm_ec_id);
                     new_moneda_id = reader.GetInt64Safe(NameOf_cm_mn_id);
+                    new_comprobante_asociado_id = reader.GetInt64Safe(NameOf_cm_cm_id);
                     _shouldPush = false;
                     wasAbleToPull = true;
                 }
@@ -706,6 +734,10 @@ namespace SistemaEMMG_Alpha
                 if (new_moneda_id != -1)
                 {
                     _moneda = DBMoneda.GetByID(new_moneda_id, conn);
+                }
+                if (new_comprobante_asociado_id != -1 && new_comprobante_asociado_id != GetID())
+                {
+                    _comprobanteAsociado = GetByID(conn, GetEntidadComercial(), new_comprobante_asociado_id);
                 }
             }
             catch (Exception ex)
@@ -730,10 +762,16 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
+                long comprobante_asociado_id = -1;
+                if (!(_comprobanteAsociado is null))
+                {
+                    comprobante_asociado_id = _comprobanteAsociado.GetID();
+                }
                 string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_cm_tc_id} = {_tipoComprobante.GetID()}, 
                                 {NameOf_cm_mn_id} = {_moneda.GetID()}, 
+                                {NameOf_cm_cm_id} = {comprobante_asociado_id}, 
                                 {ComprobantesData.NameOf_cm_fecha} = {fechaEmitido}, 
                                 {ComprobantesData.NameOf_cm_numero} = '{Regex.Replace(_data.cm_numero.Trim(), @"\s+", " ")}', 
                                 {ComprobantesData.NameOf_cm_gravado} = {_data.cm_gravado.ToString().Replace(",", ".")}, 
@@ -762,12 +800,17 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string fechaEmitido = (_data.cm_fecha.HasValue) ? $"'{((DateTime)_data.cm_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-
+                long comprobante_asociado_id = -1;
+                if (!(_comprobanteAsociado is null))
+                {
+                    comprobante_asociado_id = _comprobanteAsociado.GetID();
+                }
                 string query = $@"INSERT INTO {db_table} (
                                 {NameOf_cm_em_id}, 
                                 {NameOf_cm_ec_id}, 
                                 {NameOf_cm_tc_id}, 
                                 {NameOf_cm_mn_id}, 
+                                {NameOf_cm_cm_id}, 
                                 {ComprobantesData.NameOf_cm_fecha}, 
                                 {ComprobantesData.NameOf_cm_numero}, 
                                 {ComprobantesData.NameOf_cm_gravado}, 
@@ -781,7 +824,8 @@ namespace SistemaEMMG_Alpha
                                 {_entidadComercial.GetCuentaID()}, 
                                 {_entidadComercial.GetID()}, 
                                 {_tipoComprobante.GetID()}, 
-                                {_moneda.GetID()},
+                                {_moneda.GetID()}, 
+                                {comprobante_asociado_id}, 
                                 {fechaEmitido}, 
                                 '{Regex.Replace(_data.cm_numero.Trim(), @"\s+", " ")}', 
                                 {_data.cm_gravado.ToString().Replace(",", ".")}, 
