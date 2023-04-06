@@ -1149,14 +1149,10 @@ namespace SistemaEMMG_Alpha
         public double GetComprobantesTotal_MonedaLocal(MySqlConnection conn)
         {
             GetAllComprobantes(conn);
-            return GetComprobantesTotal_MonedaLocal();
-        }
-        public double GetComprobantesTotal_MonedaLocal()
-        {
             double totalComprobantes = 0.0;
             foreach (DBComprobantes comprobante in _db_comprobantes)
             {
-                totalComprobantes += comprobante.GetTotal_MonedaLocal();
+                totalComprobantes += comprobante.GetTotalReal_MonedaLocal(conn);
             }
             return totalComprobantes;
         }

@@ -187,8 +187,63 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
 
             listSelectedEntidadComercial.SelectedIndex = 0;
             CheckIfAbleToSubmit();
+            RefreshTypeSelected();
         }
 
+        private void RefreshTypeSelected()
+        {
+            DBTiposComprobantes tipoComprobanteSeleccionado = DBTiposComprobantes.GetByID(((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key);
+
+            if (tipoComprobanteSeleccionado is null)
+            {
+                return;
+            }
+
+            if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Gravado))
+            {
+                gridGravado.Visibility = Visibility.Visible;
+            }
+            {
+                gridGravado.Visibility = Visibility.Collapsed;
+            }
+            if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.IVA))
+            {
+                gridIVA.Visibility = Visibility.Visible;
+            }
+            {
+                gridIVA.Visibility = Visibility.Collapsed;
+            }
+            if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.NoGravado))
+            {
+                gridNoGravado.Visibility = Visibility.Visible;
+            }
+            {
+                gridNoGravado.Visibility = Visibility.Collapsed;
+            }
+            if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Percepcion))
+            {
+                gridPercepcion.Visibility = Visibility.Visible;
+            }
+            {
+                gridPercepcion.Visibility = Visibility.Collapsed;
+            }
+            if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Total))
+            {
+                gridTotal.Visibility = Visibility.Visible;
+            }
+            {
+                gridTotal.Visibility = Visibility.Collapsed;
+            }
+            if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Asociado))
+            {
+                btnComprobantesAsociados.Visibility = Visibility.Collapsed;
+                btnComprobantesAsociados.IsEnabled = false;
+            } else
+            {
+                btnComprobantesAsociados.Visibility = Visibility.Visible;
+                btnComprobantesAsociados.IsEnabled = true;
+            }
+        }
 
         private void btnGuardar_Click(object sender, RoutedEventArgs e)
         {
@@ -394,6 +449,21 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
         private void txtFechaEmitido_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = InputHandler.OnlyDateTimeText(e, txtFechaEmitido);
+        }
+
+        private void txtTotal_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void cmbTipoComprobante_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbTipoComprobante.SelectedItem is null)
+            {
+                return;
+            }
+            RefreshTypeSelected();
         }
     }
 }

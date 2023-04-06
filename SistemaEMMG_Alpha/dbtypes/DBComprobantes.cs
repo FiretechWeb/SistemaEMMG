@@ -1681,6 +1681,23 @@ namespace SistemaEMMG_Alpha
         public double GetNoGravado_MonedaLocal() => _data.cm_no_gravado * _data.cm_cambio;
         public double GetPercepcion_MonedaLocal() => _data.cm_percepcion * _data.cm_cambio;
 
+        public double GetTotalReal_MonedaLocal(MySqlConnection conn)
+        {
+            double total_asociado = 0.0;
+            GetAllComprobantesAsociados(conn);
+            foreach (DBComprobantes comprobante in _db_comprobantes_asociados)
+            {
+                if (comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    total_asociado += comprobante.GetTotal_MonedaLocal();
+                } else
+                {
+                    total_asociado -= comprobante.GetTotal_MonedaLocal();
+                }
+            }
+            return total_asociado + GetTotal_MonedaLocal();
+        }
+
         public static List<DBComprobantes> GetAllEmitidos(List<DBComprobantes> comprobantesList) => comprobantesList.Where(x => x.IsEmitido()).ToList();
         public static List<DBComprobantes> GetAllRecibidos(List<DBComprobantes> comprobantesList) => comprobantesList.Where(x => !x.IsEmitido()).ToList();
         public static List<DBComprobantes> GetAllWithMonedaExtranjera(List<DBComprobantes> comprobantesList) => comprobantesList.Where(x => x.GetMoneda().IsExtranjera()).ToList();
@@ -1690,14 +1707,20 @@ namespace SistemaEMMG_Alpha
             double saldoTotal = 0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
+                double currentTotal = 0;
                 if (comprobante.IsEmitido())
                 {
-                    saldoTotal += comprobante.GetTotal_MonedaLocal();
+                    currentTotal = comprobante.GetTotal_MonedaLocal();
                 }
                 else
                 {
-                    saldoTotal -= comprobante.GetTotal_MonedaLocal();
+                    currentTotal = -comprobante.GetTotal_MonedaLocal();
                 }
+                if (!comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    currentTotal *= -1.0;
+                }
+                saldoTotal += currentTotal;
 
             }
             return saldoTotal;
@@ -1706,13 +1729,21 @@ namespace SistemaEMMG_Alpha
             double saldoIVA = 0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
+                double currentTotal = 0;
                 if (comprobante.IsEmitido())
                 {
-                    saldoIVA -= comprobante.GetIVA_MonedaLocal();
-                } else
-                {
-                    saldoIVA += comprobante.GetIVA_MonedaLocal();
+                    currentTotal = -comprobante.GetIVA_MonedaLocal();
                 }
+                else
+                {
+                    currentTotal = comprobante.GetIVA_MonedaLocal();
+                }
+                if (!comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    currentTotal *= -1.0;
+                }
+
+                saldoIVA += currentTotal;
                 
             }
             return saldoIVA;
@@ -1722,7 +1753,14 @@ namespace SistemaEMMG_Alpha
             double total=0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
-                total += comprobante.GetTotal_MonedaLocal();
+                if (comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    total += comprobante.GetTotal_MonedaLocal();
+                } else
+                {
+                    total -= comprobante.GetTotal_MonedaLocal();
+                }
+
             }
             return total;
         }
@@ -1731,7 +1769,15 @@ namespace SistemaEMMG_Alpha
             double totalIva = 0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
-                totalIva += comprobante.GetIVA_MonedaLocal();
+                if (comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    totalIva += comprobante.GetIVA_MonedaLocal();
+                }
+                else
+                {
+                    totalIva -= comprobante.GetIVA_MonedaLocal();
+                }
+
             }
             return totalIva;
         }
@@ -1740,7 +1786,13 @@ namespace SistemaEMMG_Alpha
             double totalGravado = 0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
-                totalGravado += comprobante.GetGravado_MonedaLocal();
+                if (comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    totalGravado += comprobante.GetGravado_MonedaLocal();
+                } else
+                {
+                    totalGravado -= comprobante.GetGravado_MonedaLocal();
+                }
             }
             return totalGravado;
         }
@@ -1749,7 +1801,13 @@ namespace SistemaEMMG_Alpha
             double totalNoGravado = 0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
-                totalNoGravado += comprobante.GetNoGravado_MonedaLocal();
+                if (comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    totalNoGravado += comprobante.GetNoGravado_MonedaLocal();
+                } else
+                {
+                    totalNoGravado -= comprobante.GetNoGravado_MonedaLocal();
+                }
             }
             return totalNoGravado;
         }
@@ -1758,7 +1816,13 @@ namespace SistemaEMMG_Alpha
             double totalPercepcion = 0.0;
             foreach (DBComprobantes comprobante in comprobantesList)
             {
-                totalPercepcion += comprobante.GetPercepcion_MonedaLocal();
+                if (comprobante.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Acredita))
+                {
+                    totalPercepcion += comprobante.GetPercepcion_MonedaLocal();
+                } else
+                {
+                    totalPercepcion -= comprobante.GetPercepcion_MonedaLocal();
+                }
             }
             return totalPercepcion;
         }
@@ -1774,7 +1838,7 @@ namespace SistemaEMMG_Alpha
             double totalPagoDirecto = 0.0;
             double totalImporte = 0.0;
             double totalPagoLocal = 0.0; //pagos que estoy seguro que fueron para solo esta factura.
-            double totalMonedaLocal = GetTotal_MonedaLocal();
+            double totalMonedaLocal = GetTotalReal_MonedaLocal(conn);
             List<DBComprobantes> listaComprobantes = new List<DBComprobantes>();
             List<DBRecibo> listaRecibos = GetAllRecibos(conn);
 
@@ -1829,8 +1893,9 @@ namespace SistemaEMMG_Alpha
             } while (!searchFinished);
 
             foreach (DBComprobantes comprobante in listaComprobantes) {
-                totalImporte += comprobante.GetTotal_MonedaLocal();
+                totalImporte += comprobante.GetTotalReal_MonedaLocal(conn);
             }
+
             foreach (DBRecibo recibo in listaRecibos)
             {
                 double pagoTotalRecibo = recibo.GetPagosTotal_MonedaLocal(conn);

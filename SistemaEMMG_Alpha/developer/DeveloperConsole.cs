@@ -369,7 +369,7 @@ namespace SistemaEMMG_Alpha
                 _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make tipo comprobante Nombre";
                 return;
             }
-            _seleccion = new DBTiposComprobantes(parametros[0]);
+            _seleccion = new DBTiposComprobantes(parametros[0], (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita);
             _outputStr = $"Tipo de comprobante creado> {_seleccion}";
         }
         private void _CMD_CrearTipoRemito(string args)
@@ -1658,10 +1658,12 @@ namespace SistemaEMMG_Alpha
 
                 //Now populate.
                 List<DBTiposComprobantes> tiposComprobantes = new List<DBTiposComprobantes>();
-                tiposComprobantes.Add(new DBTiposComprobantes("Factura A"));
-                tiposComprobantes.Add(new DBTiposComprobantes("Factura B"));
-                tiposComprobantes.Add(new DBTiposComprobantes("Factura C"));
-                tiposComprobantes.Add(new DBTiposComprobantes("Ticket"));
+                tiposComprobantes.Add(new DBTiposComprobantes("Factura A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
+                tiposComprobantes.Add(new DBTiposComprobantes("Factura B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita)); 
+                tiposComprobantes.Add(new DBTiposComprobantes("Factura C", (int)TipoComprobanteFlag.Total | (int)TipoComprobanteFlag.Acredita));
+                tiposComprobantes.Add(new DBTiposComprobantes("Ticket", (int)TipoComprobanteFlag.Total | (int)TipoComprobanteFlag.Acredita));
+                tiposComprobantes.Add(new DBTiposComprobantes("Nota de crédito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
+                tiposComprobantes.Add(new DBTiposComprobantes("Nota de débito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
 
                 foreach (DBTiposComprobantes tipoComprobante in tiposComprobantes)
                 {
