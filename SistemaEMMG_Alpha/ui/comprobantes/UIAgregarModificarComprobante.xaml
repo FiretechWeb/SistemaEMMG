@@ -187,7 +187,7 @@
                         <Button x:Name="btnRemitos" Grid.Column="2" Padding="2, 2, 2, 2" Margin="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnRemitos_Click" >
                             Remitos
                         </Button>
-                        <Button x:Name="btnComprobantesAsociados" Grid.Column="3" Padding="2, 2, 2, 2" Margin="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                        <Button x:Name="btnComprobantesAsociados" Grid.Column="3" Padding="2, 2, 2, 2" Margin="3, 3, 3, 3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnComprobantesAsociados_Click" >
                             Comprobantes Asociados
                         </Button>
                     </Grid>
@@ -206,5 +206,6 @@
         </Grid>
         <local:UIRecibo x:Name="uiRecibosPanel" Visibility="Collapsed"></local:UIRecibo>
         <local:UICRemito x:Name="uiRemitosPanel" Visibility="Collapsed"></local:UICRemito>
+        <local:UIComprobante x:Name="uiComprobantePanel" Visibility="Collapsed"></local:UIComprobante>
     </Grid>
 </UserControl>

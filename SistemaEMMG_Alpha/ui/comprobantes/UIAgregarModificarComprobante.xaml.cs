@@ -41,6 +41,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             dbData = DBMain.Instance();
             uiRecibosPanel.SetUIOwner(this);
             uiRemitosPanel.SetUIOwner(this);
+            uiComprobantePanel.SetUIOwner(this);
         }
 
         private void CheckIfAbleToSubmit()
@@ -464,6 +465,16 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 return;
             }
             RefreshTypeSelected();
+        }
+
+        private void btnComprobantesAsociados_Click(object sender, RoutedEventArgs e)
+        {
+            if (_comprobanteSeleccionado is null)
+            {
+                return;
+            }
+            uiComprobantePanel.RefreshData(_comprobanteSeleccionado);
+            uiComprobantePanel.Visibility = Visibility.Visible;
         }
     }
 }

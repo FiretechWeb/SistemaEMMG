@@ -401,13 +401,12 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
-        public static List<DBComprobantes> SearchByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido)
+        public static List<DBComprobantes> SearchByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido, int asociado = -1)
         {
             List<DBComprobantes> returnList = new List<DBComprobantes>();
             try
             {
                 string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()} AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({ComprobantesData.NameOf_cm_numero}) LIKE '%{numeroComprobante.Trim().ToUpper()}%'";
-
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -422,16 +421,26 @@ namespace SistemaEMMG_Alpha
                 MessageBox.Show("Error en DBComprobantes::SearchByNumber. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
+            if (asociado != -1)
+            {
+                if (asociado == 0)
+                {
+                    returnList.RemoveAll(x => x.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado));
+                } else
+                {
+                    returnList.RemoveAll(x => !x.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado));
+                }
+            }
+
             foreach (DBComprobantes comprobante in returnList)
             {
                 comprobante.RefreshComprobanteAsociado(conn);
             }
-
             return returnList;
         }
 
-        public static DBComprobantes GetByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido)
-        {
+        public static DBComprobantes GetByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido, int asociado = -1)
+        { 
             DBComprobantes returnEnt = null;
             try
             {
@@ -454,6 +463,17 @@ namespace SistemaEMMG_Alpha
 
             if (!(returnEnt is null))
             {
+                if (asociado != -1)
+                {
+                    if (asociado == 0 && returnEnt.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado))
+                    {
+                        return null;
+                    }
+                    else if (!returnEnt.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado))
+                    {
+                        return null;
+                    }
+                }
                 returnEnt.RefreshComprobanteAsociado(conn);
             }
 
@@ -1647,7 +1667,7 @@ namespace SistemaEMMG_Alpha
 
         public void AsociarAComprobante(DBComprobantes comprobanteAsociado)
         {
-            if (comprobanteAsociado.GetCuentaID() != GetCuentaID() || comprobanteAsociado.GetEntidadComercialID() != GetEntidadComercialID() || GetID() == comprobanteAsociado.GetID() || IsEmitido() != comprobanteAsociado.IsEmitido())
+            if (!(comprobanteAsociado is null) && (comprobanteAsociado.GetCuentaID() != GetCuentaID() || comprobanteAsociado.GetEntidadComercialID() != GetEntidadComercialID() || GetID() == comprobanteAsociado.GetID() || IsEmitido() != comprobanteAsociado.IsEmitido()))
             {
                 MessageBox.Show("Error en el método DBComprobantes::AsociarAComprobante.", "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
