@@ -90,7 +90,6 @@ namespace SistemaEMMG_Alpha.ui.remitos
             SetComprobanteSeleccionado(null);
         }
 
-
         private void listComprobantesAsociados_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_remitoSelected is null)

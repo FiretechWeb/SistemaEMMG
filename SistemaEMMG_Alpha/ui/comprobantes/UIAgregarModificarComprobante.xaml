@@ -147,7 +147,7 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Total:</Label>
-                        <TextBox x:Name="txtTotal"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtTotal_PreviewTextInput"></TextBox>
+                        <TextBox x:Name="txtTotal"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtTotal_PreviewTextInput" TextChanged="txtTotal_TextChanged"></TextBox>
                     </Grid>
                     <Grid Grid.Row="5">
                         <Grid.ColumnDefinitions>

@@ -68,7 +68,7 @@
                 Comprobantes similares al ingresado.
             </Label>
             <ListBox x:Name="listComprobantesSimilares" Grid.Row="5" FontFamily="Helvetica" FontSize="14" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listComprobantesSimilares_SelectionChanged"></ListBox>
-            <Button x:Name="btnVolver" Grid.Row="6" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center">
+            <Button x:Name="btnVolver" Grid.Row="6" FontFamily="Helvetica" Padding="10, 0, 10, 0" Margin="2, 2, 2, 2"  Foreground="Black" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Click="btnVolver_Click">
                 Volver
             </Button>
         </Grid>

@@ -1661,7 +1661,7 @@ namespace SistemaEMMG_Alpha
                 tiposComprobantes.Add(new DBTiposComprobantes("Factura A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
                 tiposComprobantes.Add(new DBTiposComprobantes("Factura B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita)); 
                 tiposComprobantes.Add(new DBTiposComprobantes("Factura C", (int)TipoComprobanteFlag.Total | (int)TipoComprobanteFlag.Acredita));
-                tiposComprobantes.Add(new DBTiposComprobantes("Ticket", (int)TipoComprobanteFlag.Total | (int)TipoComprobanteFlag.Acredita));
+                tiposComprobantes.Add(new DBTiposComprobantes("Ticket", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
                 tiposComprobantes.Add(new DBTiposComprobantes("Nota de crédito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
                 tiposComprobantes.Add(new DBTiposComprobantes("Nota de débito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
 

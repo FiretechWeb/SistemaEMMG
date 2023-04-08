@@ -157,6 +157,9 @@
     <Compile Include="ui\comprobantes\UIAgregarModificarComprobante.xaml.cs">
       <DependentUpon>UIAgregarModificarComprobante.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\comprobantes\UIComprobante.xaml.cs">
+      <DependentUpon>UIComprobante.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\comprobantes\UICRemito.xaml.cs">
       <DependentUpon>UICRemito.xaml</DependentUpon>
     </Compile>
@@ -230,6 +233,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ui\comprobantes\UIAgregarModificarComprobante.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\comprobantes\UIComprobante.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

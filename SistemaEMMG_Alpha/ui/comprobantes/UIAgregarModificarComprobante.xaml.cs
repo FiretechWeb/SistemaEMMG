@@ -57,7 +57,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 btnGuardar.IsEnabled = false;
                 return;
             }
-            if (txtGravado.Text.Trim().Length < 1)
+            if (txtGravado.Text.Trim().Length < 1 && txtTotal.Text.Trim().Length < 1)
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -159,6 +159,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 txtPercepcion.Text = "";
                 txtObservacion.Text = "";
                 txtCambio.Text = "1.0";
+                txtTotal.Text = "";
                 cmbMoneda.SelectedIndex = 0;
                 RefreshMonedaSelected();
                 cmbTipoComprobante.SelectedIndex = 0;
@@ -184,6 +185,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 RefreshMonedaSelected();
                 cmbTipoComprobante.SelectedValue = _comprobanteSeleccionado.GetTipoComprobante().GetID();
                 txtCambio.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetCambio());
+                txtTotal.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetSubTotal());
             }
 
             listSelectedEntidadComercial.SelectedIndex = 0;
@@ -193,7 +195,12 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
 
         private void RefreshTypeSelected()
         {
-            DBTiposComprobantes tipoComprobanteSeleccionado = DBTiposComprobantes.GetByID(((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key);
+            if (cmbTipoComprobante.SelectedItem is null)
+            {
+                return;
+            }
+
+            DBTiposComprobantes tipoComprobanteSeleccionado = DBTiposComprobantes.GetByID(((KeyValuePair<long, string>)cmbTipoComprobante.SelectedItem).Key);
 
             if (tipoComprobanteSeleccionado is null)
             {
@@ -203,35 +210,35 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Gravado))
             {
                 gridGravado.Visibility = Visibility.Visible;
-            }
+            } else
             {
                 gridGravado.Visibility = Visibility.Collapsed;
             }
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.IVA))
             {
                 gridIVA.Visibility = Visibility.Visible;
-            }
+            } else
             {
                 gridIVA.Visibility = Visibility.Collapsed;
             }
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.NoGravado))
             {
                 gridNoGravado.Visibility = Visibility.Visible;
-            }
+            } else
             {
                 gridNoGravado.Visibility = Visibility.Collapsed;
             }
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Percepcion))
             {
                 gridPercepcion.Visibility = Visibility.Visible;
-            }
+            } else
             {
                 gridPercepcion.Visibility = Visibility.Collapsed;
             }
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Total))
             {
                 gridTotal.Visibility = Visibility.Visible;
-            }
+            } else
             {
                 gridTotal.Visibility = Visibility.Collapsed;
             }
@@ -265,6 +272,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             _comprobanteSeleccionado.SetIVA(SafeConvert.ToDouble(txtIVA.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetNoGravado(SafeConvert.ToDouble(txtNoGravado.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetPercepcion(SafeConvert.ToDouble(txtPercepcion.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetSubTotal(SafeConvert.ToDouble(txtTotal.Text.Replace(".", ",")));
 
             _comprobanteSeleccionado.SetObservacion(txtObservacion.Text);
 
@@ -285,7 +293,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                     _comprobanteSeleccionado.PushAllRelationshipsWithRecibosDB(dbCon.Connection);
                     _comprobanteSeleccionado.PushAllRelationshipsWithRemitosDB(dbCon.Connection);
                 }
-                MessageBox.Show("Comprobante agregado / modificado a la base de datos correctamente!");
+                MessageBox.Show("¡Comprobante agregado / modificado a la base de datos correctamente!");
                 _ownerControl.RefreshData();
                 Visibility = Visibility.Collapsed;
             } else
@@ -475,6 +483,11 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
             uiComprobantePanel.RefreshData(_comprobanteSeleccionado);
             uiComprobantePanel.Visibility = Visibility.Visible;
+        }
+
+        private void txtTotal_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
         }
     }
 }

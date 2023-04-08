@@ -81,8 +81,8 @@ namespace SistemaEMMG_Alpha.ui.recibos
             double importeTotal = 0.0;
             foreach (DBComprobantes comprobante in comprobantesAsociados)
             {
-                listComprobantesAsociados.Items.Add(new KeyValuePair<long, string>(comprobante.GetID(), $"{comprobante.GetNumeroComprobante()}: {comprobante.GetTotal_MonedaLocal()} ARS"));
-                importeTotal += comprobante.GetTotal_MonedaLocal();
+                listComprobantesAsociados.Items.Add(new KeyValuePair<long, string>(comprobante.GetID(), $"{comprobante.GetNumeroComprobante()}: {comprobante.GetTotalReal_MonedaLocal(dbCon.Connection)} ARS"));
+                importeTotal += comprobante.GetTotalReal_MonedaLocal(dbCon.Connection);
             }
             listComprobantesSimilares.SelectedIndex = -1;
             listComprobantesAsociados.SelectedIndex = -1;
@@ -113,11 +113,11 @@ namespace SistemaEMMG_Alpha.ui.recibos
             {
                 return;
             }
-            DBComprobantes newComprobante = DBComprobantes.GetByNumber(dbCon.Connection, _reciboSelected.GetEntidadComercial(), txtNumeroComprobante.Text.Trim(), _reciboSelected.IsEmitido());
+            DBComprobantes newComprobante = DBComprobantes.GetByNumber(dbCon.Connection, _reciboSelected.GetEntidadComercial(), txtNumeroComprobante.Text.Trim(), _reciboSelected.IsEmitido(), 0);
 
             if (newComprobante is null)
             {
-                List<DBComprobantes> comprobantesSimilares = DBComprobantes.SearchByNumber(dbCon.Connection, _reciboSelected.GetEntidadComercial(), txtNumeroComprobante.Text.Trim(), _reciboSelected.IsEmitido());
+                List<DBComprobantes> comprobantesSimilares = DBComprobantes.SearchByNumber(dbCon.Connection, _reciboSelected.GetEntidadComercial(), txtNumeroComprobante.Text.Trim(), _reciboSelected.IsEmitido(), 0);
                 listComprobantesSimilares.Items.Clear();
                 listComprobantesSimilares.SelectedValuePath = "Key";
                 listComprobantesSimilares.DisplayMemberPath = "Value";

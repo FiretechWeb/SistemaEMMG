@@ -500,7 +500,7 @@ namespace SistemaEMMG_Alpha
                         sl.SetCellValue(row, 7, comprobante.GetCambio());
                         sl.SetCellStyle(row, 7, styleARS);
 
-                        sl.SetCellValue(row, 8, comprobante.GetTotal_MonedaLocal());
+                        sl.SetCellValue(row, 8, comprobante.GetTotalReal_MonedaLocal(conn));
                         sl.SetCellStyle(row, 8, styleARS);
 
                         sl.SetCellStyle(row, 9, styleUSD);
@@ -523,7 +523,7 @@ namespace SistemaEMMG_Alpha
                     sl.SetCellValue(row + 6, 1, "Total comprobantes:");
                     sl.SetCellStyle(row + 6, 1, styleTitle);
 
-                    sl.SetCellValue(row + 6, 2, DBComprobantes.GetTotal_MonedaLocal(listaComprobantes));
+                    sl.SetCellValue(row + 6, 2, DBComprobantes.GetTotalReal_MonedaLocal(listaComprobantes, conn));
                     sl.SetCellStyle(row + 6, 2, styleARS);
 
                     sl.SetCellValue(row, 11, "Pagos");

@@ -188,5 +188,10 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
             txtNumeroComprobante.Text = comprobanteSimilarSelected.GetNumeroComprobante();
         }
+
+        private void btnVolver_Click(object sender, RoutedEventArgs e)
+        {
+            Visibility = Visibility.Collapsed;
+        }
     }
 }
