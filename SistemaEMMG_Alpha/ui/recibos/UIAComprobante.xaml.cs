@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -113,6 +114,11 @@ namespace SistemaEMMG_Alpha.ui.recibos
             {
                 return;
             }
+            Console.WriteLine($"_reciboSelected exists");
+            if (_reciboSelected.IsLocal())
+            {
+                Console.WriteLine($"_reciboSelected is Local");
+            }
             DBComprobantes newComprobante = DBComprobantes.GetByNumber(dbCon.Connection, _reciboSelected.GetEntidadComercial(), txtNumeroComprobante.Text.Trim(), _reciboSelected.IsEmitido(), 0);
 
             if (newComprobante is null)
@@ -125,6 +131,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 {
                     listComprobantesSimilares.Items.Add(new KeyValuePair<long, string>(comprobante.GetID(), $"{comprobante.GetNumeroComprobante()}: {comprobante.GetTotal_MonedaLocal()} ARS"));
                 }
+                Console.WriteLine($"comprobanteSelected does not exists");
             }
             else
             {
@@ -134,6 +141,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
                     _reciboSelected.PushRelationshipComprobanteDB(dbCon.Connection, newComprobante);
                 }
                 RefreshData(_reciboSelected);
+                Console.WriteLine($"Pushing new comprobante");
             }
         }
 

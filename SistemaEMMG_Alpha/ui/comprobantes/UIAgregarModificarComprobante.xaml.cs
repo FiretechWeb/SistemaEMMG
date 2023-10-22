@@ -242,6 +242,9 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             {
                 gridTotal.Visibility = Visibility.Collapsed;
             }
+            //Stradex: Esto significa que si el tipo de comprobante se un comprobante que se asocia a otros (notas de crédito y débito)
+            //Entonces no hay que mostrar el botón con la lista de comprobantes asociados, ya que este tipo de comprobante no tiene comprobantes asociados
+            //Sino que está asociado a otro comprobante .
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Asociado))
             {
                 btnComprobantesAsociados.Visibility = Visibility.Collapsed;

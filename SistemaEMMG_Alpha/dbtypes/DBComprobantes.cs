@@ -448,7 +448,9 @@ namespace SistemaEMMG_Alpha
             DBComprobantes returnEnt = null;
             try
             {
+                Console.WriteLine($"numberoComprobante: {numeroComprobante.Trim().ToUpper()}");
                 string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {entidadComercial.GetID()} AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(isEmitido)} AND UPPER({ComprobantesData.NameOf_cm_numero}) = '{numeroComprobante.Trim().ToUpper()}'";
+                Console.WriteLine($"query: {query}");
 
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
@@ -467,11 +469,14 @@ namespace SistemaEMMG_Alpha
 
             if (!(returnEnt is null))
             {
+                Console.WriteLine($"returnEnt not null");
                 if (asociado != -1)
                 {
-                    if (asociado == 0 && returnEnt.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado))
+                    if (asociado == 0)
                     {
-                        return null;
+                        if (returnEnt.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado)) {
+                            return null;
+                        }
                     }
                     else if (!returnEnt.GetTipoComprobante().HasFlag(TipoComprobanteFlag.Asociado))
                     {
