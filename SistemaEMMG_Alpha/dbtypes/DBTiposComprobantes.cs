@@ -351,7 +351,6 @@ namespace SistemaEMMG_Alpha
         }
         public int GetFlags() => _data.tc_bitflags;
 
-
         public override DBBaseClass GetLocalCopy() => new DBTiposComprobantes(-1, _data);
 
         public override string ToString() => $"ID: {GetID()} - {_data}";
