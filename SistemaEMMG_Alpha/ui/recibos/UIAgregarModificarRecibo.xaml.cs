@@ -203,6 +203,8 @@ namespace SistemaEMMG_Alpha.ui.recibos
         {
             Trace.Assert(!(_ownerControl is null));
 
+            if (_reciboSeleccionado.GetEntidadComercial() is null) return;
+
             long old_cm_ec_id = _reciboSeleccionado.GetEntidadComercialID();
 
             DateTime fechaEmitido = new DateTime();

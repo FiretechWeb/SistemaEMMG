@@ -154,6 +154,7 @@ namespace SistemaEMMG_Alpha.ui
                 return;
             }
             _mainWin.SetCuentaSeleccionada(newCuentaSelected);
+            //TODO: Refresh add Comprobantes, add Remitos, add Recibos and all UI to avoid issues.
         }
     }
 }
