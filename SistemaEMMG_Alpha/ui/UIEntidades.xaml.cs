@@ -104,6 +104,8 @@ namespace SistemaEMMG_Alpha.ui
                 listEntidadesComerciales.SelectedIndex = -1;
                 SetEntidadSeleccionada(null);
             }
+
+            GetMainWindow().refreshTabItems();
         }
 
         public UIEntidades()

@@ -38,7 +38,7 @@ namespace SistemaEMMG_Alpha
             }
             else
             {
-                enableTabItems();
+                refreshTabItems();
                 lblCuentaSeleccionada.Content = _cuentaSeleccionada.GetRazonSocial();
             }
         }
@@ -57,6 +57,26 @@ namespace SistemaEMMG_Alpha
             tabRecibos.IsEnabled = false;
             tabRemitos.IsEnabled = false;
         }
+
+        public void refreshTabItems()
+        {
+            if (GetCuentaSeleccionada() is null)
+            {
+                disableTabItems();
+                return;
+            }
+            enableTabItems();
+            //_cuentaSeleccionada
+            List<DBEntidades> entidadesComerciales = DBEntidades.GetAll(dbCon.Connection, GetCuentaSeleccionada());
+
+            if (entidadesComerciales.Count <= 0)
+            {
+                tabComprobantes.IsEnabled = false;
+                tabRecibos.IsEnabled = false;
+                tabRemitos.IsEnabled = false;
+            }
+        }
+
         public bool ConnectWithDatabase()
         {
             if (!(dbCon is null))
