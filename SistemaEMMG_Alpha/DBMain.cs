@@ -3,6 +3,7 @@
 
 namespace SistemaEMMG_Alpha
 {
+    //SINGLETON Class
     public class DBMain
     {
         private DBMain()

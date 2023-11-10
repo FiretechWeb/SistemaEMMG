@@ -44,6 +44,19 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             uiComprobantePanel.SetUIOwner(this);
         }
 
+        /*
+         *  START: MISC Methods
+         */
+
+        private long getListSelectedEntidadComercialID()
+        {
+            return ((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key;
+        }
+
+        /*
+         *  END: MISC Methods
+         */
+
         private void CheckIfAbleToSubmit()
         {
             DateTime fechaEmitido = new DateTime();
@@ -58,6 +71,19 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 return;
             }
             if (txtGravado.Text.Trim().Length < 1 && txtTotal.Text.Trim().Length < 1)
+            {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (_comprobanteSeleccionado is null) {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (_comprobanteSeleccionado.GetEntidadComercial() is null) {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (getListSelectedEntidadComercialID() <= -1)
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -267,7 +293,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
 
             _comprobanteSeleccionado.SetFechaEmitido(fechaEmitido);
             _comprobanteSeleccionado.SetEmitido(SafeConvert.ToBoolean(rdbEmitido.IsChecked));
-            _comprobanteSeleccionado.SetEntidadComercial(((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key, dbCon.Connection);
+            _comprobanteSeleccionado.SetEntidadComercial(getListSelectedEntidadComercialID(), dbCon.Connection);
             _comprobanteSeleccionado.SetTipoComprobante(((KeyValuePair<long, string>)cmbTipoComprobante.SelectedItem).Key);
             _comprobanteSeleccionado.SetMoneda(DBMoneda.GetByID(((KeyValuePair<long, string>)cmbMoneda.SelectedItem).Key));
             _comprobanteSeleccionado.SetNumeroComprobante(txNumeroComprobante.Text);
@@ -354,6 +380,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 _comprobanteSeleccionado.SetEntidadComercial(selectedEntidad);
             }
             listSelectedEntidadComercial.SelectedIndex = 0;
+
+            CheckIfAbleToSubmit();
         }
 
         private void txNumeroComprobante_TextChanged(object sender, TextChangedEventArgs e)
