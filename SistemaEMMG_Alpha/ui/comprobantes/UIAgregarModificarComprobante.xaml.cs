@@ -50,6 +50,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
 
         private long getListSelectedEntidadComercialID()
         {
+            if (listSelectedEntidadComercial.SelectedItem is null) return -1;
+
             return ((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key;
         }
 
