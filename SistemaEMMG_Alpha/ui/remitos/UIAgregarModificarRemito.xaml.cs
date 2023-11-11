@@ -40,6 +40,13 @@ namespace SistemaEMMG_Alpha.ui.remitos
             uiComprobantePanel.SetUIOwner(this);
         }
 
+        private long getListSelectedEntidadComercialID()
+        {
+            if (listSelectedEntidadComercial.SelectedItem is null) return -1;
+
+            return ((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key;
+        }
+
         private void CheckIfAbleToSubmit()
         {
             DateTime fechaEmitido = new DateTime();
@@ -49,6 +56,11 @@ namespace SistemaEMMG_Alpha.ui.remitos
                 return;
             }
             if (txtNumero.Text.Trim().Length < 1)
+            {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (getListSelectedEntidadComercialID() <= -1)
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -187,6 +199,8 @@ namespace SistemaEMMG_Alpha.ui.remitos
                 _remitoSeleccionado.SetEntidadComercial(selectedEntidad);
             }
             listSelectedEntidadComercial.SelectedIndex = 0;
+
+            CheckIfAbleToSubmit();
         }
 
         private void txtNumero_TextChanged(object sender, TextChangedEventArgs e)
@@ -202,6 +216,8 @@ namespace SistemaEMMG_Alpha.ui.remitos
         private void btnGuardar_Click(object sender, RoutedEventArgs e)
         {
             Trace.Assert(!(_ownerControl is null));
+
+            if (getListSelectedEntidadComercialID() <= -1) return;
 
             long old_cm_ec_id = _remitoSeleccionado.GetEntidadComercialID();
 
