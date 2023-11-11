@@ -41,6 +41,13 @@ namespace SistemaEMMG_Alpha.ui.recibos
             uiPagosPanel.SetUIOwner(this);
         }
 
+        private long getListSelectedEntidadComercialID()
+        {
+            if (listSelectedEntidadComercial.SelectedItem is null) return -1;
+
+            return ((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key;
+        }
+
         private void CheckIfAbleToSubmit()
         {
             DateTime fechaEmitido = new DateTime();
@@ -50,6 +57,11 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 return;
             }
             if (txtNumero.Text.Trim().Length < 1)
+            {
+                btnGuardar.IsEnabled = false;
+                return;
+            }
+            if (getListSelectedEntidadComercialID() <= -1)
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -187,6 +199,8 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 _reciboSeleccionado.SetEntidadComercial(selectedEntidad);
             }
             listSelectedEntidadComercial.SelectedIndex = 0;
+
+            CheckIfAbleToSubmit();
         }
 
         private void txtNumero_TextChanged(object sender, TextChangedEventArgs e)
