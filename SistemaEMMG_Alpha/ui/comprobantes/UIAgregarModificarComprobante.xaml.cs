@@ -59,6 +59,57 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
          *  END: MISC Methods
          */
 
+        private void RefreshCommercialEntitySelected(DBEntidades selectedEntidad)
+        {
+            if (selectedEntidad is null && (_comprobanteSeleccionado is null || _comprobanteSeleccionado.IsLocal()))
+            {
+                gridCambio.Visibility = Visibility.Collapsed;
+                gridDatosAsociados.Visibility = Visibility.Collapsed;
+                gridEstado.Visibility = Visibility.Collapsed;
+                gridFecha.Visibility = Visibility.Collapsed;
+                gridGravado.Visibility = Visibility.Collapsed;
+                gridIVA.Visibility = Visibility.Collapsed;
+                gridMoneda.Visibility = Visibility.Collapsed;
+                gridNoGravado.Visibility = Visibility.Collapsed;
+                gridNumero.Visibility = Visibility.Collapsed;
+                gridObservacion.Visibility = Visibility.Collapsed;
+                gridPercepcion.Visibility = Visibility.Collapsed;
+                gridTipoComprobante.Visibility = Visibility.Collapsed;
+                gridTotal.Visibility = Visibility.Collapsed;
+            } else
+            {
+                gridCambio.Visibility = Visibility.Visible;
+                gridDatosAsociados.Visibility = Visibility.Visible;
+                gridEstado.Visibility = Visibility.Visible;
+                gridFecha.Visibility = Visibility.Visible;
+                gridGravado.Visibility = Visibility.Visible;
+                gridIVA.Visibility = Visibility.Visible;
+                gridMoneda.Visibility = Visibility.Visible;
+                gridNoGravado.Visibility = Visibility.Visible;
+                gridNumero.Visibility = Visibility.Visible;
+                gridObservacion.Visibility = Visibility.Visible;
+                gridPercepcion.Visibility = Visibility.Visible;
+                gridTipoComprobante.Visibility = Visibility.Visible;
+                gridTotal.Visibility = Visibility.Visible;
+
+                if (!(_comprobanteSeleccionado is null) && _comprobanteSeleccionado.IsLocal())
+                {
+                    if (selectedEntidad.GetTipoEntidad().isProveedor())
+                    {
+                        rdbRecibido.IsChecked = true;
+                        rdbEmitido.IsChecked = false;
+                    }
+                    else
+                    {
+                        rdbRecibido.IsChecked = false;
+                        rdbEmitido.IsChecked = true;
+                    }
+                }
+
+                RefreshTypeSelected();
+                RefreshMonedaSelected();
+            }
+        }
         private void CheckIfAbleToSubmit()
         {
             DateTime fechaEmitido = new DateTime();
@@ -173,6 +224,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
 
             if (_comprobanteSeleccionado is null)
             {
+
                 _comprobanteSeleccionado = new DBComprobantes(entidadesComerciales[0], listTiposComprobantes[0], listMonedas[0], true, null, "-1", 0.0, 0.0); //Created to handle pagos/remitos relations.
                 listSelectedEntidadComercial.Items.Add(new KeyValuePair<long, string>(-1, "Seleccione una entidad comercial..."));
                 rdbRecibido.IsChecked = false;
@@ -216,9 +268,16 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 txtTotal.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetSubTotal());
             }
 
-            listSelectedEntidadComercial.SelectedIndex = 0;
+            if (selectedComprobante is null)
+            {
+                listSelectedEntidadComercial.SelectedIndex = -1;
+                RefreshCommercialEntitySelected(null);
+            } else
+            {
+                listSelectedEntidadComercial.SelectedIndex = 0;
+                RefreshCommercialEntitySelected(selectedComprobante.GetEntidadComercial());
+            }
             CheckIfAbleToSubmit();
-            RefreshTypeSelected();
         }
 
         private void RefreshTypeSelected()
@@ -356,20 +415,24 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
         {
             if (listEntidadesComerciales.SelectedItem is null)
             {
+                RefreshCommercialEntitySelected(null);
                 return;
             }
             if (GetCuentaSeleccionada() is null)
             {
+                RefreshCommercialEntitySelected(null);
                 return;
             }
             long listECSelectedID = ((KeyValuePair<long, string>)listEntidadesComerciales.SelectedItem).Key;
             if (listECSelectedID < 0)
             {
+                RefreshCommercialEntitySelected(null);
                 return;
             }
             DBEntidades selectedEntidad = DBEntidades.GetByID(dbCon.Connection, GetCuentaSeleccionada(), (int)listECSelectedID);
             if (selectedEntidad is null)
             {
+                RefreshCommercialEntitySelected(null);
                 return;
             }
             listSelectedEntidadComercial.Items.Clear();
@@ -384,6 +447,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             listSelectedEntidadComercial.SelectedIndex = 0;
 
             CheckIfAbleToSubmit();
+            RefreshCommercialEntitySelected(selectedEntidad);
         }
 
         private void txNumeroComprobante_TextChanged(object sender, TextChangedEventArgs e)

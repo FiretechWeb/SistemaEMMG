@@ -299,6 +299,12 @@ namespace SistemaEMMG_Alpha
             return $"ID: {GetID()} - {_data.ToString()}";
         }
 
+        //Shorthands (HARDCODED - Not ideal) FIXME
+        public bool isProveedor()
+        {
+            return GetName().ToLower().Equals("proveedor") || GetName().ToLower().Equals("proveedores") || GetName().ToLower().Equals("supplier") || GetName().ToLower().Equals("suppliers");
+        }
+
         public override DBBaseClass GetLocalCopy()
         {
             return new DBTipoEntidad(-1, _data);

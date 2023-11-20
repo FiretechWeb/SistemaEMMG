@@ -28,7 +28,7 @@
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
+                    <Grid x:Name="gridEstado" Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -44,7 +44,7 @@
                             <RadioButton x:Name="rdbEmitido" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" GroupName="group_estado" IsChecked="False" Checked="rdbEmitido_Checked">Emitido</RadioButton>
                         </Grid>
                     </Grid>
-                    <Grid Grid.Row="1">
+                    <Grid x:Name="gridTipoComprobante" Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -52,7 +52,7 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Tipo:</Label>
                         <ComboBox x:Name="cmbTipoComprobante" Grid.Column="1" MinWidth="125" HorizontalAlignment="Left" SelectionChanged="cmbTipoComprobante_SelectionChanged"></ComboBox>
                     </Grid>
-                    <Grid Grid.Row="2">
+                    <Grid x:Name="gridNumero" Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -60,7 +60,7 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">Numero:</Label>
                         <TextBox x:Name="txNumeroComprobante" Grid.Column="1" VerticalAlignment="Center" TextChanged="txNumeroComprobante_TextChanged"></TextBox>
                     </Grid>
-                    <Grid Grid.Row="3">
+                    <Grid x:Name="gridCommercialEntity" Grid.Row="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -87,7 +87,7 @@
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid Grid.Row="4">
+                    <Grid x:Name="gridFecha" Grid.Row="4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -149,7 +149,7 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Total:</Label>
                         <TextBox x:Name="txtTotal"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtTotal_PreviewTextInput" TextChanged="txtTotal_TextChanged"></TextBox>
                     </Grid>
-                    <Grid Grid.Row="5">
+                    <Grid x:Name="gridMoneda" Grid.Row="5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -165,7 +165,7 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Cambio:</Label>
                         <TextBox x:Name="txtCambio"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtCambio_PreviewTextInput"></TextBox>
                     </Grid>
-                    <Grid Grid.Row="7">
+                    <Grid x:Name="gridObservacion" Grid.Row="7">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -173,7 +173,7 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Observación:</Label>
                         <TextBox x:Name="txtObservacion" MaxLength="126"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
                     </Grid>
-                    <Grid Grid.Row="8">
+                    <Grid x:Name="gridDatosAsociados" Grid.Row="8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition Width="auto"></ColumnDefinition>
