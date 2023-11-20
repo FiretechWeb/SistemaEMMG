@@ -15,6 +15,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
         public DBMain dbData = null;
         private UIRecibos _ownerControl = null;
         private DBRecibo _reciboSeleccionado = null;
+        private bool modificandoRecibo = false;
 
         public void SetUIOwner(UIRecibos ownerControl)
         {
@@ -67,6 +68,16 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 return;
             }
             btnGuardar.IsEnabled = true;
+        }
+
+        public void PrepararParaAgregar()
+        {
+            modificandoRecibo = false;
+        }
+
+        public void PrepararParaModificar()
+        {
+            modificandoRecibo = true;
         }
         public void RefreshData(DBRecibo selectedRecibo = null)
         {
@@ -231,7 +242,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
             _reciboSeleccionado.SetNumero(txtNumero.Text);
             _reciboSeleccionado.SetObservacion(txtObservacion.Text);
             bool reciboWasLocal = _reciboSeleccionado.IsLocal();
-
+            bool pushDataSuccess = false;
             if (_reciboSeleccionado.PushToDatabase(dbCon.Connection, old_cm_ec_id))
             {
                 if (reciboWasLocal)
@@ -243,6 +254,11 @@ namespace SistemaEMMG_Alpha.ui.recibos
                         pago.PushToDatabase(dbCon.Connection);
                     }
                 }
+
+                pushDataSuccess = true;
+            }
+            if (modificandoRecibo || pushDataSuccess)
+            {
                 MessageBox.Show("Recibo agregado / modificado a la base de datos correctamente!");
                 _ownerControl.RefreshData();
                 Visibility = Visibility.Collapsed;

@@ -227,6 +227,7 @@ namespace SistemaEMMG_Alpha.ui
 
         private void btnAgregar_Click(object sender, RoutedEventArgs e)
         {
+            uiAgregarModificarReciboPanel.PrepararParaAgregar();
             uiAgregarModificarReciboPanel.RefreshData();
             uiAgregarModificarReciboPanel.Visibility = Visibility.Visible;
         }
@@ -237,6 +238,7 @@ namespace SistemaEMMG_Alpha.ui
             {
                 return;
             }
+            uiAgregarModificarReciboPanel.PrepararParaModificar();
             uiAgregarModificarReciboPanel.RefreshData(GetReciboSeleccionado());
             uiAgregarModificarReciboPanel.Visibility = Visibility.Visible;
         }
