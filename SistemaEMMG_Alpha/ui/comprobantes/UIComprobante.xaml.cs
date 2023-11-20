@@ -142,6 +142,10 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 if (!_fatherComprobanteSelected.IsLocal())
                 {
                     newComprobante.PushToDatabase(dbCon.Connection);
+                } else
+                {
+                    _fatherComprobanteSelected.AddComprobanteAsociado(newComprobante);
+
                 }
                 RefreshData(_fatherComprobanteSelected);
             }
@@ -158,7 +162,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 return;
             }
             _comprobanteSeleccionado.AsociarAComprobante(null);
-            if (!_comprobanteSeleccionado.IsLocal())
+            if (!_fatherComprobanteSelected.IsLocal())
             {
                 _comprobanteSeleccionado.PushToDatabase(dbCon.Connection);
             }

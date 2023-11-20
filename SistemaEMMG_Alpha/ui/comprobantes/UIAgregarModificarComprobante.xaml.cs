@@ -382,6 +382,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 {
                     _comprobanteSeleccionado.PushAllRelationshipsWithRecibosDB(dbCon.Connection);
                     _comprobanteSeleccionado.PushAllRelationshipsWithRemitosDB(dbCon.Connection);
+                    _comprobanteSeleccionado.PushAllComprobantesAsociadosDB(dbCon.Connection);
                 }
                 MessageBox.Show("¡Comprobante agregado / modificado a la base de datos correctamente!");
                 _ownerControl.RefreshData();

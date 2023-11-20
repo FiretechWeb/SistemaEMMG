@@ -998,6 +998,13 @@ namespace SistemaEMMG_Alpha
             bool deletedCorrectly = false;
             try
             {
+                List<DBComprobantes> compAsociados = GetAllComprobantesAsociados(conn);
+                foreach (DBComprobantes cmpAsociado in compAsociados)
+                {
+                    cmpAsociado.AsociarAComprobante(null);
+                    cmpAsociado.PushToDatabase(conn);
+                }
+
                 string query = $"DELETE FROM {db_recibos_relation_table} WHERE rp_em_id = {GetCuentaID()} AND rp_ec_id = {GetEntidadComercialID()} AND rp_cm_id = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
@@ -1545,6 +1552,26 @@ namespace SistemaEMMG_Alpha
                 _db_comprobantes_asociados.Add(comprobanteAsociado);
             }
             return returnList;
+        }
+        public bool AddComprobanteAsociado(DBComprobantes comprobanteParaAsociar)
+        {
+            foreach (DBComprobantes cmpAsociado in _db_comprobantes_asociados)
+            {
+                if (cmpAsociado.GetCuentaID() == comprobanteParaAsociar.GetCuentaID() && cmpAsociado.GetEntidadComercialID() == comprobanteParaAsociar.GetEntidadComercialID() && cmpAsociado.GetID() == comprobanteParaAsociar.GetID())
+                {
+                    return false;
+                }
+            }
+            _db_comprobantes_asociados.Add(comprobanteParaAsociar);
+            return true;
+        }
+
+        public void PushAllComprobantesAsociadosDB(MySqlConnection conn)
+        {
+            foreach (DBComprobantes cmpAsociado in _db_comprobantes_asociados)
+            {
+                cmpAsociado.PushToDatabase(conn);
+            }
         }
         public List<DBComprobantes> GetAllComprobantesAsociados() => _db_comprobantes_asociados;
 
