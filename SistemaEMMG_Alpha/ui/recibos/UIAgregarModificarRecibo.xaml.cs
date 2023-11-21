@@ -48,11 +48,15 @@ namespace SistemaEMMG_Alpha.ui.recibos
 
             return ((KeyValuePair<long, string>)listSelectedEntidadComercial.SelectedItem).Key;
         }
+        private bool inputFechaEmitidoIsValid()
+        {
+            DateTime fechaEmitido = new DateTime();
+            return DateTime.TryParse(txtFecha.Text, out fechaEmitido);
+        }
 
         private void CheckIfAbleToSubmit()
         {
-            DateTime fechaEmitido = new DateTime();
-            if (!DateTime.TryParse(txtFecha.Text, out fechaEmitido))
+            if (!inputFechaEmitidoIsValid())
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -68,6 +72,26 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 return;
             }
             btnGuardar.IsEnabled = true;
+        }
+
+        private void RefreshFieldsColorState()
+        {
+            if (inputFechaEmitidoIsValid())
+            {
+                txtFecha.ClearValue(TextBox.BorderBrushProperty);
+            }
+            else
+            {
+                txtFecha.BorderBrush = System.Windows.Media.Brushes.Red;
+            }
+
+            if (txtNumero.Text.Trim().Length >= 1)
+            {
+                txtNumero.ClearValue(TextBox.BorderBrushProperty);
+            } else
+            {
+                txtNumero.BorderBrush = System.Windows.Media.Brushes.Red;
+            }
         }
 
         public void PrepararParaAgregar()
@@ -163,6 +187,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
 
             listSelectedEntidadComercial.SelectedIndex = 0;
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void btnBuscarEntidad_Click(object sender, RoutedEventArgs e)
@@ -212,16 +237,19 @@ namespace SistemaEMMG_Alpha.ui.recibos
             listSelectedEntidadComercial.SelectedIndex = 0;
 
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void txtNumero_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void txtFecha_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void btnGuardar_Click(object sender, RoutedEventArgs e)
