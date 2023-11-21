@@ -110,10 +110,16 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 RefreshMonedaSelected();
             }
         }
-        private void CheckIfAbleToSubmit()
+
+        private bool inputFechaEmitidoIsValid()
         {
             DateTime fechaEmitido = new DateTime();
-            if (!DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido))
+            return DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido);
+        }
+
+        private void CheckIfAbleToSubmit()
+        {
+            if (!inputFechaEmitidoIsValid())
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -142,6 +148,41 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 return;
             }
             btnGuardar.IsEnabled = true;
+        }
+
+        private void RefreshFieldsColorState()
+        {
+            if (inputFechaEmitidoIsValid())
+            {
+                txtFechaEmitido.ClearValue(TextBox.BorderBrushProperty);
+            }
+            else
+            {
+                txtFechaEmitido.BorderBrush = System.Windows.Media.Brushes.Red;
+            }
+
+            if (txNumeroComprobante.Text.Trim().Length >= 1)
+            {
+                txNumeroComprobante.ClearValue(TextBox.BorderBrushProperty);
+            } else {
+                txNumeroComprobante.BorderBrush = System.Windows.Media.Brushes.Red;
+            }
+
+            if (txtGravado.Text.Trim().Length >= 1)
+            {
+                txtGravado.ClearValue(TextBox.BorderBrushProperty);
+            } else
+            {
+                txtGravado.BorderBrush = System.Windows.Media.Brushes.Red;
+            }
+            if (txtTotal.Text.Trim().Length >= 1)
+            {
+                txtTotal.ClearValue(TextBox.BorderBrushProperty);
+            } else
+            {
+                txtTotal.BorderBrush = System.Windows.Media.Brushes.Red;
+            }
+
         }
 
         private void RefreshMonedaSelected()
@@ -278,6 +319,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 RefreshCommercialEntitySelected(selectedComprobante.GetEntidadComercial());
             }
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void RefreshTypeSelected()
@@ -448,22 +490,26 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             listSelectedEntidadComercial.SelectedIndex = 0;
 
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
             RefreshCommercialEntitySelected(selectedEntidad);
         }
 
         private void txNumeroComprobante_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void txtFechaEmitido_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void txtGravado_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
 
         private void txtGravado_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -586,6 +632,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
         private void txtTotal_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
     }
 }
