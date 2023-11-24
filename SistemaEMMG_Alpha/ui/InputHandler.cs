@@ -13,11 +13,12 @@ namespace SistemaEMMG_Alpha.ui
         public static bool OnlyDateTimeText(System.Windows.Input.TextCompositionEventArgs e, TextBox inputTextBox)
         {
             Regex regex = new Regex("[^0-9]+");
+            
             bool validInput = inputTextBox.Text.Length < 10 && !regex.IsMatch(e.Text);
             if (validInput)
             {
                 string numbersOnlyText = inputTextBox.Text.Replace("/", "");
-                if (numbersOnlyText.Length == 2 || numbersOnlyText.Length == 4)
+                 if (inputTextBox.Text.Trim().Length == 2 || inputTextBox.Text.Trim().Length == 5)
                 {
                     inputTextBox.Text += "/";
                     inputTextBox.CaretIndex = inputTextBox.Text.Length;
