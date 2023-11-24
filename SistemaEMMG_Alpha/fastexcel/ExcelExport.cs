@@ -6,169 +6,35 @@ using MySql.Data.MySqlClient;
 
 namespace SistemaEMMG_Alpha
 {
-    //Format pesos: #.##0,00 [$ARS];-#.##0,00 [$ARS]
-    //Format dolares: #.##0,00 [$USD];-#.##0,00 [$USD]
-    //Format saldo: #.##0,00 [$ARS];[RED]-#.##0,00 [$ARS]
-
-    //Header background color: #afd095
-    // base background color: #dee6ef
     public class ExcelExport
     {
         public static void ExportToFile(List<DBComprobantes> comprobantes, string fileName)
         {
             MySqlConnection conn = DBConnection.Instance().Connection;
+
             using (SLDocument sl = new SLDocument())
             {
-                SLStyle styleDefaultText = sl.CreateStyle();
-                styleDefaultText.Font.FontSize = 13;
-                styleDefaultText.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
-                SLStyle styleTitle = sl.CreateStyle();
-                styleTitle.Font.FontSize = 14;
-                styleTitle.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-                styleTitle.Font.Bold = true;
-
-                SLStyle styleSaldoARS = sl.CreateStyle();
-                styleSaldoARS.Font.FontSize = 13;
-                styleSaldoARS.FormatCode = "#,##0.00 [$ARS];[RED]-#,##0.00 [$ARS]";
-                styleSaldoARS.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
-                SLStyle styleARS = sl.CreateStyle();
-                styleARS.Font.FontSize = 13;
-                styleARS.FormatCode = "#,##0.00 [$ARS];-#,##0.00 [$ARS]";
-                styleARS.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
-                SLStyle styleUSD = sl.CreateStyle();
-                styleUSD.Font.FontSize = 13;
-                styleUSD.FormatCode = "#,##0.00 [$USD];-#,##0.00 [$USD]";
-                styleUSD.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
+                SLStyle styleDefaultText = ExcelStyles.defaultTextStyle(sl);
+                SLStyle styleTitle = ExcelStyles.titleTextStyle(sl);
+                SLStyle styleSaldoARS = ExcelStyles.saldoARSTextStyle(sl);
+                SLStyle styleARS = ExcelStyles.ARSTextStyle(sl);
+                SLStyle styleUSD = ExcelStyles.USDTextStyle(sl);
 
                 sl.RenameWorksheet(sl.GetCurrentWorksheetName(), "Comprobantes");
                 //sl.SelectWorksheet("Comprobantes");
-                // set a boolean at "A1"
+
                 int row = 1;
 
-                //applying title font style
-                for (int i=1; i < 20; i++)
-                {
-                    sl.SetCellStyle(row, i, styleTitle);
-                }
-                sl.SetCellValue(row, 1, "Estado");
-                sl.SetCellValue(row, 2, "Fecha");
-                sl.SetCellValue(row, 3, "CUIT");
-                sl.SetCellValue(row, 4, "Tipo");
-                sl.SetCellValue(row, 5, "Numero");
-                sl.SetCellValue(row, 6, "Razón Social");
-                sl.SetCellValue(row, 7, "Moneda");
-                sl.SetCellValue(row, 8, "Cambio");
-                sl.SetCellValue(row, 9, "Gravado (Mon. Loc.)");
-                sl.SetCellValue(row, 10, "IVA (Mon. Loc.)");
-                sl.SetCellValue(row, 11, "No Gravado (Mon. Loc.)");
-                sl.SetCellValue(row, 12, "Percepción (Mon. Loc.)");
-                sl.SetCellValue(row, 13, "Total (Mon. Loc.)");
-                sl.SetCellValue(row, 14, "Gravado (Mon. Ext.)");
-                sl.SetCellValue(row, 15, "IVA (Mon. Ext.)");
-                sl.SetCellValue(row, 16, "No Gravado (Mon. Ext.)");
-                sl.SetCellValue(row, 17, "Percepcion (Mon. Ext.)");
-                sl.SetCellValue(row, 18, "Total (Mon. Ext.)");
-                sl.SetCellValue(row, 19, "Observación");
+                sl.CopyCellDataToRow(row, GetComprobantesHeadersCells(styleTitle));
                 row++;
 
                 List<DBRecibo> recibos = new List<DBRecibo>();
-                //Creating Worksheet with comprobantes
 
                 foreach (DBComprobantes comprobante in comprobantes)
                 {
-                    string fechaString = "";
-                    if (comprobante.GetFechaEmitido().HasValue)
-                    {
-                        fechaString = ((DateTime)comprobante.GetFechaEmitido()).ToString("dd/MM/yyyy");
-                    }
-                    else
-                    {
-                        fechaString = "Sin fecha";
-                    }
-                    sl.SetCellValue(row, 1, comprobante.IsEmitido() ? "Emitido" : "Recibido");
-                    sl.SetCellStyle(row, 1, styleDefaultText);
+                    sl.CopyCellDataToRow(row, GetDBComprobanteAsCells(comprobante, comprobante.IsPago(conn), styleDefaultText, styleARS, styleUSD));
 
-                    sl.SetCellValue(row, 2, fechaString);
-                    sl.SetCellStyle(row, 2, styleDefaultText);
-
-                    sl.SetCellValue(row, 3, comprobante.GetEntidadComercial().GetCUIT());
-                    sl.SetCellStyle(row, 3, styleDefaultText);
-
-                    sl.SetCellValue(row, 4, comprobante.GetTipoComprobante().GetName());
-                    sl.SetCellStyle(row, 4, styleDefaultText);
-
-                    sl.SetCellValue(row, 5, comprobante.GetNumeroComprobante());
-                    sl.SetCellStyle(row, 5, styleDefaultText);
-
-                    sl.SetCellValue(row, 6, comprobante.GetEntidadComercial().GetRazonSocial());
-                    sl.SetCellStyle(row, 6, styleDefaultText);
-
-                    sl.SetCellValue(row, 7, comprobante.GetMoneda().GetName());
-                    sl.SetCellStyle(row, 7, styleDefaultText);
-
-                    sl.SetCellValue(row, 8, comprobante.GetCambio());
-                    sl.SetCellStyle(row, 8, styleARS);
-
-                    sl.SetCellValue(row, 9, comprobante.GetGravado_MonedaLocal());
-                    sl.SetCellStyle(row, 9, styleARS);
-
-                    sl.SetCellValue(row, 10, comprobante.GetIVA_MonedaLocal());
-                    sl.SetCellStyle(row, 10, styleARS);
-
-                    sl.SetCellValue(row, 11, comprobante.GetNoGravado_MonedaLocal());
-                    sl.SetCellStyle(row, 11, styleARS);
-
-                    sl.SetCellValue(row, 12, comprobante.GetPercepcion_MonedaLocal());
-                    sl.SetCellStyle(row, 12, styleARS);
-
-                    sl.SetCellValue(row, 13, comprobante.GetTotal_MonedaLocal());
-                    sl.SetCellStyle(row, 13, styleARS);
-
-                    sl.SetCellStyle(row, 14, styleUSD);
-                    sl.SetCellStyle(row, 15, styleUSD);
-                    sl.SetCellStyle(row, 16, styleUSD);
-                    sl.SetCellStyle(row, 17, styleUSD);
-                    sl.SetCellStyle(row, 18, styleUSD);
-
-                    if (comprobante.GetMoneda().IsExtranjera())
-                    {
-
-                        sl.SetCellValue(row, 14, comprobante.GetGravado());
-                        sl.SetCellValue(row, 15, comprobante.GetIVA());
-                        sl.SetCellValue(row, 16, comprobante.GetNoGravado());
-                        sl.SetCellValue(row, 17, comprobante.GetPercepcion());
-                        sl.SetCellValue(row, 18, comprobante.GetTotal());
-                    }
-                    else
-                    {
-                        sl.SetCellValue(row, 14, "");
-                        sl.SetCellValue(row, 15, "");
-                        sl.SetCellValue(row, 16, "");
-                        sl.SetCellValue(row, 17, "");
-                        sl.SetCellValue(row, 18, "");
-                    }
-
-                    sl.SetCellValue(row, 19, comprobante.GetObservacion());
-                    sl.SetCellStyle(row, 19, styleDefaultText);
-
-                    bool isComprobantePago = comprobante.IsPago(conn);
-                    for (int j = 1; j < 20; j++)
-                    {
-                        SLStyle richStyle = sl.GetCellStyle(row, j);
-                        if (isComprobantePago)
-                        {
-                            richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
-                        }
-                        else
-                        {
-                            richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.Gainsboro, System.Drawing.Color.Gainsboro);
-                        }
-                        sl.SetCellStyle(row, j, richStyle);
-                    }
+                    //Getting a list of all recibos associated with the comprobantes we are exporting.
                     List<DBRecibo> recibosFromComprobante = comprobante.GetAllRecibos();
                     foreach (DBRecibo recibo in recibosFromComprobante)
                     {
@@ -181,31 +47,11 @@ namespace SistemaEMMG_Alpha
                     row++;
                 }
 
-                //Applying borders & background colors.
-                for (int i = 1; i < row; i++)
-                {
-                    for (int j = 1; j < 20; j++)
-                    {
-                        SLStyle richStyle = sl.GetCellStyle(i, j);
-                        richStyle.Border.BottomBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.BottomBorder.Color = System.Drawing.Color.Black;
-                        richStyle.Border.LeftBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.LeftBorder.Color = System.Drawing.Color.Black;
-                        richStyle.Border.RightBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.RightBorder.Color = System.Drawing.Color.Black;
-                        richStyle.Border.TopBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.TopBorder.Color = System.Drawing.Color.Black;
-
-                        if (i==1)
-                        {
-                            richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightSeaGreen, System.Drawing.Color.LightSeaGreen);
-                        }
-
-                        sl.SetCellStyle(i, j, richStyle);
-                    }
-                }
+                StylingComprobantesCells(sl, 1, row, 1, 20);
 
                 row++;
+
+                //Keep refactoring this mess from here.
 
                 List<DBComprobantes> comprobantesRecibidos = DBComprobantes.GetAllRecibidos(comprobantes);
                 List<DBComprobantes> comprobantesEmitidos = DBComprobantes.GetAllEmitidos(comprobantes);
@@ -649,6 +495,133 @@ namespace SistemaEMMG_Alpha
                 sl.SaveAs($"{fileName}");
             }
             //sl.SelectWorksheet("Sheet1");
+        }
+
+        private static void StylingComprobantesCells(SLDocument sl, int startRow, int endRow, int startColumn, int endColumn)
+        {
+            //Applying borders & background colors.
+            for (int i = startRow; i < endRow; i++)
+            {
+                for (int j = startColumn; j < endColumn; j++)
+                {
+                    SLStyle richStyle = sl.GetCellStyle(i, j);
+                    richStyle.Border.BottomBorder.BorderStyle = BorderStyleValues.Thin;
+                    richStyle.Border.BottomBorder.Color = System.Drawing.Color.Black;
+                    richStyle.Border.LeftBorder.BorderStyle = BorderStyleValues.Thin;
+                    richStyle.Border.LeftBorder.Color = System.Drawing.Color.Black;
+                    richStyle.Border.RightBorder.BorderStyle = BorderStyleValues.Thin;
+                    richStyle.Border.RightBorder.Color = System.Drawing.Color.Black;
+                    richStyle.Border.TopBorder.BorderStyle = BorderStyleValues.Thin;
+                    richStyle.Border.TopBorder.Color = System.Drawing.Color.Black;
+
+                    if (i == startRow)
+                    {
+                        richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightSeaGreen, System.Drawing.Color.LightSeaGreen);
+                    }
+
+                    sl.SetCellStyle(i, j, richStyle);
+                }
+            }
+        }
+
+        private static CellData[] GetComprobantesHeadersCells(SLStyle styleTitle = null)
+        {
+            CellData[] comprobanteHeader =
+            {
+                new CellData(1, "Estado", styleTitle),
+                new CellData(2, "Fecha", styleTitle),
+                new CellData(3, "CUIT", styleTitle),
+                new CellData(4, "Tipo", styleTitle),
+                new CellData(5, "Numero", styleTitle),
+                new CellData(6, "Razón Social", styleTitle),
+                new CellData(7, "Moneda", styleTitle),
+                new CellData(8, "Cambio", styleTitle),
+                new CellData(9, "Gravado (Mon. Loc.)", styleTitle),
+                new CellData(10, "IVA (Mon. Loc.)", styleTitle),
+                new CellData(11, "No Gravado (Mon. Loc.)", styleTitle),
+                new CellData(12, "Percepción (Mon. Loc.)", styleTitle),
+                new CellData(13, "Total (Mon. Loc.)", styleTitle),
+                new CellData(14, "Gravado (Mon. Ext.)", styleTitle),
+                new CellData(15, "IVA (Mon. Ext.)", styleTitle),
+                new CellData(16, "No Gravado (Mon. Ext.)" ,styleTitle),
+                new CellData(17, "Percepcion (Mon. Ext.)", styleTitle),
+                new CellData(18, "Total (Mon. Ext.)", styleTitle),
+                new CellData(19, "Observación", styleTitle)
+            };
+
+            return comprobanteHeader;
+        }
+
+        private static CellData[] GetDBComprobanteAsCells(DBComprobantes comprobante, bool isComprobantePago, SLStyle styleDefaultText = null, SLStyle styleARS = null, SLStyle styleUSD = null)
+        {
+
+            //START STYLING: Adding Color if a Comprobante was Pago or not
+
+            if (isComprobantePago)
+            {
+                if (!(styleDefaultText is null))
+                {
+                    styleDefaultText.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
+                }
+                if (!(styleARS is null))
+                {
+                    styleARS.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
+                }
+                if (!(styleUSD is null))
+                {
+                    styleUSD.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
+                }
+            }
+            else
+            {
+                if (!(styleDefaultText is null))
+                {
+                    styleDefaultText.SetPatternFill(PatternValues.Solid, System.Drawing.Color.Gainsboro, System.Drawing.Color.Gainsboro);
+                }
+                if (!(styleARS is null))
+                {
+                    styleARS.SetPatternFill(PatternValues.Solid, System.Drawing.Color.Gainsboro, System.Drawing.Color.Gainsboro);
+                }
+                if (!(styleUSD is null))
+                {
+                    styleUSD.SetPatternFill(PatternValues.Solid, System.Drawing.Color.Gainsboro, System.Drawing.Color.Gainsboro);
+                }
+            }
+            //END STYLING
+
+            string fechaString = "";
+            if (comprobante.GetFechaEmitido().HasValue)
+            {
+                fechaString = ((DateTime)comprobante.GetFechaEmitido()).ToString("dd/MM/yyyy");
+            }
+            else
+            {
+                fechaString = "Sin fecha";
+            }
+
+            CellData[] listOfCells = {
+                new CellData(1, comprobante.IsEmitido() ? "Emitido" : "Recibido", styleDefaultText),
+                new CellData(2, fechaString, styleDefaultText),
+                new CellData(3, comprobante.GetEntidadComercial().GetCUIT(), styleDefaultText),
+                new CellData(4, comprobante.GetTipoComprobante().GetName(), styleDefaultText),
+                new CellData(5, comprobante.GetNumeroComprobante(), styleDefaultText),
+                new CellData(6, comprobante.GetEntidadComercial().GetRazonSocial(), styleDefaultText),
+                new CellData(7, comprobante.GetMoneda().GetName(), styleDefaultText),
+                new CellData(8, comprobante.GetCambio(), styleARS),
+                new CellData(9, comprobante.GetGravado_MonedaLocal(), styleARS),
+                new CellData(10, comprobante.GetIVA_MonedaLocal(), styleARS),
+                new CellData(11, comprobante.GetNoGravado_MonedaLocal(),styleARS),
+                new CellData(12, comprobante.GetPercepcion_MonedaLocal(), styleARS),
+                new CellData(13, comprobante.GetTotal_MonedaLocal(), styleARS),
+                new CellData(14, comprobante.GetMoneda().IsExtranjera() ? comprobante.GetGravado() : 0.0, styleUSD),
+                new CellData(15, comprobante.GetMoneda().IsExtranjera() ? comprobante.GetIVA() : 0.0, styleUSD),
+                new CellData(16, comprobante.GetMoneda().IsExtranjera() ? comprobante.GetNoGravado() : 0.0, styleUSD),
+                new CellData(17, comprobante.GetMoneda().IsExtranjera() ? comprobante.GetPercepcion() : 0.0, styleUSD),
+                new CellData(18, comprobante.GetMoneda().IsExtranjera() ? comprobante.GetTotal() : 0.0, styleUSD),
+                new CellData(19, comprobante.GetObservacion(), styleDefaultText),
+            };
+
+            return listOfCells;
         }
     }
 }

@@ -153,6 +153,8 @@
     <Compile Include="dbtypes\DBTipoRemito.cs" />
     <Compile Include="developer\DeveloperConsole.cs" />
     <Compile Include="fastexcel\ExcelExport.cs" />
+    <Compile Include="fastexcel\ExcelExtensions.cs" />
+    <Compile Include="fastexcel\ExcelStyles.cs" />
     <Compile Include="SafeConvert.cs" />
     <Compile Include="ui\comprobantes\UIAgregarModificarComprobante.xaml.cs">
       <DependentUpon>UIAgregarModificarComprobante.xaml</DependentUpon>
