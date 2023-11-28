@@ -41,9 +41,6 @@ namespace SistemaEMMG_Alpha
                     maxRow = row;
                 }
                 row = initRow;
-
-
-
                 row += 2;
 
                 foreach (DBPago pago in listaPagos)
@@ -58,39 +55,11 @@ namespace SistemaEMMG_Alpha
                 }
                 row = initRow;
 
-                int[] startBorder = { initRow, 1 };
-                int[] endBorder = { maxRow - 1, 17 };
+                SetRecibosWorksheetBorders(sl, initRow, maxRow);
 
-                for (int i = startBorder[0]; i < endBorder[0]; i++)
-                {
-                    for (int j = startBorder[1]; j <= endBorder[1]; j++)
-                    {
-                        SLStyle richStyle = sl.GetCellStyle(i, j);
-                        richStyle.Border.BottomBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.BottomBorder.Color = System.Drawing.Color.Black;
-                        richStyle.Border.LeftBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.LeftBorder.Color = System.Drawing.Color.Black;
-                        richStyle.Border.RightBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.RightBorder.Color = System.Drawing.Color.Black;
-                        richStyle.Border.TopBorder.BorderStyle = BorderStyleValues.Thin;
-                        richStyle.Border.TopBorder.Color = System.Drawing.Color.Black;
-
-                        if ((j != startBorder[1] + 2) && (j != startBorder[1] + 9))
-                        {
-                            if (j == startBorder[1] || ((i < startBorder[0] + 2) && (j > startBorder[1] + 2)))
-                            {
-                                richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightSeaGreen, System.Drawing.Color.LightSeaGreen);
-                            }
-                            else
-                            {
-                                richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
-                            }
-                        }
-                        sl.SetCellStyle(i, j, richStyle);
-                    }
-                }
                 row = maxRow + 1; //add EVEN more padding
             }
+
             for (int i = 1; i < 18; i++)
             {
                 sl.AutoFitColumn(i);
@@ -198,6 +167,41 @@ namespace SistemaEMMG_Alpha
             };
 
             return listOfCells;
+        }
+
+        private static void SetRecibosWorksheetBorders(SLDocument sl, int initRow, int maxRow)
+        {
+                int[] startBorder = { initRow, 1 };
+                int[] endBorder = { maxRow - 1, 17 };
+
+                for (int i = startBorder[0]; i < endBorder[0]; i++)
+                {
+                    for (int j = startBorder[1]; j <= endBorder[1]; j++)
+                    {
+                        SLStyle richStyle = sl.GetCellStyle(i, j);
+                        richStyle.Border.BottomBorder.BorderStyle = BorderStyleValues.Thin;
+                        richStyle.Border.BottomBorder.Color = System.Drawing.Color.Black;
+                        richStyle.Border.LeftBorder.BorderStyle = BorderStyleValues.Thin;
+                        richStyle.Border.LeftBorder.Color = System.Drawing.Color.Black;
+                        richStyle.Border.RightBorder.BorderStyle = BorderStyleValues.Thin;
+                        richStyle.Border.RightBorder.Color = System.Drawing.Color.Black;
+                        richStyle.Border.TopBorder.BorderStyle = BorderStyleValues.Thin;
+                        richStyle.Border.TopBorder.Color = System.Drawing.Color.Black;
+
+                        if ((j != startBorder[1] + 2) && (j != startBorder[1] + 9))
+                        {
+                            if (j == startBorder[1] || ((i < startBorder[0] + 2) && (j > startBorder[1] + 2)))
+                            {
+                                richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightSeaGreen, System.Drawing.Color.LightSeaGreen);
+                            }
+                            else
+                            {
+                                richStyle.SetPatternFill(PatternValues.Solid, System.Drawing.Color.LightBlue, System.Drawing.Color.LightBlue);
+                            }
+                        }
+                        sl.SetCellStyle(i, j, richStyle);
+                    }
+                }
         }
     }
 }
