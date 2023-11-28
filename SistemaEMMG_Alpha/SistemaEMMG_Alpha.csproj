@@ -152,6 +152,8 @@
     <Compile Include="dbtypes\DBTipoRecibo.cs" />
     <Compile Include="dbtypes\DBTipoRemito.cs" />
     <Compile Include="developer\DeveloperConsole.cs" />
+    <Compile Include="fastexcel\components\xlsComprobantes.cs" />
+    <Compile Include="fastexcel\components\xlsRecibos.cs" />
     <Compile Include="fastexcel\ExcelExport.cs" />
     <Compile Include="fastexcel\ExcelExtensions.cs" />
     <Compile Include="fastexcel\ExcelStyles.cs" />

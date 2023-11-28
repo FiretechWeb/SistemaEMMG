@@ -13,53 +13,71 @@ namespace SistemaEMMG_Alpha
 
         //Header background color: #afd095
         // base background color: #dee6ef
+
+        private static SLStyle _defaultTextStyle = null;
         public static SLStyle defaultTextStyle(SLDocument sl)
         {
-            SLStyle styleDefaultText = sl.CreateStyle();
-            styleDefaultText.Font.FontSize = 13;
-            styleDefaultText.Alignment.Horizontal = HorizontalAlignmentValues.Left;
+            if (_defaultTextStyle is null)
+            {
+                _defaultTextStyle = sl.CreateStyle();
+                _defaultTextStyle.Font.FontSize = 13;
+                _defaultTextStyle.Alignment.Horizontal = HorizontalAlignmentValues.Left;
+            }
 
-            return styleDefaultText;
+            return _defaultTextStyle;
         }
 
+        private static SLStyle _titleTextStyle = null;
         public static SLStyle titleTextStyle(SLDocument sl)
         {
-            SLStyle styleTitle = sl.CreateStyle();
-            styleTitle.Font.FontSize = 14;
-            styleTitle.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-            styleTitle.Font.Bold = true;
+            if (_titleTextStyle is null)
+            {
+                _titleTextStyle = sl.CreateStyle();
+                _titleTextStyle.Font.FontSize = 14;
+                _titleTextStyle.Alignment.Horizontal = HorizontalAlignmentValues.Left;
+                _titleTextStyle.Font.Bold = true;
+            }
 
-            return styleTitle;
+            return _titleTextStyle;
         }
 
+        private static SLStyle _styleSaldoARS = null;
         public static SLStyle saldoARSTextStyle(SLDocument sl)
         {
-            SLStyle styleSaldoARS = sl.CreateStyle();
-            styleSaldoARS.Font.FontSize = 13;
-            styleSaldoARS.FormatCode = "#,##0.00 [$ARS];[RED]-#,##0.00 [$ARS]";
-            styleSaldoARS.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
-            return styleSaldoARS;
+            if (_styleSaldoARS is null)
+            {
+                _styleSaldoARS = sl.CreateStyle();
+                _styleSaldoARS.Font.FontSize = 13;
+                _styleSaldoARS.FormatCode = "#,##0.00 [$ARS];[RED]-#,##0.00 [$ARS]";
+                _styleSaldoARS.Alignment.Horizontal = HorizontalAlignmentValues.Left;
+            }
+            return _styleSaldoARS;
         }
 
+        private static SLStyle _styleARS = null;
         public static SLStyle ARSTextStyle(SLDocument sl)
         {
-            SLStyle styleARS = sl.CreateStyle();
-            styleARS.Font.FontSize = 13;
-            styleARS.FormatCode = "#,##0.00 [$ARS];-#,##0.00 [$ARS]";
-            styleARS.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
-            return styleARS;
+            if (_styleARS is null)
+            {
+                _styleARS = sl.CreateStyle();
+                _styleARS.Font.FontSize = 13;
+                _styleARS.FormatCode = "#,##0.00 [$ARS];-#,##0.00 [$ARS]";
+                _styleARS.Alignment.Horizontal = HorizontalAlignmentValues.Left;
+            }
+            return _styleARS;
         }
 
+        private static SLStyle _styleUSD = null;
         public static SLStyle USDTextStyle(SLDocument sl)
         {
-            SLStyle styleUSD = sl.CreateStyle();
-            styleUSD.Font.FontSize = 13;
-            styleUSD.FormatCode = "#,##0.00 [$USD];-#,##0.00 [$USD]";
-            styleUSD.Alignment.Horizontal = HorizontalAlignmentValues.Left;
-
-            return styleUSD;
+            if (_styleUSD is null)
+            {
+                _styleUSD = sl.CreateStyle();
+                _styleUSD.Font.FontSize = 13;
+                _styleUSD.FormatCode = "#,##0.00 [$USD];-#,##0.00 [$USD]";
+                _styleUSD.Alignment.Horizontal = HorizontalAlignmentValues.Left;
+            }
+            return _styleUSD;
         }
     }
 }
