@@ -11,29 +11,21 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UIComprobantes.xaml
     /// </summary>
-    public partial class UIComprobantes : UserControl
+    public partial class UIComprobantes : BaseUCClass
     {
         public DBConnection dbCon = null;
         public DBMain dbData = null;
-        private MainWindow _mainWin = null;
         private List<DBComprobantes> _listaComprobantes = null;
         private DBComprobantes _comprobanteSeleccionado = null;
-        public void SetMainWindow(MainWindow mainWin)
-        {
-            _mainWin = mainWin;
-        }
 
         public DBCuenta GetCuentaSeleccionada()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return null;
             }
-            return _mainWin.GetCuentaSeleccionada();
+            return GetMainWindow().GetCuentaSeleccionada();
         }
-
-        public MainWindow GetMainWindow() => _mainWin;
-
 
         public DBComprobantes GetComprobanteSeleccionado() => _comprobanteSeleccionado;
 
@@ -56,7 +48,7 @@ namespace SistemaEMMG_Alpha.ui
 
         public void RefreshData()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }
@@ -72,7 +64,7 @@ namespace SistemaEMMG_Alpha.ui
             {
                 return;
             }
-            if (!_mainWin.CheckDBConnection())
+            if (!GetMainWindow().CheckDBConnection())
             {
                 return;
             }
@@ -188,7 +180,7 @@ namespace SistemaEMMG_Alpha.ui
 
         private void dgComprobantes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }

@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.config.UIGraphicOptions"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.config"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid x:Name="optionFontSize" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left">Tamaño de fuente:</Label>
+            <ComboBox x:Name="cmbOptionFontSize" Grid.Column="1" MinWidth="125" HorizontalAlignment="Left" >
+                <ComboBoxItem>Pequeño</ComboBoxItem>
+                <ComboBoxItem IsSelected="True">Normal</ComboBoxItem>
+                <ComboBoxItem>Grande</ComboBoxItem>
+            </ComboBox>
+        </Grid>
+        <Grid x:Name="optionTheme" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left">Tema visual:</Label>
+            <ComboBox x:Name="cmbUITheme" Grid.Column="1" MinWidth="125" HorizontalAlignment="Left" >
+                <ComboBoxItem IsSelected="True">Claro</ComboBoxItem>
+                <ComboBoxItem>Oscuro</ComboBoxItem>
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnGraphicsSave" Grid.Column="1" Padding="5, 5, 5, 5" Margin="5, 5, 5, 5" FontFamily="Helvetica" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">Guardar</Button>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -9,28 +9,21 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UIRemitos.xaml
     /// </summary>
-    public partial class UIRemitos : UserControl
+    public partial class UIRemitos : BaseUCClass
     {
         public DBConnection dbCon = null;
         public DBMain dbData = null;
-        private MainWindow _mainWin = null;
         private List<DBRemito> _listaRemitos = null;
         private DBRemito _remitoSeleccionado = null;
-        public void SetMainWindow(MainWindow mainWin)
-        {
-            _mainWin = mainWin;
-        }
 
         public DBCuenta GetCuentaSeleccionada()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return null;
             }
-            return _mainWin.GetCuentaSeleccionada();
+            return GetMainWindow().GetCuentaSeleccionada();
         }
-
-        public MainWindow GetMainWindow() => _mainWin;
 
 
         public DBRemito GetRemitoSeleccionado() => _remitoSeleccionado;
@@ -63,7 +56,7 @@ namespace SistemaEMMG_Alpha.ui
 
         public void RefreshData()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }
@@ -79,7 +72,7 @@ namespace SistemaEMMG_Alpha.ui
             {
                 return;
             }
-            if (!_mainWin.CheckDBConnection())
+            if (!GetMainWindow().CheckDBConnection())
             {
                 return;
             }
@@ -171,7 +164,7 @@ namespace SistemaEMMG_Alpha.ui
 
         private void dgRemitos_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }

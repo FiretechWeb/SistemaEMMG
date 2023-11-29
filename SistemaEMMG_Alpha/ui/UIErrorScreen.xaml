@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.UIErrorScreen"
+﻿<myTypes:BaseUCClass x:Class="SistemaEMMG_Alpha.ui.UIErrorScreen"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui"
+             xmlns:myTypes="clr-namespace:SistemaEMMG_Alpha.ui"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="#EE000000">
@@ -15,4 +16,4 @@
         <Label HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Grid.Row="1" FontSize="16" FontWeight="Bold">Prueba reiniciando el servidor Apache o verificando los datos de conexión.</Label>
         <Button x:Name="btnDbReconnect" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnDbReconnect_Click">Intentar conectar de nuevo</Button>
     </Grid>
-</UserControl>
+</myTypes:BaseUCClass>

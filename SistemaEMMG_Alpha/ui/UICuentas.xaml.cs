@@ -8,31 +8,25 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UICuentas.xaml
     /// </summary>
-    public partial class UICuentas : UserControl
+    public partial class UICuentas : BaseUCClass
     {
         public DBConnection dbCon = null;
         public DBMain dbData = null;
 
-        private MainWindow _mainWin = null;
-        public void SetMainWindow(MainWindow mainWin)
-        {
-            _mainWin = mainWin;
-        }
 
         public DBCuenta GetCuentaSeleccionada()
         {
-            if (_mainWin is null)
+            
+            if (GetMainWindow() is null)
             {
                 return null;
             }
-            return _mainWin.GetCuentaSeleccionada();
+            return GetMainWindow().GetCuentaSeleccionada();
         }
-
-        public MainWindow GetMainWindow() => _mainWin;
 
         public void RefreshData()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }
@@ -45,7 +39,7 @@ namespace SistemaEMMG_Alpha.ui
                 dbCon = DBConnection.Instance();
             }
 
-            if (!_mainWin.CheckDBConnection())
+            if (!GetMainWindow().CheckDBConnection())
             {
                 return;
             }
@@ -64,7 +58,7 @@ namespace SistemaEMMG_Alpha.ui
                 listCuentas.Items.Add(new KeyValuePair<long, string>(cuenta.GetID(), $"{cuenta.GetCUIT()}: {cuenta.GetRazonSocial()}"));
             }
 
-            DBCuenta cuentaSeleccionada = _mainWin.GetCuentaSeleccionada();
+            DBCuenta cuentaSeleccionada = GetMainWindow().GetCuentaSeleccionada();
 
             if (GetCuentaSeleccionada() is null)
             {
@@ -72,7 +66,7 @@ namespace SistemaEMMG_Alpha.ui
                 {
                     listCuentas.SelectedIndex = 0;
                     cmbCuentas.SelectedIndex = 0;
-                    _mainWin.SetCuentaSeleccionada(DBCuenta.GetByID(((KeyValuePair<long, string>)listCuentas.SelectedItem).Key));
+                    GetMainWindow().SetCuentaSeleccionada(DBCuenta.GetByID(((KeyValuePair<long, string>)listCuentas.SelectedItem).Key));
                     btnEliminarCuenta.IsEnabled = true;
                     btnModificarCuenta.IsEnabled = true;
                 } else
@@ -131,7 +125,7 @@ namespace SistemaEMMG_Alpha.ui
                     MessageBox.Show("Cuenta eliminada exitosamente");
                     if (isSelectedCuenta)
                     {
-                        _mainWin.SetCuentaSeleccionada(null);
+                        GetMainWindow().SetCuentaSeleccionada(null);
                     }
                     RefreshData();
                 }  else
@@ -153,7 +147,7 @@ namespace SistemaEMMG_Alpha.ui
             {
                 return;
             }
-            _mainWin.SetCuentaSeleccionada(newCuentaSelected);
+            GetMainWindow().SetCuentaSeleccionada(newCuentaSelected);
             //TODO: Refresh add Comprobantes, add Remitos, add Recibos and all UI to avoid issues.
         }
     }

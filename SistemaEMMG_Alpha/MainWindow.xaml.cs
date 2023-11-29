@@ -136,6 +136,7 @@ namespace SistemaEMMG_Alpha
             uiComprobantespanel.SetMainWindow(this);
             uiRecibosPanel.SetMainWindow(this);
             uiRemitosPanel.SetMainWindow(this);
+            configWin.SetMainWindow(this);
         }
         
         public MainWindow()
@@ -237,6 +238,11 @@ namespace SistemaEMMG_Alpha
                         break;
                 }
             }
+        }
+
+        private void btnConfiguracion_Click(object sender, RoutedEventArgs e)
+        {
+            configWinWrapper.Visibility = Visibility.Visible;
         }
     }
 }

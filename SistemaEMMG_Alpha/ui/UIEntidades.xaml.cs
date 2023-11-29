@@ -10,27 +10,22 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UIEntidades.xaml
     /// </summary>
-    public partial class UIEntidades : UserControl
+    public partial class UIEntidades : BaseUCClass
     {
         public DBConnection dbCon = null;
         public DBMain dbData = null;
 
         private DBEntidades _entidadSeleccionada =null;
         private List<DBEntidades> _listaEntidades = new List<DBEntidades>();
-        private MainWindow _mainWin = null;
 
-        public void SetMainWindow(MainWindow mainWin)
-        {
-            _mainWin = mainWin;
-        }
 
         public DBCuenta GetCuentaSeleccionada()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return null;
             }
-            return _mainWin.GetCuentaSeleccionada();
+            return GetMainWindow().GetCuentaSeleccionada();
         }
 
         public DBEntidades GetEntidadSeleccionada() => _entidadSeleccionada;
@@ -58,11 +53,9 @@ namespace SistemaEMMG_Alpha.ui
             }
         }
 
-        public MainWindow GetMainWindow() => _mainWin;
-
         public void RefreshData()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }
@@ -75,7 +68,7 @@ namespace SistemaEMMG_Alpha.ui
                 dbCon = DBConnection.Instance();
             }
 
-            if (!_mainWin.CheckDBConnection())
+            if (!GetMainWindow().CheckDBConnection())
             {
                 return;
             }

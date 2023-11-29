@@ -9,28 +9,21 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UIRecibos.xaml
     /// </summary>
-    public partial class UIRecibos : UserControl
+    public partial class UIRecibos : BaseUCClass
     {
         public DBConnection dbCon = null;
         public DBMain dbData = null;
-        private MainWindow _mainWin = null;
         private List<DBRecibo> _listaRecibos = null;
         private DBRecibo _reciboSeleccionado = null;
-        public void SetMainWindow(MainWindow mainWin)
-        {
-            _mainWin = mainWin;
-        }
 
         public DBCuenta GetCuentaSeleccionada()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return null;
             }
-            return _mainWin.GetCuentaSeleccionada();
+            return GetMainWindow().GetCuentaSeleccionada();
         }
-
-        public MainWindow GetMainWindow() => _mainWin;
 
 
         public DBRecibo GetReciboSeleccionado() => _reciboSeleccionado;
@@ -62,7 +55,7 @@ namespace SistemaEMMG_Alpha.ui
 
         public void RefreshData()
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }
@@ -78,7 +71,7 @@ namespace SistemaEMMG_Alpha.ui
             {
                 return;
             }
-            if (!_mainWin.CheckDBConnection())
+            if (!GetMainWindow().CheckDBConnection())
             {
                 return;
             }
@@ -173,7 +166,7 @@ namespace SistemaEMMG_Alpha.ui
 
         private void dgRecibos_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }

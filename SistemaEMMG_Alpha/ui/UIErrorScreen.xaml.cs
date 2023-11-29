@@ -6,15 +6,8 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UIErrorScreen.xaml
     /// </summary>
-    public partial class UIErrorScreen : UserControl
+    public partial class UIErrorScreen : BaseUCClass
     {
-        private MainWindow _mainWin = null;
-        public void SetMainWindow(MainWindow mainWin)
-        {
-            _mainWin = mainWin;
-        }
-        public MainWindow GetMainWindow() => _mainWin;
-
         public UIErrorScreen()
         {
             InitializeComponent();
@@ -22,14 +15,14 @@ namespace SistemaEMMG_Alpha.ui
 
         private void btnDbReconnect_Click(object sender, RoutedEventArgs e)
         {
-            if (_mainWin is null)
+            if (GetMainWindow() is null)
             {
                 return;
             }
-            if (_mainWin.ConnectWithDatabase())
+            if (GetMainWindow().ConnectWithDatabase())
             {
                 Visibility = Visibility.Collapsed;
-                _mainWin.SoftwareMain();
+                GetMainWindow().SoftwareMain();
             }
             else
             {

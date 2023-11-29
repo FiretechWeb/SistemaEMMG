@@ -17,7 +17,7 @@
         </DockPanel>
         <DockPanel Background="Black"  Height="26" DockPanel.Dock="Top" VerticalAlignment="Top" >
            <Label x:Name="lblCuentaSeleccionada" DockPanel.Dock="Left" FontSize="13" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White">Cuenta</Label>
-           <Button x:Name="btnConfiguracion" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="90" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="False" Visibility="Collapsed">Configuración</Button>
+           <Button x:Name="btnConfiguracion" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnConfiguracion_Click">Config.</Button>
            <Button x:Name="btnImportDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" IsEnabled="False" Visibility="Collapsed">Importar</Button>
            <Button x:Name="btnBackupDB" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="70" FontWeight="Bold" Margin="3, 3, 3, 3" Click="btnBackupDB_Click">Backup</Button>
         </DockPanel>
@@ -42,11 +42,27 @@
         <!-- End: Conenido -->
         </DockPanel>
     <!-- START: Version info -->
-    <Label VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3, 3, 3, 3" Foreground="BlueViolet">Versión Alpha 1</Label>
+    <Label VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3, 3, 3, 3" Foreground="BlueViolet">Versión 0.2.5</Label>
     <!-- END: Version info -->
     <!-- START: Error Database Connection -->
         <uc:UIErrorScreen x:Name="errorScreen" Visibility="Collapsed"></uc:UIErrorScreen>
     <!-- END: Error Database Connection -->
         <uc:UIDeveloperConsole x:Name="developerWin" Visibility="Collapsed"></uc:UIDeveloperConsole>
+    <!-- START: Configuration screen -->
+        <Grid>
+            <Grid.Resources>
+            <Style TargetType="Border">
+                <Setter Property="Padding" Value="35, 35, 35, 35" />
+            </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border x:Name="configWinWrapper" Grid.Row="0" Grid.Column="0" Background="#EE000000" Visibility="Collapsed">
+                <uc:UIConfigScreen x:Name="configWin"></uc:UIConfigScreen>
+            </Border>
+        </Grid>
+
+    <!-- END: Configuration screen -->
     </Grid>
 </Window>
