@@ -25,20 +25,14 @@
                 <RowDefinition Height="70"></RowDefinition>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="0">
-                <Button x:Name="btnUIOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnUIOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnUIOptions_Click">
                     Graficos
                 </Button>
-                <Button x:Name="btnExcelOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
-                    Excel
-                </Button>
-                <Button x:Name="btnBackupOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnBackupOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnBackupOptions_Click">
                     Backup
                 </Button>
-                <Button x:Name="btnPrinterOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnPrinterOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnPrinterOptions_Click">
                     Impresoras
-                </Button>
-                <Button x:Name="btnSeguridad" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
-                    Acceso
                 </Button>
             </StackPanel>
             <Grid Grid.Row="3">
@@ -50,8 +44,16 @@
                 <Button x:Name="btnExitConfig" Grid.Column="1" Padding="5, 5, 5, 5" Margin="5, 5, 5, 5" FontFamily="Helvetica" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnExitConfig_Click">Salir</Button>
             </Grid>
         </Grid>
-        <Border Grid.Row="0" Grid.Column="1">
+        <Border x:Name="cfgGraphicOptionWrapper" Grid.Row="0" Grid.Column="1">
             <config:UIGraphicOptions></config:UIGraphicOptions>
+        </Border>
+        
+        <Border x:Name="cfgBackupOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+            <config:UIBackupOptions></config:UIBackupOptions>
+        </Border>
+
+        <Border x:Name="cfgPrintersOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+            <config:UIPrinterOptions></config:UIPrinterOptions>
         </Border>
 
     </Grid>

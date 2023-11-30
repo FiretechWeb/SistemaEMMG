@@ -93,6 +93,9 @@
     <Reference Include="MySqlBackup, Version=2.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MySqlBackup.NET.2.3.8\lib\netstandard2.0\MySqlBackup.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SpreadsheetLight, Version=3.5.0.0, Culture=neutral, PublicKeyToken=32fbb46dc1730c57, processorArchitecture=MSIL">
       <HintPath>..\packages\SpreadsheetLight.3.5.0\lib\netstandard2.0\SpreadsheetLight.dll</HintPath>
     </Reference>
@@ -145,6 +148,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="config\ConfigType.cs" />
     <Compile Include="DBInterfaces.cs" />
     <Compile Include="dbtypes\DBMoneda.cs" />
     <Compile Include="dbtypes\DBRecibo.cs" />
@@ -171,8 +175,14 @@
     <Compile Include="ui\comprobantes\UIRecibo.xaml.cs">
       <DependentUpon>UIRecibo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\config\UIBackupOptions.xaml.cs">
+      <DependentUpon>UIBackupOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\config\UIGraphicOptions.xaml.cs">
       <DependentUpon>UIGraphicOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\config\UIPrinterOptions.xaml.cs">
+      <DependentUpon>UIPrinterOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\cuentas\UIAgregarModificarCuenta.xaml.cs">
       <DependentUpon>UIAgregarModificarCuenta.xaml</DependentUpon>
@@ -259,7 +269,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ui\config\UIBackupOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ui\config\UIGraphicOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\config\UIPrinterOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

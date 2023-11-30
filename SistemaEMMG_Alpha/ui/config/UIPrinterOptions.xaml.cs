@@ -15,14 +15,12 @@ using System.Windows.Shapes;
 
 namespace SistemaEMMG_Alpha.ui.config
 {
-
     /// <summary>
-    /// Interaction logic for UIGraphicOptions.xaml
+    /// Interaction logic for UIPrinterOptions.xaml
     /// </summary>
-
-    public partial class UIGraphicOptions : UserControl
+    public partial class UIPrinterOptions : UserControl
     {
-        public UIGraphicOptions()
+        public UIPrinterOptions()
         {
             InitializeComponent();
         }

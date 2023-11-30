@@ -111,6 +111,9 @@ namespace SistemaEMMG_Alpha
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
 
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
+
+            internalComandsList.Add(new KeyValuePair<string, Action<string>>("save config", (x) => _CMD_SaveConfig(x)));
+
             internalComandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => _CMD_Help()));
         }
         ///<summary>
@@ -1746,6 +1749,13 @@ namespace SistemaEMMG_Alpha
             {
                 _outputStr = "Es necesario seleccionar una cuenta o entidad comercial para exportar un excel de los comprobantes.";
             }
+        }
+
+        private void _CMD_SaveConfig(string fileName)
+        {
+            (new Config()).ExportToJSONFile(fileName.Trim());
+            _outputStr = $"Exportado archivo de configuración en {fileName.Trim()}";
+
         }
     }
 }

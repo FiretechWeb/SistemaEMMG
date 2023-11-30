@@ -33,5 +33,26 @@ namespace SistemaEMMG_Alpha.ui
             }
             GetMainWindow().configWinWrapper.Visibility = Visibility.Collapsed;
         }
+
+        private void btnUIOptions_Click(object sender, RoutedEventArgs e)
+        {
+            cfgBackupOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgPrintersOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgGraphicOptionWrapper.Visibility = Visibility.Visible;
+        }
+
+        private void btnBackupOptions_Click(object sender, RoutedEventArgs e)
+        {
+            cfgPrintersOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgGraphicOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgBackupOptionWrapper.Visibility = Visibility.Visible;
+        }
+
+        private void btnPrinterOptions_Click(object sender, RoutedEventArgs e)
+        {
+            cfgGraphicOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgBackupOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgPrintersOptionWrapper.Visibility = Visibility.Visible;
+        }
     }
 }

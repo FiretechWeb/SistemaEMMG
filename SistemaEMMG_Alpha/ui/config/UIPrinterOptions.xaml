@@ -1,0 +1,118 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.config.UIPrinterOptions"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.config"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid x:Name="optionActivePrinter" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="175"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left">
+                Impresora Default:
+            </Label>
+
+            <ComboBox x:Name="cmbPrintersAvailable" Grid.Column="1" MinWidth="150" HorizontalAlignment="Left" >
+
+            </ComboBox>
+            
+        </Grid>
+        <Label Grid.Row="1" FontFamily="Helvetica" FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+            Plantillas de Excel para Impresión
+        </Label>        
+        <Grid x:Name="optionComprobantesTemplate" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Comprobantes:
+            </Label>
+            <ComboBox x:Name="cmbComprobantesTemplate" Grid.Column="1" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+            <Label Grid.Column="2" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Comp. Individual:
+            </Label>
+            <ComboBox x:Name="cmbSingleComprobanteTemplate" Grid.Column="3" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+        </Grid>
+        <Grid x:Name="optionRecibosTemplate" Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Recibos:
+            </Label>
+            <ComboBox x:Name="cmbRecibosTemplate" Grid.Column="1" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+            <Label Grid.Column="2" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Recibo Individual:
+            </Label>
+            <ComboBox x:Name="cmbSingleReciboTemplate" Grid.Column="3" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+        </Grid>
+        <Grid x:Name="optionRemitosTemplate" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Remitos:
+            </Label>
+            <ComboBox x:Name="cmbRemitosTemplate" Grid.Column="1" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+            <Label Grid.Column="2" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Remito Individual:
+            </Label>
+            <ComboBox x:Name="cmbSingleRemitoTemplate" Grid.Column="3" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+        </Grid>
+        <Grid x:Name="optionPagoTemplate" Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Pago:
+            </Label>
+            <ComboBox x:Name="cmbPagoTemplate" Grid.Column="1" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+            <Label Grid.Column="2" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
+                Pago Individual:
+            </Label>
+            <ComboBox x:Name="cmbSinglePagoTemplate" Grid.Column="3" MinWidth="150" HorizontalAlignment="Left" >
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="7">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnGraphicsSave" Grid.Column="1" Padding="5, 5, 5, 5" Margin="5, 5, 5, 5" FontFamily="Helvetica" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">Guardar</Button>
+        </Grid>
+    </Grid>
+</UserControl>
