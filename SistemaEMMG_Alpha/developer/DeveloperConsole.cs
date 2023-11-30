@@ -25,7 +25,7 @@ namespace SistemaEMMG_Alpha
         private List<string> _inputRegister = new List<string>();
         private int _currentRegisterSelected = -1;
         private List<KeyValuePair<string, Action<string>>> commandsList = new List<KeyValuePair<string, Action<string>>>();
-        private List<KeyValuePair<string, Action<string>>> internalComandsList = new List<KeyValuePair<string, Action<string>>>();
+        private List<KeyValuePair<string, Action<string>>> internalCommandsList = new List<KeyValuePair<string, Action<string>>>();
         private DBBaseClass _seleccion;
         private DeveloperConsole()
         {
@@ -33,88 +33,92 @@ namespace SistemaEMMG_Alpha
             commandsList.Add(new KeyValuePair<string, Action<string>>("sql>", (x) => ProcessSQLCommand(x))); //alias
             commandsList.Add(new KeyValuePair<string, Action<string>>("$>", (x) => ProcessInternalCommand(x))); //internal commands
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get data", (x) => _CMD_RefreshBasicDataDB()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print data", (x) => _CMD_PrintBasicDataDB()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get data", (x) => _CMD_RefreshBasicDataDB()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print data", (x) => _CMD_PrintBasicDataDB()));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo comprobante", (x) => _CMD_SelectTipoComprobante(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo comprobante", (x) => _CMD_CrearTipoComprobante(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo comprobante set name", (x) => _CMD_TipoComprobanteSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo comprobante", (x) => _CMD_SelectTipoComprobante(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo comprobante", (x) => _CMD_CrearTipoComprobante(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("tipo comprobante set name", (x) => _CMD_TipoComprobanteSetName(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo recibo", (x) => _CMD_SelectTipoRecibo(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo recibo", (x) => _CMD_CrearTipoRecibo(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo recibo set name", (x) => _CMD_TipoReciboSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo recibo", (x) => _CMD_SelectTipoRecibo(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo recibo", (x) => _CMD_CrearTipoRecibo(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("tipo recibo set name", (x) => _CMD_TipoReciboSetName(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo remito", (x) => _CMD_SelectTipoRemito(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo remito", (x) => _CMD_CrearTipoRemito(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo remito set name", (x) => _CMD_TipoRemitoSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo remito", (x) => _CMD_SelectTipoRemito(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo remito", (x) => _CMD_CrearTipoRemito(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("tipo remito set name", (x) => _CMD_TipoRemitoSetName(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select tipo entidad", (x) => _CMD_SelectTipoEntidad(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make tipo entidad", (x) => _CMD_CrearTipoEntidad(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("tipo entidad set name", (x) => _CMD_TipoEntidadSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo entidad", (x) => _CMD_SelectTipoEntidad(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo entidad", (x) => _CMD_CrearTipoEntidad(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("tipo entidad set name", (x) => _CMD_TipoEntidadSetName(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select forma pago", (x) => _CMD_SelectFormaPago(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make forma pago", (x) => _CMD_CrearFormaDePago(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("forma pago set name", (x) => _CMD_FormaPagoSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select forma pago", (x) => _CMD_SelectFormaPago(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make forma pago", (x) => _CMD_CrearFormaDePago(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("forma pago set name", (x) => _CMD_FormaPagoSetName(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select moneda", (x) => _CMD_SelectMoneda(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make moneda", (x) => _CMD_CrearMoneda(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("moneda set name", (x) => _CMD_MonedaSetName(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("moneda set extranjera", (x) => _CMD_MonedaSetExtranjera(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select moneda", (x) => _CMD_SelectMoneda(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make moneda", (x) => _CMD_CrearMoneda(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("moneda set name", (x) => _CMD_MonedaSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("moneda set extranjera", (x) => _CMD_MonedaSetExtranjera(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make cuenta", (x) => _CMD_CrearCuenta(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set name", (x) => _CMD_CuentaSetRazonSocial(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set cuit", (x) => _CMD_CuentaSetCUIT(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select cuenta", (x) => _CMD_SelectCuenta(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make cuenta", (x) => _CMD_CrearCuenta(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set name", (x) => _CMD_CuentaSetRazonSocial(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("cuenta set cuit", (x) => _CMD_CuentaSetCUIT(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("selected", (x) => _CMD_PrintSelected()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("delete", (x) => _CMD_DeleteSelected()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("push", (x) => _CMD_PushSelected()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("pull", (x) => _CMD_PullSelected()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("duplicate", (x) => _CMD_MakeLocalSelected()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink all", (x) => _CMD_UnlinkAll()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("selected", (x) => _CMD_PrintSelected()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("delete", (x) => _CMD_DeleteSelected()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("push", (x) => _CMD_PushSelected()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("pull", (x) => _CMD_PullSelected()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("duplicate", (x) => _CMD_MakeLocalSelected()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("unlink all", (x) => _CMD_UnlinkAll()));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get entidades", (x) => _CMD_GetEntidades(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print entidades", (x) => _CMD_PrintEntidades()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select entidad", (x) => _CMD_SelectEntidad(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make entidad", (x) => _CMD_CrearEntidad(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get entidades", (x) => _CMD_GetEntidades(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print entidades", (x) => _CMD_PrintEntidades()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select entidad", (x) => _CMD_SelectEntidad(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make entidad", (x) => _CMD_CrearEntidad(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get comprobantes", (x) => _CMD_GetComprobantes(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print comprobantes", (x) => _CMD_PrintComprobantes()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select comprobante", (x) => _CMD_SelectComprobante(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("link recibo", (x) => _CMD_LinkRecibo(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink recibo", (x) => _CMD_UnlinkRecibo(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("link remito", (x) => _CMD_LinkRemito(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink remito", (x) => _CMD_UnlinkRemito(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get comprobantes", (x) => _CMD_GetComprobantes(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print comprobantes", (x) => _CMD_PrintComprobantes()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select comprobante", (x) => _CMD_SelectComprobante(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make comprobante", (x) => _CMD_CrearComprobante(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("link recibo", (x) => _CMD_LinkRecibo(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("unlink recibo", (x) => _CMD_UnlinkRecibo(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("link remito", (x) => _CMD_LinkRemito(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("unlink remito", (x) => _CMD_UnlinkRemito(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get recibos", (x) => _CMD_GetRecibos(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print recibos", (x) => _CMD_PrintRecibos()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select recibo", (x) => _CMD_SelectRecibo(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRecibo(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get recibos", (x) => _CMD_GetRecibos(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print recibos", (x) => _CMD_PrintRecibos()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select recibo", (x) => _CMD_SelectRecibo(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make recibo", (x) => _CMD_CrearRecibo(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get remitos", (x) => _CMD_GetRemitos(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print remitos", (x) => _CMD_PrintRemitos()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select remito", (x) => _CMD_SelectRemito(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make remito", (x) => _CMD_CrearRemito(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get remitos", (x) => _CMD_GetRemitos(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print remitos", (x) => _CMD_PrintRemitos()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select remito", (x) => _CMD_SelectRemito(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make remito", (x) => _CMD_CrearRemito(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("link comprobante", (x) => _CMD_LinkComprobante(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("unlink comprobante", (x) => _CMD_UnlinkComprobante(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("link comprobante", (x) => _CMD_LinkComprobante(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("unlink comprobante", (x) => _CMD_UnlinkComprobante(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("get pagos", (x) => _CMD_GetPagos(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("print pagos", (x) => _CMD_PrintPagos()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("select pago", (x) => _CMD_SelectPago(x)));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("make pago", (x) => _CMD_CrearPago(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get pagos", (x) => _CMD_GetPagos(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print pagos", (x) => _CMD_PrintPagos()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select pago", (x) => _CMD_SelectPago(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make pago", (x) => _CMD_CrearPago(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("go back", (x) => _CMD_GoBack()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("reset database", (x) => _CMD_ResetDatabase()));
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("go back", (x) => _CMD_GoBack()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("generate basic data", (x) => _CMD_GenerateBasicData()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("reset database", (x) => _CMD_ResetDatabase()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("save config", (x) => _CMD_SaveConfig(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("save config", (x) => _CMD_SaveConfig(x)));
 
-            internalComandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => _CMD_Help()));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("encrypt", (x) => _CMD_Encrypt(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("decrypt", (x) => _CMD_Decrypt(x)));
+
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => _CMD_Help()));
+
         }
         ///<summary>
         ///Process an input string and retrieves the result.
@@ -228,7 +232,7 @@ namespace SistemaEMMG_Alpha
         private void ProcessInternalCommand(string command)
         {
             bool commandNotFound = true;
-            foreach (KeyValuePair<string, Action<string>> internalCommand in internalComandsList)
+            foreach (KeyValuePair<string, Action<string>> internalCommand in internalCommandsList)
             {
                 if (command.StartsWith(internalCommand.Key))
                 {
@@ -247,7 +251,7 @@ namespace SistemaEMMG_Alpha
         private void _CMD_Help()
         {
             _outputStr = ":: Comandos disponibles ::\n\n";
-            foreach (KeyValuePair<string, Action<string>> internalCmd in internalComandsList)
+            foreach (KeyValuePair<string, Action<string>> internalCmd in internalCommandsList)
             {
                 _outputStr += $"\t{internalCmd.Key}\n";
             }
@@ -1749,6 +1753,41 @@ namespace SistemaEMMG_Alpha
             {
                 _outputStr = "Es necesario seleccionar una cuenta o entidad comercial para exportar un excel de los comprobantes.";
             }
+        }
+
+        private void _CMD_Encrypt(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = $"La cantidad de parámetros ({parametros.Length}) introducida es incorrecta.\nFormato: encrypt contraseña, encryptionKey";
+                return;
+            }
+
+            string stringToEncrypt = parametros[0].Trim();
+            string encryptionKey = parametros[1].Trim();
+
+            string encryptedString = EncryptManager.EncryptString(stringToEncrypt, encryptionKey);
+
+            _outputStr = $"string encriptada: {encryptedString}";
+
+        }
+
+        private void _CMD_Decrypt(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: decrypt encryptedPassword, encryptionKey";
+                return;
+            }
+
+            string encryptedString = parametros[0].Trim();
+            string encryptionKey = parametros[1].Trim();
+
+            string decryptedString = EncryptManager.DecryptString(encryptedString, encryptionKey);
+
+            _outputStr = $"string desencriptada: {decryptedString}";
         }
 
         private void _CMD_SaveConfig(string fileName)
