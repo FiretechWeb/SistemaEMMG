@@ -235,6 +235,7 @@
     <Compile Include="ui\UIRemitos.xaml.cs">
       <DependentUpon>UIRemitos.xaml</DependentUpon>
     </Compile>
+    <Compile Include="users\Users.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

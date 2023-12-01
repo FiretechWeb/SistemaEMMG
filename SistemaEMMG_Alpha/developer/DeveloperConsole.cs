@@ -1811,6 +1811,17 @@ namespace SistemaEMMG_Alpha
                 _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: add user user_name, user_pasword";
                 return;
             }
+            User tmpUser = new User(parametros[0].Trim(), parametros[1].Trim());
+            MySqlConnection conn = DBConnection.Instance().Connection;
+
+            if (tmpUser.PushToDatabase(conn))
+            {
+                _outputStr = $"Usuario creado correctamente.\nPassword: {tmpUser.GetPassword()}\n Encrypted password: {tmpUser.GetEncryptedPassword()}";
+            }
+            else
+            {
+                _outputStr = "No se pudo crear el usuario";
+            }
         }
 
         private void _CMD_RemoveUser(string args)
@@ -1830,6 +1841,16 @@ namespace SistemaEMMG_Alpha
             {
                 _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: login user_name, user_password";
                 return;
+            }
+
+            User tmpUser = new User(parametros[0].Trim(), parametros[1].Trim());
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            if (tmpUser.CheckIfValid(conn))
+            {
+                _outputStr = "Usuario logeado correctamente.";
+            } else
+            {
+                _outputStr = $"Datos ingresados incorrectos.\nPassword: {tmpUser.GetPassword()}\n Encrypted password: {tmpUser.GetEncryptedPassword()}";
             }
         }
 

@@ -11,6 +11,5 @@ namespace SistemaEMMG_Alpha
         //YOU MUST CHANGE THESE KEYS FOR THE ONES YOU WANT TO USE.
         public static readonly string userEncryptionKey = "userKey";
         public static readonly string databaseEncryptionKey = "databaseKey";
-        public static readonly string consoleEncryptionKey = "consoleKey";
     }
 }
