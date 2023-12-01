@@ -38,6 +38,7 @@ namespace SistemaEMMG_Alpha.ui
         {
             cfgBackupOptionWrapper.Visibility = Visibility.Collapsed;
             cfgPrintersOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgDatabaseOptionWrapper.Visibility = Visibility.Collapsed;
             cfgGraphicOptionWrapper.Visibility = Visibility.Visible;
         }
 
@@ -45,6 +46,7 @@ namespace SistemaEMMG_Alpha.ui
         {
             cfgPrintersOptionWrapper.Visibility = Visibility.Collapsed;
             cfgGraphicOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgDatabaseOptionWrapper.Visibility = Visibility.Collapsed;
             cfgBackupOptionWrapper.Visibility = Visibility.Visible;
         }
 
@@ -52,7 +54,17 @@ namespace SistemaEMMG_Alpha.ui
         {
             cfgGraphicOptionWrapper.Visibility = Visibility.Collapsed;
             cfgBackupOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgDatabaseOptionWrapper.Visibility = Visibility.Collapsed;
             cfgPrintersOptionWrapper.Visibility = Visibility.Visible;
+        }
+
+        private void btnDatabaseOptions_Click(object sender, RoutedEventArgs e)
+        {
+            cfgGraphicOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgBackupOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgPrintersOptionWrapper.Visibility = Visibility.Collapsed;
+            cfgDatabaseOptionWrapper.Visibility = Visibility.Visible;
+
         }
     }
 }

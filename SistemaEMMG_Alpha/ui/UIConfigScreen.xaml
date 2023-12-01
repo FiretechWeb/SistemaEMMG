@@ -34,6 +34,9 @@
                 <Button x:Name="btnPrinterOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnPrinterOptions_Click">
                     Impresoras
                 </Button>
+                <Button x:Name="btnDatabaseOptions" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="btnDatabaseOptions_Click">
+                    Base de Datos
+                </Button>
             </StackPanel>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
@@ -54,6 +57,10 @@
 
         <Border x:Name="cfgPrintersOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
             <config:UIPrinterOptions></config:UIPrinterOptions>
+        </Border>
+
+        <Border x:Name="cfgDatabaseOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+            <config:UIDatabaseOptions></config:UIDatabaseOptions>
         </Border>
 
     </Grid>

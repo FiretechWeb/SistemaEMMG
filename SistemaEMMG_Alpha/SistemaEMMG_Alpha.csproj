@@ -149,6 +149,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="config\ConfigType.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DBInterfaces.cs" />
     <Compile Include="dbtypes\DBMoneda.cs" />
     <Compile Include="dbtypes\DBRecibo.cs" />
@@ -178,6 +179,9 @@
     </Compile>
     <Compile Include="ui\config\UIBackupOptions.xaml.cs">
       <DependentUpon>UIBackupOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\config\UIDatabaseOptions.xaml.cs">
+      <DependentUpon>UIDatabaseOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\config\UIGraphicOptions.xaml.cs">
       <DependentUpon>UIGraphicOptions.xaml</DependentUpon>
@@ -271,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\config\UIBackupOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\config\UIDatabaseOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

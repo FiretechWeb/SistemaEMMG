@@ -32,6 +32,7 @@ namespace SistemaEMMG_Alpha
             commandsList.Add(new KeyValuePair<string, Action<string>>("SQL>", (x) => ProcessSQLCommand(x)));
             commandsList.Add(new KeyValuePair<string, Action<string>>("sql>", (x) => ProcessSQLCommand(x))); //alias
             commandsList.Add(new KeyValuePair<string, Action<string>>("$>", (x) => ProcessInternalCommand(x))); //internal commands
+            commandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => ProcessHelpCommand(x)));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get data", (x) => _CMD_RefreshBasicDataDB()));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print data", (x) => _CMD_PrintBasicDataDB()));
@@ -116,6 +117,10 @@ namespace SistemaEMMG_Alpha
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("encrypt", (x) => _CMD_Encrypt(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("decrypt", (x) => _CMD_Decrypt(x)));
+
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("add user", (x) => _CMD_CreateUser(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("remove user", (x) => _CMD_RemoveUser(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("login", (x) => _CMD_UserLogin(x)));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => _CMD_Help()));
 
@@ -255,6 +260,7 @@ namespace SistemaEMMG_Alpha
             {
                 _outputStr += $"\t{internalCmd.Key}\n";
             }
+            _outputStr += "\n\nPara usar los comandos hay que usar: $>nombre comando";
         }
         private void _CMD_RefreshBasicDataDB()
         {
@@ -1795,6 +1801,44 @@ namespace SistemaEMMG_Alpha
             (new Config()).ExportToJSONFile(fileName.Trim());
             _outputStr = $"Exportado archivo de configuración en {fileName.Trim()}";
 
+        }
+
+        private void _CMD_CreateUser(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: add user user_name, user_pasword";
+                return;
+            }
+        }
+
+        private void _CMD_RemoveUser(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: remove user user_name";
+                return;
+            }
+        }
+
+        private void _CMD_UserLogin(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: login user_name, user_password";
+                return;
+            }
+        }
+
+        private void ProcessHelpCommand(string args)
+        {
+            _outputStr = ".: Información :.\n\n";
+            _outputStr += "Ejecutar SQL: sql>\n";
+            _outputStr += "Ejecutar comandos internos: $>\n";
+            _outputStr += "Lista de comandos internos: $>help\n";
         }
     }
 }
