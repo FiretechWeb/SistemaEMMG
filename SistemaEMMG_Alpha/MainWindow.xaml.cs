@@ -137,6 +137,7 @@ namespace SistemaEMMG_Alpha
             uiRecibosPanel.SetMainWindow(this);
             uiRemitosPanel.SetMainWindow(this);
             configWin.SetMainWindow(this);
+            accessWin.SetMainWindow(this);
         }
         
         public MainWindow()
@@ -175,7 +176,7 @@ namespace SistemaEMMG_Alpha
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F11)
+            if ((e.Key == Key.F11) && !(User.GetCurrentUser() is null) && User.GetCurrentUser().IsAdmin())
             {
                 developerWin.Visibility = developerWin.IsVisible ? Visibility.Collapsed : Visibility.Visible;
             }

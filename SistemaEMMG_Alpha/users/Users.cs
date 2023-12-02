@@ -106,7 +106,7 @@ namespace SistemaEMMG_Alpha
             return exitsInDB;
         }
 
-        public bool CheckIfValid(MySqlConnection conn) //Login check function
+        public bool isValid(MySqlConnection conn) //Login check function
         {
             if (ExistsInDatabase(conn) != true)
             {

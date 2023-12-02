@@ -18,11 +18,34 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UILoginScreen.xaml
     /// </summary>
-    public partial class UILoginScreen : UserControl
+    public partial class UILoginScreen : BaseUCClass
     {
+        public DBConnection dbCon = null;
         public UILoginScreen()
         {
             InitializeComponent();
+            dbCon = DBConnection.Instance();
+        }
+
+        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            if (dbCon is null)
+            {
+                dbCon = DBConnection.Instance();
+            }
+            string username = txtUserName.Text.Trim();
+            string password = txtUserPass.Password;
+
+            User tmpUser = new User(username, password);
+
+            if (tmpUser.isValid(dbCon.Connection) && tmpUser.PullFromDatabase(dbCon.Connection))
+            {
+                User.SetCurrentUser(tmpUser);
+                GetMainWindow().accessWin.Visibility = Visibility.Collapsed;
+            } else
+            {
+                MessageBox.Show("Datos de acceso incorrectos", "ERROR", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }

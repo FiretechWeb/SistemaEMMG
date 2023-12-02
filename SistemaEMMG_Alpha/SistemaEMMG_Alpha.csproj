@@ -229,6 +229,9 @@
     <Compile Include="ui\UIErrorScreen.xaml.cs">
       <DependentUpon>UIErrorScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\UILoginScreen.xaml.cs">
+      <DependentUpon>UILoginScreen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\UIRecibos.xaml.cs">
       <DependentUpon>UIRecibos.xaml</DependentUpon>
     </Compile>
@@ -340,6 +343,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\UIErrorScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\UILoginScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

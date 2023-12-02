@@ -1845,7 +1845,7 @@ namespace SistemaEMMG_Alpha
 
             User tmpUser = new User(parametros[0].Trim(), parametros[1].Trim());
             MySqlConnection conn = DBConnection.Instance().Connection;
-            if (tmpUser.CheckIfValid(conn))
+            if (tmpUser.isValid(conn))
             {
                 _outputStr = "Usuario logeado correctamente.";
             } else
