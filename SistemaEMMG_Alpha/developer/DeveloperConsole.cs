@@ -114,6 +114,7 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("save config", (x) => _CMD_SaveConfig(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("load config", (x) => _CMD_LoadConfig(x)));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("encrypt", (x) => _CMD_Encrypt(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("decrypt", (x) => _CMD_Decrypt(x)));
@@ -1801,6 +1802,13 @@ namespace SistemaEMMG_Alpha
             (new Config()).ExportToJSONFile(fileName.Trim());
             _outputStr = $"Exportado archivo de configuración en {fileName.Trim()}";
 
+        }
+
+        private void _CMD_LoadConfig(string fileName)
+        {
+            Config loadedCFG = new Config();
+            loadedCFG.ImportFromJSONFile(fileName.Trim());
+            _outputStr = $"Importado archivo de configuración:\n{loadedCFG}";
         }
 
         private void _CMD_CreateUser(string args)

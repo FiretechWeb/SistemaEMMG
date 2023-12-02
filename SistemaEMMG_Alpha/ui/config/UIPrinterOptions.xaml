@@ -29,17 +29,17 @@
             <ComboBox x:Name="cmbPrintersAvailable" Grid.Column="1" MinWidth="150" HorizontalAlignment="Left" >
 
             </ComboBox>
-            
+
         </Grid>
         <Label Grid.Row="1" FontFamily="Helvetica" FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
             Plantillas de Excel para Impresión
-        </Label>        
+        </Label>
         <Grid x:Name="optionComprobantesTemplate" Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="250"></ColumnDefinition>
                 <ColumnDefinition Width="150"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="bold" VerticalAlignment="Center" HorizontalAlignment="left" Margin="0,1">
                 Comprobantes:

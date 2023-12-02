@@ -16,8 +16,8 @@ namespace SistemaEMMG_Alpha
     }
     public enum TypeVisualTheme
     {
-        Dark=0,
-        Light
+        Light=0,
+        Dark
     }
 
     public class ConfigObject
@@ -35,6 +35,35 @@ namespace SistemaEMMG_Alpha
         public string singleRemitoPrintTemplate;
         public string pagosPrintTemplate;
         public string singlePagoPrintTemplate;
+        public string db_hostName;
+        public string db_databaseName;
+        public string db_userName;
+        public string db_userPassword;
+    }
+
+    public struct DatabaseAccessData
+    {
+        public DatabaseAccessData(string _host, string _db, string _user, string _pass)
+        {
+            hostName = _host;
+            databaseName = _db;
+            userName = _user;
+            userPassword = _pass;
+        }
+        public string hostName;
+        public string databaseName;
+        public string userName;
+        public string userPassword;
+
+        public static DatabaseAccessData GetDefault()
+        {
+            return new DatabaseAccessData("localhost", "sistemacomprobantes", "root", "root");
+        }
+
+        public override string ToString()
+        {
+            return $"DatabaseAcessData:\n\thostName: {hostName}\n\tdatabaseName: {databaseName}\n\tuserName: {userName}\n\tuserPassword: {userPassword}\n";
+        }
     }
 
     public struct PrinterTemplateData
@@ -73,11 +102,25 @@ namespace SistemaEMMG_Alpha
                 "plantillas/impresora/pago_individual.xlsx"
             );
         }
+
+        public override string ToString()
+        {
+            string returnStr = "PrinterTemplateData:\n";
+            returnStr += $"\tcomprobantesPrintTemplate={comprobantesPrintTemplate}\n";
+            returnStr += $"\tsingleComprobantePrintTemplate={singleComprobantePrintTemplate}\n";
+            returnStr += $"\trecibosPrintTemplate={recibosPrintTemplate}\n";
+            returnStr += $"\tsingleReciboPrintTemplate={singleReciboPrintTemplate}\n";
+            returnStr += $"\tremitosPrintTemplate={remitosPrintTemplate}\n";
+            returnStr += $"\tsingleRemitoPrintTemplate={singleRemitoPrintTemplate}\n";
+            returnStr += $"\tpagosPrintTemplate={pagosPrintTemplate}\n";
+            returnStr += $"\tsinglePagoPrintTemplate={singlePagoPrintTemplate}\n";
+            return returnStr;
+        }
     }
 
     public struct ConfigData
     { 
-        public ConfigData(TypeFontSize _fs, TypeVisualTheme _theme, bool _autoBackup, int _autoInterval, string _defPrinter, PrinterTemplateData _printerTemplates)
+        public ConfigData(TypeFontSize _fs, TypeVisualTheme _theme, bool _autoBackup, int _autoInterval, string _defPrinter, PrinterTemplateData _printerTemplates, DatabaseAccessData _dbData)
         {
             fontSize = _fs;
             visualTheme = _theme;
@@ -85,6 +128,30 @@ namespace SistemaEMMG_Alpha
             automaticBackupsInterval = _autoInterval;
             defaultPrinter = _defPrinter;
             printerTemplates = _printerTemplates;
+            databaseData = _dbData;
+        }
+
+        public ConfigData(ConfigObject cfgObject)
+        {
+            fontSize = (TypeFontSize)cfgObject.fontSize;
+            visualTheme = (TypeVisualTheme)cfgObject.visualTheme;
+            automaticBackups = cfgObject.automaticBackups;
+            automaticBackupsInterval = cfgObject.automaticBackupsInterval;
+            defaultPrinter = cfgObject.defaultPrinter;
+            printerTemplates = new PrinterTemplateData(
+                cfgObject.comprobantesPrintTemplate,
+                cfgObject.singleComprobantePrintTemplate,
+                cfgObject.recibosPrintTemplate,
+                cfgObject.singleReciboPrintTemplate,
+                cfgObject.remitosPrintTemplate,
+                cfgObject.singleRemitoPrintTemplate,
+                cfgObject.pagosPrintTemplate,
+                cfgObject.singlePagoPrintTemplate);
+            databaseData = new DatabaseAccessData(
+                cfgObject.db_hostName,
+                cfgObject.db_databaseName,
+                cfgObject.db_userName,
+                cfgObject.db_userPassword);
         }
         public TypeFontSize fontSize;
         public TypeVisualTheme visualTheme;
@@ -92,6 +159,7 @@ namespace SistemaEMMG_Alpha
         public int automaticBackupsInterval;
         public string defaultPrinter;
         public PrinterTemplateData printerTemplates;
+        public DatabaseAccessData databaseData;
 
         public static ConfigData GetDefault()
         {
@@ -101,7 +169,8 @@ namespace SistemaEMMG_Alpha
                 false,
                 120,
                 "",
-                PrinterTemplateData.GetDefault()
+                PrinterTemplateData.GetDefault(),
+                DatabaseAccessData.GetDefault()
             );
         }
 
@@ -121,13 +190,32 @@ namespace SistemaEMMG_Alpha
                 visualTheme = (int)this.visualTheme,
                 automaticBackups = this.automaticBackups,
                 automaticBackupsInterval = this.automaticBackupsInterval,
-                defaultPrinter = this.defaultPrinter
+                defaultPrinter = this.defaultPrinter,
+                db_hostName = this.databaseData.hostName,
+                db_databaseName = this.databaseData.databaseName,
+                db_userName = this.databaseData.userName,
+                db_userPassword = this.databaseData.userPassword
             };
+        }
+
+        public override string ToString()
+        {
+            string returnStr = "ConfigData:\n";
+            returnStr += $"\tfontSize: {fontSize}\n";
+            returnStr += $"\tvisualTheme: {visualTheme}\n";
+            returnStr += $"\tautomaticBackups: {automaticBackups}\n";
+            returnStr += $"\tautomaticBackupsInterval: {automaticBackupsInterval}\n";
+            returnStr += $"\tdefaultPrinter: {defaultPrinter}\n";
+            returnStr += $"\tprinterTemplates: {printerTemplates}\n";
+            returnStr += $"\tdatabaseData: {databaseData}\n";
+            return returnStr;
         }
     }
     class Config
     {
         private ConfigData _data;
+        private static Config _globalConfig=null;
+        private static readonly string _defaultConfigFile = "configuracion.json";
 
         public Config(ConfigData cfgData)
         {
@@ -139,10 +227,57 @@ namespace SistemaEMMG_Alpha
             _data = ConfigData.GetDefault();
         }
 
+        public Config(string jsonFile)
+        {
+            if (File.Exists(jsonFile))
+            {
+                ImportFromJSONFile(jsonFile);
+            } else
+            {
+                _data = ConfigData.GetDefault();
+                ExportToJSONFile(jsonFile);
+            }
+        }
+
+        public static Config GetGlobalConfig()
+        {
+            return _globalConfig;
+        }
+        public static void SetGlobalConfig(Config newGlobalConfig)
+        {
+            _globalConfig = newGlobalConfig;
+        }
+
+        public static string GetDefaultConfigFileName() => _defaultConfigFile;
+
         public void ExportToJSONFile(string fileName)
         {
-            File.WriteAllText(fileName, JsonConvert.SerializeObject(_data.GetAsObject()));
+            ConfigObject tmpCFGObject = _data.GetAsObject();
+            tmpCFGObject.db_userPassword = EncryptManager.EncryptString(tmpCFGObject.db_userPassword, Constants.databaseEncryptionKey);
+            File.WriteAllText(fileName, JsonConvert.SerializeObject(tmpCFGObject));
         }
+
+        public void ImportFromJSONFile(string fileName)
+        {
+            ConfigObject tmpCFGObject = JsonConvert.DeserializeObject<ConfigObject>(File.ReadAllText(fileName));
+            tmpCFGObject.db_userPassword = EncryptManager.DecryptString(tmpCFGObject.db_userPassword, Constants.databaseEncryptionKey);
+            _data = new ConfigData(tmpCFGObject);
+        }
+
+        //Setters
+        public void SetFontSize(TypeFontSize newFontSize) => _data.fontSize = newFontSize;
+
+        public void SetVisualTheme(TypeVisualTheme newVisualTheme) => _data.visualTheme = newVisualTheme;
+
+        public void SetAutomaticBackups(bool automaticBackups) => _data.automaticBackups = automaticBackups;
+
+        public void SetAutomaticBackupsInterval(int interval) => _data.automaticBackupsInterval = interval;
+
+        public void SetDefaultPrinter(string newDefaultPrinter) => _data.defaultPrinter = newDefaultPrinter;
+
+        public void SetDatabaseData(DatabaseAccessData newDatabaseAccessData) => _data.databaseData = newDatabaseAccessData;
+
+        public void SetPrinterTemplates(PrinterTemplateData newPrinterTemplates) => _data.printerTemplates = newPrinterTemplates;
 
         public TypeFontSize GetFontSize() => _data.fontSize;
 
@@ -156,5 +291,11 @@ namespace SistemaEMMG_Alpha
 
         public PrinterTemplateData GetPrinterTemplates() => _data.printerTemplates;
 
+        public DatabaseAccessData GetDatabaseData() => _data.databaseData;
+
+        public override string ToString()
+        {
+            return _data.ToString();
+        }
     }
 }

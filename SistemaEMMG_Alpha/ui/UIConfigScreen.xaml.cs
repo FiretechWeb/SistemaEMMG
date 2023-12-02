@@ -25,6 +25,14 @@ namespace SistemaEMMG_Alpha.ui
             InitializeComponent();
         }
 
+        public void RefreshData()
+        {
+            cfgGraphicOptions.RefreshData();
+            cfgBackupOptions.RefreshData();
+            cfgDatabaseOptions.RefreshData();
+            cfgPrinterOptions.RefreshData();
+        }
+
         private void btnExitConfig_Click(object sender, RoutedEventArgs e)
         {
             if (GetMainWindow() is null)

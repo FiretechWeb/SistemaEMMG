@@ -48,19 +48,19 @@
             </Grid>
         </Grid>
         <Border x:Name="cfgGraphicOptionWrapper" Grid.Row="0" Grid.Column="1">
-            <config:UIGraphicOptions></config:UIGraphicOptions>
+            <config:UIGraphicOptions x:Name="cfgGraphicOptions"></config:UIGraphicOptions>
         </Border>
         
         <Border x:Name="cfgBackupOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
-            <config:UIBackupOptions></config:UIBackupOptions>
+            <config:UIBackupOptions x:Name="cfgBackupOptions"></config:UIBackupOptions>
         </Border>
 
         <Border x:Name="cfgPrintersOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
-            <config:UIPrinterOptions></config:UIPrinterOptions>
+            <config:UIPrinterOptions x:Name="cfgPrinterOptions"></config:UIPrinterOptions>
         </Border>
 
         <Border x:Name="cfgDatabaseOptionWrapper" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
-            <config:UIDatabaseOptions></config:UIDatabaseOptions>
+            <config:UIDatabaseOptions x:Name="cfgDatabaseOptions"></config:UIDatabaseOptions>
         </Border>
 
     </Grid>

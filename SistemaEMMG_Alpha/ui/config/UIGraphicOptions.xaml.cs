@@ -26,5 +26,29 @@ namespace SistemaEMMG_Alpha.ui.config
         {
             InitializeComponent();
         }
+
+        public void RefreshData()
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            cmbOptionFontSize.SelectedIndex = (int)Config.GetGlobalConfig().GetFontSize();
+            cmbUITheme.SelectedIndex = (int)Config.GetGlobalConfig().GetVisualTheme();
+        }
+
+        private void btnGraphicsSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            Config.GetGlobalConfig().SetFontSize((TypeFontSize)cmbOptionFontSize.SelectedIndex);
+            Config.GetGlobalConfig().SetVisualTheme((TypeVisualTheme)cmbUITheme.SelectedIndex);
+
+            Config.GetGlobalConfig().ExportToJSONFile(Config.GetDefaultConfigFileName());
+        }
     }
 }

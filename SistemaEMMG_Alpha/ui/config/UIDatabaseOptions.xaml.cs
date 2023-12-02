@@ -24,5 +24,34 @@ namespace SistemaEMMG_Alpha.ui.config
         {
             InitializeComponent();
         }
+        public void RefreshData()
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            txtServerName.Text = Config.GetGlobalConfig().GetDatabaseData().hostName;
+            txtDatabaseName.Text = Config.GetGlobalConfig().GetDatabaseData().databaseName;
+            txtUserName.Text = Config.GetGlobalConfig().GetDatabaseData().userName;
+            txtServerPassword.Password = Config.GetGlobalConfig().GetDatabaseData().userPassword;
+        }
+
+        private void btnGraphicsSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            Config.GetGlobalConfig().SetDatabaseData(new DatabaseAccessData(
+                txtServerName.Text.Trim(),
+                txtDatabaseName.Text.Trim(),
+                txtUserName.Text.Trim(),
+                txtServerPassword.Password.Trim()
+                ));
+
+            Config.GetGlobalConfig().ExportToJSONFile(Config.GetDefaultConfigFileName());
+        }
     }
 }

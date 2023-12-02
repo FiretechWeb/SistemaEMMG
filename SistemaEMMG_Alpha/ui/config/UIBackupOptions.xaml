@@ -36,7 +36,7 @@
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnGraphicsSave" Grid.Column="1" Padding="5, 5, 5, 5" Margin="5, 5, 5, 5" FontFamily="Helvetica" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">Guardar</Button>
+            <Button x:Name="btnGraphicsSave" Grid.Column="1" Padding="5, 5, 5, 5" Margin="5, 5, 5, 5" FontFamily="Helvetica" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnGraphicsSave_Click">Guardar</Button>
         </Grid>
     </Grid>
 </UserControl>

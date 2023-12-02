@@ -87,10 +87,10 @@ namespace SistemaEMMG_Alpha
             try
             {
                 dbCon = DBConnection.Instance();
-                dbCon.Server = "localhost";
-                dbCon.DatabaseName = "sistemacomprobantes";
-                dbCon.UserName = "root";
-                dbCon.Password = "root";
+                dbCon.Server = Config.GetGlobalConfig().GetDatabaseData().hostName;
+                dbCon.DatabaseName = Config.GetGlobalConfig().GetDatabaseData().databaseName;
+                dbCon.UserName = Config.GetGlobalConfig().GetDatabaseData().userName;
+                dbCon.Password = Config.GetGlobalConfig().GetDatabaseData().userPassword;
                 if (dbCon.StartConnection())
                 {
                     sucessfulConnected = true;
@@ -144,6 +144,9 @@ namespace SistemaEMMG_Alpha
         {
             InitializeComponent();
             InitUserControls();
+
+            //Load CFG file
+            Config.SetGlobalConfig(new Config(Config.GetDefaultConfigFileName()));
 
            if (!ConnectWithDatabase())
             {
@@ -243,6 +246,7 @@ namespace SistemaEMMG_Alpha
 
         private void btnConfiguracion_Click(object sender, RoutedEventArgs e)
         {
+            configWin.RefreshData();
             configWinWrapper.Visibility = Visibility.Visible;
         }
     }

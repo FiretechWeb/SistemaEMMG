@@ -24,5 +24,28 @@ namespace SistemaEMMG_Alpha.ui.config
         {
             InitializeComponent();
         }
+
+        public void RefreshData()
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            cbAutomaticBackups.IsChecked = Config.GetGlobalConfig().AutomaticBackupsEnabled();
+            txtAutomaticBackupInterval.Text = Config.GetGlobalConfig().AutomaticBackupsInterval().ToString();
+        }
+
+        private void btnGraphicsSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            Config.GetGlobalConfig().SetAutomaticBackups(cbAutomaticBackups.IsChecked == true);
+            Config.GetGlobalConfig().SetAutomaticBackupsInterval(SafeConvert.ToInt32(txtAutomaticBackupInterval.Text));
+            Config.GetGlobalConfig().ExportToJSONFile(Config.GetDefaultConfigFileName());
+        }
     }
 }

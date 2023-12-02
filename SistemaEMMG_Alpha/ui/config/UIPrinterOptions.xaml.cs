@@ -24,5 +24,15 @@ namespace SistemaEMMG_Alpha.ui.config
         {
             InitializeComponent();
         }
+
+        public void RefreshData()
+        {
+            if (Config.GetGlobalConfig() is null)
+            {
+                return;
+            }
+
+            //TODO
+        }
     }
 }
