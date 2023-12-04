@@ -53,16 +53,10 @@ namespace SistemaEMMG_Alpha
 
             } else //We use external apps (default: LibreOffice)
             {
-                //--outdir outdir input.pdf
-                /*var pdfProcess = new Process();
-pdfProcess.StartInfo.FileName = exePdf;
-pdfProcess.StartInfo.Arguments = "-norestore -nofirststartwizard -headless -convert-to pdf  \"TheFile.xlsx\"";
-pdfProcess.StartInfo.WorkingDirectory = docPath; //This is really important
-pdfProcess.Start();
-                */
                 string workingDirectory = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(excelFilePath));
                 string inputFileName = System.IO.Path.GetFileName(excelFilePath);
                 string outputFileName = System.IO.Path.GetFileName(outPdfPath);
+                string relativePath = System.IO.Path.GetDirectoryName(excelFilePath);
 
                 Console.WriteLine($"Working Path: {workingDirectory}");
                 Console.WriteLine($"Arguments: {Config.GetGlobalConfig().GetExternalAppsData().GetXlsToPdfArgsParsed(inputFileName, outputFileName)}");
@@ -72,32 +66,18 @@ pdfProcess.Start();
                 pdfProcess.StartInfo.Arguments = Config.GetGlobalConfig().GetExternalAppsData().GetXlsToPdfArgsParsed(inputFileName, outputFileName);
                 pdfProcess.StartInfo.WorkingDirectory = workingDirectory;
                 pdfProcess.Start();
-
+                pdfProcess.WaitForExit(); //Program waits for process to end.
+                System.IO.File.Move(System.IO.Path.ChangeExtension(excelFilePath, ".pdf"), outPdfPath);
 
             }
             return outPdfPath;
         }
 
-        public static void PrintPDF(string pdfFilePath)
+        public static void PrintPDF(string pdfFilePath, string printerName)
         {
-            PrintDocument printDoc = new PrintDocument();
-            printDoc.PrintPage += (sender, e) =>
-            {
-                //Use GhotscriptSharp to print the PDF
-
-                GhostscriptSharp.GhostscriptSettings settings = new GhostscriptSharp.GhostscriptSettings();
-
-                settings.Page.AllPages = false;
-                settings.Page.Start = 1;
-                settings.Page.End = 1;
-                settings.Size.Native = GhostscriptSharp.Settings.GhostscriptPageSizes.a4;
-                settings.Device = GhostscriptSharp.Settings.GhostscriptDevices.png16m;
-                settings.Resolution = new System.Drawing.Size(72, 72);
-
-                GhostscriptSharp.GhostscriptWrapper.GenerateOutput(pdfFilePath, "output.png", settings);
-            };
-
-            printDoc.Print();
+            var printer = new PDFtoPrinter.PDFtoPrinterPrinter();
+            var printerTimeout = new TimeSpan(0, 5, 0);
+            printer.Print(new PDFtoPrinter.PrintingOptions(printerName, System.IO.Path.GetFullPath(pdfFilePath)), printerTimeout);
         }
 
 

@@ -37,14 +37,33 @@ namespace SistemaEMMG_Alpha.ui.config
             cmbPrintersAvailable.DisplayMemberPath = "Value";
 
             List<string> printersInstalled = PrinterManagment.GetInstalledPrinters();
-
+            int printerSelected = -1;
             for (int i=0; i < printersInstalled.Count; i++)
             {
                 cmbPrintersAvailable.Items.Add(new KeyValuePair<long, string>(i, printersInstalled[i]));
+
+                if (printersInstalled[i].ToLower().Equals(Config.GetGlobalConfig().GetDefaultPrinter().ToLower()))
+                {
+                    printerSelected = i;
+                }
+            }
+            if (printerSelected != -1)
+            {
+                cmbPrintersAvailable.SelectedIndex = printerSelected;
+            }
+            //TODO
+        }
+
+        private void btnGraphicsSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbPrintersAvailable.SelectedItem is null)
+            {
+                return;
             }
 
+            Config.GetGlobalConfig().SetDefaultPrinter(((KeyValuePair<long, string>)cmbPrintersAvailable.SelectedItem).Value);
+            Config.GetGlobalConfig().ExportToJSONFile(Config.GetDefaultConfigFileName());
 
-            //TODO
         }
     }
 }

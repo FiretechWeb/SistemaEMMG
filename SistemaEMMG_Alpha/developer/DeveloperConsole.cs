@@ -114,6 +114,8 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("create pdf", (x) => _CMD_MakePDF(x)));
 
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print pdf", (x) => _CMD_PrintPDF(x)));
+
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("save config", (x) => _CMD_SaveConfig(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("load config", (x) => _CMD_LoadConfig(x)));
 
@@ -1763,6 +1765,20 @@ namespace SistemaEMMG_Alpha
             }
         }
 
+        private void _CMD_PrintPDF(string fileName)
+        {
+            if (!System.IO.File.Exists(fileName.Trim()) || fileName.Trim().Length < 2)
+            {
+                _outputStr = "El archivo indicado no existe!";
+            }
+            else
+            {
+                _outputStr = $"Imprimiendo {fileName.Trim()}";
+                PrinterManagment.PrintPDF(fileName.Trim(), Config.GetGlobalConfig().GetDefaultPrinter());
+            }
+
+        }
+
         private void _CMD_MakePDF(string fileName)
         {
             if (_seleccion is null)
@@ -1771,7 +1787,7 @@ namespace SistemaEMMG_Alpha
                 return;
             }
             fileName = fileName.Trim();
-            string fileNameExcel = System.IO.Path.GetFileNameWithoutExtension(fileName) + ".xlsx";
+            string fileNameExcel = System.IO.Path.GetFileNameWithoutExtension(fileName) + "_tmp.xlsx";
             if (_seleccion is DBCuenta cuenta)
             {
                 MySqlConnection conn = DBConnection.Instance().Connection;
