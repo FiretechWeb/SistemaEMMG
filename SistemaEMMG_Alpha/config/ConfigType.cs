@@ -16,7 +16,7 @@ namespace SistemaEMMG_Alpha
     }
     public enum TypeVisualTheme
     {
-        Light=0,
+        Light = 0,
         Dark
     }
 
@@ -39,6 +39,37 @@ namespace SistemaEMMG_Alpha
         public string db_databaseName;
         public string db_userName;
         public string db_userPassword;
+        public string app_pathXLStoPDF;
+        public string app_xlsToPdfArgs;
+    }
+
+    public struct ExternalAPPSData {
+
+        public ExternalAPPSData(string _XLStoPDF, string _args)
+        {
+            pathXLStoPDF = _XLStoPDF;
+            xlsToPdfArgs = _args;
+        }
+
+        public string pathXLStoPDF;
+        public string xlsToPdfArgs; //Special keyworks: %i input file, %o output file.
+
+        public string GetXlsToPdfArgsParsed(string fileInput, string fileOutput)
+        {
+            return xlsToPdfArgs
+                .Replace("%i", fileInput)
+                .Replace("%o", fileOutput);
+        }
+
+        public static ExternalAPPSData GetDefault()
+        {
+            return new ExternalAPPSData("C:\\Program Files\\LibreOffice\\program\\soffice.exe", "-norestore -nofirststartwizard -headless -convert-to pdf  \"%i\"");
+        }
+
+        public override string ToString()
+        {
+            return $"ExternalAPPSData:\n\tpathXLStoPDF: {pathXLStoPDF}\n\txlsToPdfArgs: {xlsToPdfArgs}";
+        }
     }
 
     public struct DatabaseAccessData
@@ -120,7 +151,7 @@ namespace SistemaEMMG_Alpha
 
     public struct ConfigData
     { 
-        public ConfigData(TypeFontSize _fs, TypeVisualTheme _theme, bool _autoBackup, int _autoInterval, string _defPrinter, PrinterTemplateData _printerTemplates, DatabaseAccessData _dbData)
+        public ConfigData(TypeFontSize _fs, TypeVisualTheme _theme, bool _autoBackup, int _autoInterval, string _defPrinter, PrinterTemplateData _printerTemplates, DatabaseAccessData _dbData, ExternalAPPSData _appData)
         {
             fontSize = _fs;
             visualTheme = _theme;
@@ -129,6 +160,7 @@ namespace SistemaEMMG_Alpha
             defaultPrinter = _defPrinter;
             printerTemplates = _printerTemplates;
             databaseData = _dbData;
+            externalApps = _appData;
         }
 
         public ConfigData(ConfigObject cfgObject)
@@ -152,7 +184,11 @@ namespace SistemaEMMG_Alpha
                 cfgObject.db_databaseName,
                 cfgObject.db_userName,
                 cfgObject.db_userPassword);
+            externalApps = new ExternalAPPSData(
+                cfgObject.app_pathXLStoPDF, 
+                cfgObject.app_xlsToPdfArgs);
         }
+
         public TypeFontSize fontSize;
         public TypeVisualTheme visualTheme;
         public bool automaticBackups;
@@ -160,6 +196,7 @@ namespace SistemaEMMG_Alpha
         public string defaultPrinter;
         public PrinterTemplateData printerTemplates;
         public DatabaseAccessData databaseData;
+        public ExternalAPPSData externalApps;
 
         public static ConfigData GetDefault()
         {
@@ -170,7 +207,8 @@ namespace SistemaEMMG_Alpha
                 120,
                 "",
                 PrinterTemplateData.GetDefault(),
-                DatabaseAccessData.GetDefault()
+                DatabaseAccessData.GetDefault(),
+                ExternalAPPSData.GetDefault()
             );
         }
 
@@ -194,8 +232,10 @@ namespace SistemaEMMG_Alpha
                 db_hostName = this.databaseData.hostName,
                 db_databaseName = this.databaseData.databaseName,
                 db_userName = this.databaseData.userName,
-                db_userPassword = this.databaseData.userPassword
-            };
+                db_userPassword = this.databaseData.userPassword,
+                app_pathXLStoPDF = this.externalApps.pathXLStoPDF,
+                app_xlsToPdfArgs = this.externalApps.xlsToPdfArgs
+    };
         }
 
         public override string ToString()
@@ -208,6 +248,7 @@ namespace SistemaEMMG_Alpha
             returnStr += $"\tdefaultPrinter: {defaultPrinter}\n";
             returnStr += $"\tprinterTemplates: {printerTemplates}\n";
             returnStr += $"\tdatabaseData: {databaseData}\n";
+            returnStr += $"\texternalApps: {externalApps}\n";
             return returnStr;
         }
     }
@@ -279,6 +320,8 @@ namespace SistemaEMMG_Alpha
 
         public void SetPrinterTemplates(PrinterTemplateData newPrinterTemplates) => _data.printerTemplates = newPrinterTemplates;
 
+        public void SetExternalAppsData(ExternalAPPSData newAppsData) => _data.externalApps = newAppsData;
+
         public TypeFontSize GetFontSize() => _data.fontSize;
 
         public TypeVisualTheme GetVisualTheme() => _data.visualTheme;
@@ -292,6 +335,8 @@ namespace SistemaEMMG_Alpha
         public PrinterTemplateData GetPrinterTemplates() => _data.printerTemplates;
 
         public DatabaseAccessData GetDatabaseData() => _data.databaseData;
+
+        public ExternalAPPSData GetExternalAppsData() => _data.externalApps;
 
         public override string ToString()
         {

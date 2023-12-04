@@ -112,6 +112,7 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("populate random", (x) => _CMD_PopulateRandom()));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("create excel", (x) => _CMD_MakeExcel(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("create pdf", (x) => _CMD_MakePDF(x)));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("save config", (x) => _CMD_SaveConfig(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("load config", (x) => _CMD_LoadConfig(x)));
@@ -1759,6 +1760,33 @@ namespace SistemaEMMG_Alpha
             } else
             {
                 _outputStr = "Es necesario seleccionar una cuenta o entidad comercial para exportar un excel de los comprobantes.";
+            }
+        }
+
+        private void _CMD_MakePDF(string fileName)
+        {
+            if (_seleccion is null)
+            {
+                _outputStr = "No hay seleccion";
+                return;
+            }
+            fileName = fileName.Trim();
+            string fileNameExcel = System.IO.Path.GetFileNameWithoutExtension(fileName) + ".xlsx";
+            if (_seleccion is DBCuenta cuenta)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                ExcelExport.ExportToFile(cuenta.GetAllComprobantes(conn), fileNameExcel);
+                PrinterManagment.ConvertExcelToPDF(fileNameExcel, fileName);
+                _outputStr = "Exportado todos los comprobantes de esta cuenta.";
+            } else if (_seleccion is DBEntidades entidadComercial)
+            {
+                MySqlConnection conn = DBConnection.Instance().Connection;
+                ExcelExport.ExportToFile(entidadComercial.GetAllComprobantes(conn), fileNameExcel);
+                PrinterManagment.ConvertExcelToPDF(fileNameExcel, fileName);
+                _outputStr = "Exportado todos los comprobantes de esta entidad comercial.";
+            } else
+            {
+                _outputStr = "Es necesario seleccionar una cuenta o entidad comercial para exportar un excel de los comprobantes";
             }
         }
 

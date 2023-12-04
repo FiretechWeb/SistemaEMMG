@@ -32,6 +32,18 @@ namespace SistemaEMMG_Alpha.ui.config
                 return;
             }
 
+            cmbPrintersAvailable.Items.Clear();
+            cmbPrintersAvailable.SelectedValuePath = "Key";
+            cmbPrintersAvailable.DisplayMemberPath = "Value";
+
+            List<string> printersInstalled = PrinterManagment.GetInstalledPrinters();
+
+            for (int i=0; i < printersInstalled.Count; i++)
+            {
+                cmbPrintersAvailable.Items.Add(new KeyValuePair<long, string>(i, printersInstalled[i]));
+            }
+
+
             //TODO
         }
     }
