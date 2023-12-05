@@ -425,12 +425,25 @@ namespace SistemaEMMG_Alpha
         private void _CMD_CrearFormaDePago(string args)
         {
             string[] parametros = args.Split(',');
-            if (parametros.Length != 1)
+            if (parametros.Length != 2)
             {
-                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make forma pago Nombre";
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make forma pago Nombre, tipo";
                 return;
             }
-            _seleccion = new DBFormasPago(parametros[0]);
+
+            if (!Enum.IsDefined(typeof(TipoFormaDePago), SafeConvert.ToInt32(parametros[1])))
+            {
+                _outputStr = "El valor del tipo de forma de pago es invalido. Lista de valores validos:\n";
+                Array values = Enum.GetValues(typeof(TipoFormaDePago));
+
+                foreach (TipoFormaDePago val in values)
+                {
+                    _outputStr += String.Format("\t{0}: {1}\n", (int)val, Enum.GetName(typeof(TipoFormaDePago), val));
+                }
+                return;
+            }
+
+            _seleccion = new DBFormasPago(parametros[0].Trim(), (TipoFormaDePago)SafeConvert.ToInt32(parametros[1]));
             _outputStr = $"Forma de pago creada> {_seleccion}";
         }
         private void _CMD_CrearMoneda(string args)
@@ -1688,10 +1701,10 @@ namespace SistemaEMMG_Alpha
                 }
 
                 List<DBFormasPago> formasDePago = new List<DBFormasPago>();
-                formasDePago.Add(new DBFormasPago("Cheque"));
-                formasDePago.Add(new DBFormasPago("Efectivo"));
-                formasDePago.Add(new DBFormasPago("Transferencia Bancaria"));
-                formasDePago.Add(new DBFormasPago("Nota de crédito"));
+                formasDePago.Add(new DBFormasPago("Cheque", TipoFormaDePago.CHEQUE));
+                formasDePago.Add(new DBFormasPago("Efectivo", TipoFormaDePago.EFECTIVO));
+                formasDePago.Add(new DBFormasPago("Transferencia Bancaria", TipoFormaDePago.TRANSFERENCIA));
+                formasDePago.Add(new DBFormasPago("Nota de crédito", TipoFormaDePago.OTRO));
 
                 foreach (DBFormasPago formaPago in formasDePago)
                 {

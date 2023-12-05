@@ -7,18 +7,34 @@ using System.Text.RegularExpressions;
 
 namespace SistemaEMMG_Alpha
 {
+    public enum TipoFormaDePago
+    {
+        EFECTIVO = 0,
+        CHEQUE,
+        TRANSFERENCIA,
+        OTRO
+    }
+
     public struct FormasPagoData
     {
-        public FormasPagoData(string nom)
+        public FormasPagoData(string nom, TipoFormaDePago type)
         {
             fp_nombre = nom;
+            fp_type = type;
         }
         public string fp_nombre { get; set; }
 
+        public TipoFormaDePago fp_type;
+
         public static readonly string NameOf_fp_nombre = nameof(fp_nombre);
 
-        public static FormasPagoData CreateFromReader(MySqlDataReader reader) => new FormasPagoData(reader.GetStringSafe(NameOf_fp_nombre));
-        public override string ToString() => $"Forma: {fp_nombre}";
+        public static readonly string NameOf_fp_type = nameof(fp_type);
+
+        public static FormasPagoData CreateFromReader(MySqlDataReader reader) => new FormasPagoData(
+            reader.GetStringSafe(NameOf_fp_nombre),
+            (TipoFormaDePago)reader.GetInt32Safe(NameOf_fp_type)
+        );
+        public override string ToString() => $"Forma: {fp_nombre} - Tipo: {fp_type}";
     }
     public class DBFormasPago : DBBaseClass, IDBase<DBFormasPago>, IDBDataType<DBFormasPago>
     {
@@ -95,9 +111,9 @@ namespace SistemaEMMG_Alpha
         public DBFormasPago(long id, FormasPagoData newData) : base (id) { _data = newData; }
 
         public DBFormasPago(FormasPagoData newData) : this(-1, newData) { }
-        public DBFormasPago(long id, string nombre) : this(id, new FormasPagoData(nombre)) { }
+        public DBFormasPago(long id, string nombre, TipoFormaDePago tipoForma) : this(id, new FormasPagoData(nombre, tipoForma)) { }
 
-        public DBFormasPago(string nombre) : this(-1, nombre) { }
+        public DBFormasPago(string nombre, TipoFormaDePago tipoForma) : this(-1, nombre, tipoForma) { }
 
         public DBFormasPago(MySqlConnection conn, long id) : base (id)
         {
@@ -165,7 +181,10 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToUpdate = false;
             try
             {
-                string query = $"UPDATE {db_table} SET {FormasPagoData.NameOf_fp_nombre} = '{Regex.Replace(_data.fp_nombre.Trim(), @"\s+", " ")}' WHERE {NameOf_id} = {GetID()}";
+                string query = $@"UPDATE {db_table} SET
+                                {FormasPagoData.NameOf_fp_nombre} = '{Regex.Replace(_data.fp_nombre.Trim(), @"\s+", " ")}',
+                                {FormasPagoData.NameOf_fp_type} = {(int)_data.fp_type}
+                                WHERE {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
                 _shouldPush = _shouldPush && !wasAbleToUpdate;
@@ -188,7 +207,10 @@ namespace SistemaEMMG_Alpha
             bool wasAbleToInsert = false;
             try
             {
-                string query = $"INSERT INTO {db_table} ({FormasPagoData.NameOf_fp_nombre}) VALUES ('{Regex.Replace(_data.fp_nombre.Trim(), @"\s+", " ")}')";
+                string query = $@"INSERT INTO {db_table}
+                                ({FormasPagoData.NameOf_fp_nombre}, {FormasPagoData.NameOf_fp_type})
+                                VALUES
+                                ('{Regex.Replace(_data.fp_nombre.Trim(), @"\s+", " ")}', {(int)_data.fp_type})";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
                 if (wasAbleToInsert)
@@ -279,6 +301,10 @@ namespace SistemaEMMG_Alpha
             _shouldPush = _shouldPush || !_data.fp_nombre.Equals(newName);
             _data.fp_nombre = newName;
         }
+
+        public TipoFormaDePago GetTipo() => _data.fp_type;
+
+        public void SetTipo(TipoFormaDePago newType) => _data.fp_type = newType;
 
         public override DBBaseClass GetLocalCopy()
         {
