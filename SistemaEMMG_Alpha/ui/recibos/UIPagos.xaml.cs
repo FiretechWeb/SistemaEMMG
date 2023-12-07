@@ -16,11 +16,16 @@ namespace SistemaEMMG_Alpha.ui.recibos
         private UIAgregarModificarRecibo _ownerControl = null;
         private DBPago _pagoSelected = null;
         private DBRecibo _reciboSelected = null;
+        private ChequeData? _dataCheque = null;
 
         public void SetUIOwner(UIAgregarModificarRecibo ownerControl)
         {
             _ownerControl = ownerControl;
         }
+
+        public ChequeData? GetChequeData() => _dataCheque;
+
+        public void SetChequeData(ChequeData? cheque) => _dataCheque = cheque;
 
         public UIAgregarModificarRecibo GetOwnerControl() => _ownerControl;
 
@@ -59,6 +64,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 txtObservacion.Text = "";
                 cmbFormaPago.SelectedIndex = 0;
                 cmbMoneda.SelectedIndex = 0;
+                SetChequeData(null);
             } else {
                 txtCambio.Text = _pagoSelected.GetCambio().ToString();
                 txtFecha.Text = _pagoSelected.GetFecha().HasValue ? ((DateTime)_pagoSelected.GetFecha()).ToString("dd/MM/yyyy") : "";
@@ -66,6 +72,15 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 txtObservacion.Text = _pagoSelected.GetObservacion();
                 cmbFormaPago.SelectedValue = _pagoSelected.GetFormaDePago().GetID();
                 cmbMoneda.SelectedValue = _pagoSelected.GetMoneda().GetID();
+                SetChequeData(_pagoSelected.GetCheque());
+
+                if (_pagoSelected.GetFormaDePago().GetTipo() == TipoFormaDePago.CHEQUE)
+                {
+                    btnCheque.Visibility = Visibility.Visible;
+                } else
+                {
+                    btnCheque.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -96,6 +111,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
             InitializeComponent();
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
+            uiChequeInfo.SetUIOwner(this);
         }
 
 
@@ -125,6 +141,8 @@ namespace SistemaEMMG_Alpha.ui.recibos
             {
                 return;
             }
+
+            SetChequeData(null);
 
             _reciboSelected = selectedRecibo;
 
@@ -214,7 +232,8 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 SafeConvert.ToDouble(txtImporte.Text.Trim().Replace(".", ",")),
                 txtObservacion.Text.Trim(),
                 fechaEmitido,
-                cambio);
+                cambio,
+                GetChequeData());
 
             _reciboSelected.AddPago(newPago);
 
@@ -263,6 +282,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
             _pagoSelected.SetMoneda(DBMoneda.GetByID(((KeyValuePair<long, string>)cmbMoneda.SelectedItem).Key));
             _pagoSelected.SetObservacion(txtObservacion.Text.Trim());
             _pagoSelected.SetImporte(SafeConvert.ToDouble(txtImporte.Text.Trim().Replace(".", ",")));
+            _pagoSelected.SetCheque(GetChequeData());
 
             if (!_reciboSelected.IsLocal())
             {
@@ -374,6 +394,30 @@ namespace SistemaEMMG_Alpha.ui.recibos
         private void txtFecha_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             e.Handled = InputHandler.OnlyDateTimeText(e, txtFecha);
+        }
+
+        private void cmbFormaPago_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbFormaPago.SelectedItem is null)
+            {
+                return;
+            }
+            DBFormasPago formaPagoSeleccionada = DBFormasPago.GetByID(((KeyValuePair<long, string>)cmbFormaPago.SelectedItem).Key);
+
+            if (formaPagoSeleccionada.GetTipo() == TipoFormaDePago.CHEQUE)
+            {
+                btnCheque.Visibility = Visibility.Visible;
+            } else
+            {
+                btnCheque.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void btnCheque_Click(object sender, RoutedEventArgs e)
+        {
+            uiChequeInfo.SetChequeData(GetChequeData());
+            uiChequeInfo.RefreshData();
+            uiChequeInfo.Visibility = Visibility.Visible;
         }
     }
 }

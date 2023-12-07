@@ -8,7 +8,7 @@ namespace SistemaEMMG_Alpha
 
     public struct ChequeData
     {
-        public ChequeData (long bnk_id, int sucursal, long num, string serie, string persona, string cuenta, DateTime? vencimiento, int localidad)
+        public ChequeData (long bnk_id, int sucursal, long num, string serie, string persona, string cuenta, DateTime? paguese, int localidad, DateTime? debito, long cuit)
         {
             pg_bnk_id = bnk_id;
             pg_cheque_sucursal = sucursal;
@@ -16,8 +16,10 @@ namespace SistemaEMMG_Alpha
             pg_cheque_serie = serie;
             pg_cheque_persona = persona;
             pg_cheque_cta = cuenta;
-            pg_cheque_vto = vencimiento;
+            pg_cheque_pay = paguese;
             pg_cheque_localidad = localidad;
+            pg_cheque_debito = debito;
+            pg_cheque_cuit = cuit;
         }
         public long pg_bnk_id { get; set; }
         public int pg_cheque_sucursal { get; set; }
@@ -25,8 +27,10 @@ namespace SistemaEMMG_Alpha
         public string pg_cheque_serie { get; set; }
         public string pg_cheque_persona { get; set; }
         public string pg_cheque_cta { get; set; }
-        public DateTime? pg_cheque_vto { get; set; }
+        public DateTime? pg_cheque_pay { get; set; }
         public int pg_cheque_localidad { get; set; }
+        public DateTime? pg_cheque_debito { get; set; }
+        public long pg_cheque_cuit { get; set; }
 
         public static readonly string NameOf_pg_bnk_id = nameof(pg_bnk_id);
         public static readonly string NameOf_pg_cheque_sucursal = nameof(pg_cheque_sucursal);
@@ -34,8 +38,11 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_pg_cheque_serie = nameof(pg_cheque_serie);
         public static readonly string NameOf_pg_cheque_persona = nameof(pg_cheque_persona);
         public static readonly string NameOf_pg_cheque_cta = nameof(pg_cheque_cta);
-        public static readonly string NameOf_pg_cheque_vto = nameof(pg_cheque_vto);
+        public static readonly string NameOf_pg_cheque_pay = nameof(pg_cheque_pay);
         public static readonly string NameOf_pg_cheque_localidad = nameof(pg_cheque_localidad);
+        public static readonly string NameOf_pg_cheque_debito = nameof(pg_cheque_debito);
+        public static readonly string NameOf_pg_cheque_cuit = nameof(pg_cheque_cuit);
+
         public static ChequeData CreateFromReader(MySqlDataReader reader)
         {
             return new ChequeData(reader.GetInt64Safe(NameOf_pg_bnk_id),
@@ -44,8 +51,10 @@ namespace SistemaEMMG_Alpha
                                             reader.GetStringSafe(NameOf_pg_cheque_serie),
                                             reader.GetStringSafe(NameOf_pg_cheque_persona),
                                             reader.GetStringSafe(NameOf_pg_cheque_cta),
-                                            reader.GetDateTimeSafe(NameOf_pg_cheque_vto),
-                                            reader.GetInt32Safe(NameOf_pg_cheque_localidad));
+                                            reader.GetDateTimeSafe(NameOf_pg_cheque_pay),
+                                            reader.GetInt32Safe(NameOf_pg_cheque_localidad),
+                                            reader.GetDateTimeSafe(NameOf_pg_cheque_debito),
+                                            reader.GetInt64Safe(NameOf_pg_cheque_cuit));
         }
 
         public override bool Equals(object obj)
@@ -62,7 +71,9 @@ namespace SistemaEMMG_Alpha
             if (!compareObj.pg_cheque_persona.Equals(pg_cheque_persona)) return false;
             if (!compareObj.pg_cheque_serie.Equals(pg_cheque_serie)) return false;
             if (compareObj.pg_cheque_sucursal != pg_cheque_sucursal) return false;
-            if (compareObj.pg_cheque_vto != pg_cheque_vto) return false;
+            if (compareObj.pg_cheque_pay != pg_cheque_pay) return false;
+            if (compareObj.pg_cheque_debito != pg_cheque_debito) return false;
+            if (compareObj.pg_cheque_cuit != pg_cheque_cuit) return false;
 
             return true;
         }
@@ -72,7 +83,7 @@ namespace SistemaEMMG_Alpha
             return base.GetHashCode();
         }
 
-        public override string ToString() => $"Bank id: {pg_bnk_id} - Sucursal: {pg_cheque_sucursal} - Vencimiento: {pg_cheque_vto} - Persona: {pg_cheque_persona}";
+        public override string ToString() => $"Bank id: {pg_bnk_id} - Sucursal: {pg_cheque_sucursal} - Paguesé: {pg_cheque_pay} - Persona: {pg_cheque_persona}";
 
     }
 
@@ -121,14 +132,24 @@ namespace SistemaEMMG_Alpha
             return (pg_cheque.HasValue) ? ((ChequeData)pg_cheque).pg_cheque_cta : "";
         }
 
-        public DateTime? GetChequeVencimiento()
+        public DateTime? GetChequePaguese()
         {
-            return (pg_cheque.HasValue) ? ((ChequeData)pg_cheque).pg_cheque_vto : null;
+            return (pg_cheque.HasValue) ? ((ChequeData)pg_cheque).pg_cheque_pay : null;
         }
 
         public int GetChequeLocalidad()
         {
             return (pg_cheque.HasValue) ? ((ChequeData)pg_cheque).pg_cheque_localidad : 0;
+        }
+
+        public DateTime? GetChequeDebito()
+        {
+            return (pg_cheque.HasValue) ? ((ChequeData)pg_cheque).pg_cheque_debito : null;
+        }
+
+        public long GetChequeCUIT()
+        {
+            return (pg_cheque.HasValue) ? ((ChequeData)pg_cheque).pg_cheque_cuit : 0;
         }
 
         public static readonly string NameOf_pg_obs = nameof(pg_obs);
@@ -423,22 +444,25 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string fechaPago = (_data.pg_fecha.HasValue) ? $"'{((DateTime)_data.pg_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaVTOCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequeVencimiento()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaPagoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequePaguese()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaDebitadoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequeDebito()).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_pg_fp_id} = {_formaDePago.GetID()}, 
                                 {NameOf_pg_mn_id} = {_moneda.GetID()}, 
                                 {PagoData.NameOf_pg_importe} = {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 {PagoData.NameOf_pg_obs} = '{_data.pg_obs}', 
                                 {PagoData.NameOf_pg_fecha} = {fechaPago}, 
-                                {PagoData.NameOf_pg_cambio} = {_data.pg_cambio.ToString().Replace(",", ".")},
-                                {ChequeData.NameOf_pg_bnk_id} = {_data.GetChequeIDBanco()},
-                                {ChequeData.NameOf_pg_cheque_cta} = '{_data.GetChequeCuenta()}',
-                                {ChequeData.NameOf_pg_cheque_localidad} = {_data.GetChequeLocalidad()},
-                                {ChequeData.NameOf_pg_cheque_num} = {_data.GetChequeNumero()},
-                                {ChequeData.NameOf_pg_cheque_persona} = '{_data.GetChequePersona()}',
-                                {ChequeData.NameOf_pg_cheque_serie} = '{_data.GetChequeSerie()}',
-                                {ChequeData.NameOf_pg_cheque_sucursal} = {_data.GetChequeSucursal()},
-                                {ChequeData.NameOf_pg_cheque_vto} = {fechaVTOCheque}
+                                {PagoData.NameOf_pg_cambio} = {_data.pg_cambio.ToString().Replace(",", ".")}, 
+                                {ChequeData.NameOf_pg_bnk_id} = {_data.GetChequeIDBanco()}, 
+                                {ChequeData.NameOf_pg_cheque_cta} = '{_data.GetChequeCuenta()}', 
+                                {ChequeData.NameOf_pg_cheque_localidad} = {_data.GetChequeLocalidad()}, 
+                                {ChequeData.NameOf_pg_cheque_num} = {_data.GetChequeNumero()}, 
+                                {ChequeData.NameOf_pg_cheque_persona} = '{_data.GetChequePersona()}', 
+                                {ChequeData.NameOf_pg_cheque_serie} = '{_data.GetChequeSerie()}', 
+                                {ChequeData.NameOf_pg_cheque_sucursal} = {_data.GetChequeSucursal()}, 
+                                {ChequeData.NameOf_pg_cheque_pay} = {fechaPagoCheque}, 
+                                {ChequeData.NameOf_pg_cheque_debito} = {fechaDebitadoCheque}, 
+                                {ChequeData.NameOf_pg_cheque_cuit} = {_data.GetChequeCUIT()} 
                                 WHERE {NameOf_pg_em_id} = {GetCuentaID()} AND {NameOf_pg_ec_id} = {GetEntidadComercialID()} AND {NameOf_pg_rc_id} = {GetReciboID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -463,7 +487,8 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string fechaPago = (_data.pg_fecha.HasValue) ? $"'{((DateTime)_data.pg_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaVTOCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequeVencimiento()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaPagoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequePaguese()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaDebitadoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequeDebito()).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"INSERT INTO {db_table} (
                                 {NameOf_pg_em_id}, 
                                 {NameOf_pg_ec_id}, 
@@ -473,15 +498,17 @@ namespace SistemaEMMG_Alpha
                                 {PagoData.NameOf_pg_importe}, 
                                 {PagoData.NameOf_pg_obs}, 
                                 {PagoData.NameOf_pg_fecha}, 
-                                {PagoData.NameOf_pg_cambio},
-                                {ChequeData.NameOf_pg_bnk_id},
-                                {ChequeData.NameOf_pg_cheque_cta},
-                                {ChequeData.NameOf_pg_cheque_localidad},
-                                {ChequeData.NameOf_pg_cheque_num},
-                                {ChequeData.NameOf_pg_cheque_persona},
-                                {ChequeData.NameOf_pg_cheque_serie},
-                                {ChequeData.NameOf_pg_cheque_sucursal},
-                                {ChequeData.NameOf_pg_cheque_vto}) VALUES (
+                                {PagoData.NameOf_pg_cambio}, 
+                                {ChequeData.NameOf_pg_bnk_id}, 
+                                {ChequeData.NameOf_pg_cheque_cta}, 
+                                {ChequeData.NameOf_pg_cheque_localidad}, 
+                                {ChequeData.NameOf_pg_cheque_num}, 
+                                {ChequeData.NameOf_pg_cheque_persona}, 
+                                {ChequeData.NameOf_pg_cheque_serie}, 
+                                {ChequeData.NameOf_pg_cheque_sucursal}, 
+                                {ChequeData.NameOf_pg_cheque_pay}, 
+                                {ChequeData.NameOf_pg_cheque_debito}, 
+                                {ChequeData.NameOf_pg_cheque_cuit}) VALUES (
                                 {GetCuentaID()}, 
                                 {GetEntidadComercialID()}, 
                                 {GetReciboID()}, 
@@ -490,15 +517,17 @@ namespace SistemaEMMG_Alpha
                                 {_data.pg_importe.ToString().Replace(",", ".")}, 
                                 '{_data.pg_obs}', 
                                 {fechaPago}, 
-                                {_data.pg_cambio.ToString().Replace(",", ".")},
-                                {_data.GetChequeIDBanco()},
-                                '{_data.GetChequeCuenta()}',
-                                {_data.GetChequeLocalidad()},
-                                {_data.GetChequeNumero()},
-                                '{_data.GetChequePersona()}',
-                                '{_data.GetChequeSerie()}',
-                                {_data.GetChequeSucursal()},
-                                {fechaVTOCheque})";
+                                {_data.pg_cambio.ToString().Replace(",", ".")}, 
+                                {_data.GetChequeIDBanco()}, 
+                                '{_data.GetChequeCuenta()}', 
+                                {_data.GetChequeLocalidad()}, 
+                                {_data.GetChequeNumero()}, 
+                                '{_data.GetChequePersona()}', 
+                                '{_data.GetChequeSerie()}', 
+                                {_data.GetChequeSucursal()}, 
+                                {fechaPagoCheque}, 
+                                {fechaDebitadoCheque}, 
+                                {_data.GetChequeCUIT()})";
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;

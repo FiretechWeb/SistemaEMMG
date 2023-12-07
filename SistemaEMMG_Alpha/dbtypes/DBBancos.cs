@@ -401,7 +401,7 @@ namespace SistemaEMMG_Alpha
             string str = "";
             foreach(DBBancos banco in _db_bancos)
             {
-                str += $"Banco> {banco}";
+                str += $"Banco> {banco}\n";
             }
             return str;
         }

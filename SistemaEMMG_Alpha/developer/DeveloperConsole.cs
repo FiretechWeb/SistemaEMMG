@@ -132,6 +132,9 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("remove user", (x) => _CMD_RemoveUser(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("login", (x) => _CMD_UserLogin(x)));
 
+            //Patch commands only. Used when porting some DB changes to a new version of the software.
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("install patch", (x) => _CMD_InstallPatch()));
+
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("help", (x) => _CMD_Help()));
 
         }
@@ -1912,6 +1915,13 @@ namespace SistemaEMMG_Alpha
             {
                 _outputStr = $"Datos ingresados incorrectos.\nPassword: {tmpUser.GetPassword()}\n Encrypted password: {tmpUser.GetEncryptedPassword()}";
             }
+        }
+
+        private void _CMD_InstallPatch()
+        {
+            MySqlConnection conn = DBConnection.Instance().Connection;
+            DBBancos.ResetDBData(conn);
+            DBBancos.PushDefaultData(conn);
         }
 
         private void ProcessHelpCommand(string args)

@@ -222,6 +222,9 @@
     <Compile Include="ui\recibos\UIPagos.xaml.cs">
       <DependentUpon>UIPagos.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\recibos\UIRCheque.xaml.cs">
+      <DependentUpon>UIRCheque.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\remitos\UIAgregarModificarRemito.xaml.cs">
       <DependentUpon>UIAgregarModificarRemito.xaml</DependentUpon>
     </Compile>
@@ -328,6 +331,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\recibos\UIPagos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\recibos\UIRCheque.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
