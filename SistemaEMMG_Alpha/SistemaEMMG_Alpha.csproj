@@ -165,6 +165,7 @@
     <Compile Include="config\ConfigType.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DBInterfaces.cs" />
+    <Compile Include="dbtypes\DBBancos.cs" />
     <Compile Include="dbtypes\DBMoneda.cs" />
     <Compile Include="dbtypes\DBRecibo.cs" />
     <Compile Include="dbtypes\DBRemito.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="fastexcel\ExcelStyles.cs" />
     <Compile Include="printer\PrinterManagment.cs" />
     <Compile Include="SafeConvert.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="ui\BaseUCClass.cs" />
     <Compile Include="ui\comprobantes\UIAgregarModificarComprobante.xaml.cs">
       <DependentUpon>UIAgregarModificarComprobante.xaml</DependentUpon>

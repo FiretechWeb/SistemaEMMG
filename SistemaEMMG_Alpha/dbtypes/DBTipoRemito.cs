@@ -35,6 +35,62 @@ namespace SistemaEMMG_Alpha
 
         string IDBase<DBTipoRemito>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
+        public static List<DBTipoRemito> GenerateDefaultData()
+        {
+            List<DBTipoRemito> defaulData = new List<DBTipoRemito>();
+            defaulData.Add(new DBTipoRemito("R"));
+
+            return defaulData;
+        }
+        List<DBTipoRemito> IDBDataType<DBTipoRemito>.GenerateDefaultData() => GenerateDefaultData();
+
+        public static bool PushDefaultData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+
+            List<DBTipoRemito> defaultData = GenerateDefaultData();
+            foreach (DBTipoRemito tipoRemito in defaultData)
+            {
+                tipoRemito.PushToDatabase(conn);
+            }
+
+            return true;
+        }
+
+        bool IDBDataType<DBTipoRemito>.PushDefaultData(MySqlConnection conn) => PushDefaultData(conn);
+
+        public static bool ResetDBData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+            bool resetDataSuccess;
+            try
+            {
+                string query = $"DELETE FROM {db_table}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = $"ALTER TABLE {db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                resetDataSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                resetDataSuccess = false;
+                MessageBox.Show("Error en el método DBTipoRemito::ResetDBData. Error en la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return resetDataSuccess;
+        }
+
+        bool IDBDataType<DBTipoRemito>.ResetDBData(MySqlConnection conn) => ResetDBData(conn);
+
         public static List<DBTipoRemito> UpdateAll(MySqlConnection conn)
         {
             List<DBTipoRemito> returnList = new List<DBTipoRemito>();

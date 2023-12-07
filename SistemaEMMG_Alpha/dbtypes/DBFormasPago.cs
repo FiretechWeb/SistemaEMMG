@@ -50,6 +50,66 @@ namespace SistemaEMMG_Alpha
 
         string IDBase<DBFormasPago>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
+        public static List<DBFormasPago> GenerateDefaultData()
+        {
+            List<DBFormasPago> defaulData = new List<DBFormasPago>();
+            defaulData.Add(new DBFormasPago("Cheque", TipoFormaDePago.CHEQUE));
+            defaulData.Add(new DBFormasPago("Efectivo", TipoFormaDePago.EFECTIVO));
+            defaulData.Add(new DBFormasPago("Transferencia Bancaria", TipoFormaDePago.TRANSFERENCIA));
+            defaulData.Add(new DBFormasPago("Nota de crédito", TipoFormaDePago.OTRO));
+
+            return defaulData;
+        }
+        List<DBFormasPago> IDBDataType<DBFormasPago>.GenerateDefaultData() => GenerateDefaultData();
+
+        public static bool PushDefaultData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+
+            List<DBFormasPago> defaultData = GenerateDefaultData();
+
+            foreach (DBFormasPago formaPago in defaultData)
+            {
+                formaPago.PushToDatabase(conn);
+            }
+
+            return true;
+        }
+
+        bool IDBDataType<DBFormasPago>.PushDefaultData(MySqlConnection conn) => PushDefaultData(conn);
+
+        public static bool ResetDBData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+            bool resetDataSuccess;
+            try
+            {
+                string query = $"DELETE FROM {db_table}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = $"ALTER TABLE {db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                resetDataSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                resetDataSuccess = false;
+                MessageBox.Show("Error en el método DBFormasPago::ResetDBData. Error en la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return resetDataSuccess;
+        }
+
+        bool IDBDataType<DBFormasPago>.ResetDBData(MySqlConnection conn) => ResetDBData(conn);
+
         public static List<DBFormasPago> UpdateAll(MySqlConnection conn)
         {
             List<DBFormasPago> returnList = new List<DBFormasPago>();

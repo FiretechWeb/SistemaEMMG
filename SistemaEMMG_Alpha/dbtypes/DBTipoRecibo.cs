@@ -35,6 +35,63 @@ namespace SistemaEMMG_Alpha
 
         string IDBase<DBTipoRecibo>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
+        public static List<DBTipoRecibo> GenerateDefaultData()
+        {
+            List<DBTipoRecibo> defaulData = new List<DBTipoRecibo>();
+            defaulData.Add(new DBTipoRecibo("X"));
+            defaulData.Add(new DBTipoRecibo("A"));
+
+            return defaulData;
+        }
+        List<DBTipoRecibo> IDBDataType<DBTipoRecibo>.GenerateDefaultData() => GenerateDefaultData();
+
+        public static bool PushDefaultData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+
+            List<DBTipoRecibo> defaultData = GenerateDefaultData();
+            foreach (DBTipoRecibo tipoRecibo in defaultData)
+            {
+                tipoRecibo.PushToDatabase(conn);
+            }
+
+            return true;
+        }
+
+        bool IDBDataType<DBTipoRecibo>.PushDefaultData(MySqlConnection conn) => PushDefaultData(conn);
+
+        public static bool ResetDBData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+            bool resetDataSuccess;
+            try
+            {
+                string query = $"DELETE FROM {db_table}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = $"ALTER TABLE {db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+                resetDataSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                resetDataSuccess = false;
+                MessageBox.Show("Error en el método DBTipoRecibo::ResetDBData. Error en la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return resetDataSuccess;
+        }
+
+        bool IDBDataType<DBTipoRecibo>.ResetDBData(MySqlConnection conn) => ResetDBData(conn);
+
         public static List<DBTipoRecibo> UpdateAll(MySqlConnection conn)
         {
             List<DBTipoRecibo> returnList = new List<DBTipoRecibo>();

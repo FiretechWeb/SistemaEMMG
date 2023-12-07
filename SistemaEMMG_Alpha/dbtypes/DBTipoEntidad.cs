@@ -44,6 +44,62 @@ namespace SistemaEMMG_Alpha
         }
         string IDBase<DBTipoEntidad>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
 
+        public static List<DBTipoEntidad> GenerateDefaultData()
+        {
+            List<DBTipoEntidad> defaulData = new List<DBTipoEntidad>();
+            defaulData.Add(new DBTipoEntidad("Cliente"));
+            defaulData.Add(new DBTipoEntidad("Proovedor"));
+
+            return defaulData;
+        }
+        List<DBTipoEntidad> IDBDataType<DBTipoEntidad>.GenerateDefaultData() => GenerateDefaultData();
+
+        public static bool PushDefaultData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+
+            List<DBTipoEntidad> defaultData = GenerateDefaultData();
+            foreach (DBTipoEntidad tipoEntidad in defaultData)
+            {
+                tipoEntidad.PushToDatabase(conn);
+            }
+
+            return true;
+        }
+
+        bool IDBDataType<DBTipoEntidad>.PushDefaultData(MySqlConnection conn) => PushDefaultData(conn);
+
+        public static bool ResetDBData(MySqlConnection conn)
+        {
+            if ((User.GetCurrentUser() is null) || !User.GetCurrentUser().IsAdmin()) //Security measures.
+            {
+                return false;
+            }
+            bool resetDataSuccess;
+            try
+            {
+                string query = $"DELETE FROM {db_table}";
+                var cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                query = $"ALTER TABLE {db_table} AUTO_INCREMENT = 1";
+                cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+                resetDataSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                resetDataSuccess = false;
+                MessageBox.Show("Error en el método DBTipoEntidad::ResetDBData. Error en la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return resetDataSuccess;
+        }
+
+        bool IDBDataType<DBTipoEntidad>.ResetDBData(MySqlConnection conn) => ResetDBData(conn);
+
         public static List<DBTipoEntidad> UpdateAll(MySqlConnection conn)
         {
             List<DBTipoEntidad> returnList = new List<DBTipoEntidad>();

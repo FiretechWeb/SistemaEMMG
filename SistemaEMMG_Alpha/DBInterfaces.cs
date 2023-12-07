@@ -24,6 +24,11 @@ namespace SistemaEMMG_Alpha
         ///</summary>
         ///
         IReadOnlyCollection<T> GetAllLocal();
+        List<T> GenerateDefaultData();
+
+        bool PushDefaultData(MySqlConnection conn);
+
+        bool ResetDBData(MySqlConnection conn);
     }
 
     public interface IDBRecibo<T>

@@ -37,6 +37,12 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("get data", (x) => _CMD_RefreshBasicDataDB()));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print data", (x) => _CMD_PrintBasicDataDB()));
 
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select banco", (x) => _CMD_SelectBanco(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make banco", (x) => _CMD_CreateBanco(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("banco set name", (x) => _CMD_BancoSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("banco set code", (x) => _CMD_BancoSetCode(x)));
+
+
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo comprobante", (x) => _CMD_SelectTipoComprobante(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo comprobante", (x) => _CMD_CrearTipoComprobante(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("tipo comprobante set name", (x) => _CMD_TipoComprobanteSetName(x)));
@@ -288,7 +294,21 @@ namespace SistemaEMMG_Alpha
             _outputStr += DBTipoRecibo.PrintAll();
             _outputStr += "\t:: Monedas ::\n";
             _outputStr += DBMoneda.PrintAll();
+            _outputStr += "\t:: Bancos ::\n";
+            _outputStr += DBBancos.PrintAll();
         }
+
+        private void _CMD_SelectBanco(string id)
+        {
+            _seleccion = DBBancos.GetByID(SafeConvert.ToInt64(id.Trim()));
+            if (_seleccion is null)
+            {
+                _outputStr = "No existe un banco con el ID introducido.";
+                return;
+            }
+            _outputStr = $"Banco seleccionado> {_seleccion}";
+        }
+
         private void _CMD_SelectTipoComprobante(string id)
         {
             _seleccion = DBTiposComprobantes.GetByID(SafeConvert.ToInt64(id.Trim()));
@@ -378,6 +398,19 @@ namespace SistemaEMMG_Alpha
             }
             _outputStr = $"Cuenta creada> {_seleccion}";
         }
+
+        private void _CMD_CreateBanco(string args)
+        {
+            string[] parametros = args.Split(',');
+            if (parametros.Length != 2)
+            {
+                _outputStr = "La cantidad de parámetros introducida es incorrecta.\nFormato: make banco nombre, código";
+                return;
+            }
+            _seleccion = new DBBancos(parametros[0].Trim(), SafeConvert.ToInt32(parametros[1]));
+            _outputStr = $"Banco creado> {_seleccion}";
+        }
+
         private void _CMD_CrearTipoComprobante(string args)
         {
             string[] parametros = args.Split(',');
@@ -485,6 +518,31 @@ namespace SistemaEMMG_Alpha
             DBCuenta cuentaSeleccionada = (DBCuenta)_seleccion;
             cuentaSeleccionada.SetCUIT(cuit);
             _outputStr = $"CUIT de la cuenta cambiada.";
+        }
+
+        private void _CMD_BancoSetName(string name)
+        {
+            if (_seleccion is null || !(_seleccion is DBBancos))
+            {
+                _outputStr = "No hay un banco seleccionado.";
+                return;
+            }
+
+            DBBancos bancoSeleccionado = (DBBancos)_seleccion;
+            bancoSeleccionado.SetName(name.Trim());
+            _outputStr = "Nombre del banco cambiado.";
+        }
+
+        private void _CMD_BancoSetCode(string code)
+        {
+            if (_seleccion is null || !(_seleccion is DBBancos))
+            {
+                _outputStr = "No hay un banco seleccionado.";
+                return;
+            }
+            DBBancos bancoSeleccionado = (DBBancos)_seleccion;
+            bancoSeleccionado.SetCode(SafeConvert.ToInt32(code));
+            _outputStr = "Código del banco cambiado.";
         }
 
         private void _CMD_TipoComprobanteSetName(string name)
@@ -1639,112 +1697,49 @@ namespace SistemaEMMG_Alpha
             try
             {
                 //Deleting tipos_recibos
-                string query = $"DELETE FROM {DBTipoRecibo.db_table}";
-                var cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBTipoRecibo.db_table} AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                DBTipoRemito.ResetDBData(conn);
 
                 //Deleting tipos_remitos
-                query = $"DELETE FROM {DBTipoRemito.db_table}";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBTipoRemito.db_table} AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                DBTipoRemito.ResetDBData(conn);
 
                 //Deleting formas_pago
-                query = $"DELETE FROM {DBFormasPago.db_table}";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBFormasPago.db_table} AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                DBFormasPago.ResetDBData(conn);
 
                 //Deleting tipos_entidades
-                query = $"DELETE FROM {DBTipoEntidad.db_table}";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBTipoEntidad.db_table} AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                DBTipoEntidad.ResetDBData(conn);
 
                 //Deleting tipos_comprobantes
-                query = $"DELETE FROM {DBTiposComprobantes.db_table}";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBTiposComprobantes.db_table} AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                DBTiposComprobantes.ResetDBData(conn);
 
                 //Deleting monedas
-                query = $"DELETE FROM {DBMoneda.db_table}";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                query = $"ALTER TABLE {DBMoneda.db_table} AUTO_INCREMENT = 1";
-                cmd = new MySqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+                DBMoneda.ResetDBData(conn);
+
+                //Deleting bancos
+                DBBancos.ResetDBData(conn);
 
                 //Now populate.
-                List<DBTiposComprobantes> tiposComprobantes = new List<DBTiposComprobantes>();
-                tiposComprobantes.Add(new DBTiposComprobantes("Factura A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
-                tiposComprobantes.Add(new DBTiposComprobantes("Factura B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita)); 
-                tiposComprobantes.Add(new DBTiposComprobantes("Factura C", (int)TipoComprobanteFlag.Total | (int)TipoComprobanteFlag.Acredita));
-                tiposComprobantes.Add(new DBTiposComprobantes("Ticket", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
-                tiposComprobantes.Add(new DBTiposComprobantes("Nota de crédito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
-                tiposComprobantes.Add(new DBTiposComprobantes("Nota de débito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
 
-                foreach (DBTiposComprobantes tipoComprobante in tiposComprobantes)
-                {
-                    tipoComprobante.PushToDatabase(conn);
-                }
+                //POPULATE TiposComprobantes
+                DBTiposComprobantes.PushDefaultData(conn);
 
-                List<DBFormasPago> formasDePago = new List<DBFormasPago>();
-                formasDePago.Add(new DBFormasPago("Cheque", TipoFormaDePago.CHEQUE));
-                formasDePago.Add(new DBFormasPago("Efectivo", TipoFormaDePago.EFECTIVO));
-                formasDePago.Add(new DBFormasPago("Transferencia Bancaria", TipoFormaDePago.TRANSFERENCIA));
-                formasDePago.Add(new DBFormasPago("Nota de crédito", TipoFormaDePago.OTRO));
+                //POPULATE FormasPago
+                DBFormasPago.PushDefaultData(conn);
 
-                foreach (DBFormasPago formaPago in formasDePago)
-                {
-                    formaPago.PushToDatabase(conn);
-                }
+                //POPULATE TipoEntidad
+                DBTipoEntidad.PushDefaultData(conn);
 
-                List<DBTipoEntidad> tiposEntidad = new List<DBTipoEntidad>();
-                tiposEntidad.Add(new DBTipoEntidad("Cliente"));
-                tiposEntidad.Add(new DBTipoEntidad("Proovedor"));
+                //POPULATE TipoRecibos
+                DBTipoRecibo.PushDefaultData(conn);
 
-                foreach (DBTipoEntidad tipoEntidad in tiposEntidad)
-                {
-                    tipoEntidad.PushToDatabase(conn);
-                }
+                //POPULATE TipoRemitos
+                DBTipoRemito.PushDefaultData(conn);
 
-                List<DBTipoRecibo> tiposRecibos = new List<DBTipoRecibo>();
-                tiposRecibos.Add(new DBTipoRecibo("X"));
-                tiposRecibos.Add(new DBTipoRecibo("A"));
+                //POPULATE Monedas
+                DBMoneda.PushDefaultData(conn);
 
-                foreach (DBTipoRecibo tipoRecibo in tiposRecibos)
-                {
-                    tipoRecibo.PushToDatabase(conn);
-                }
+                //POPULATE Bancos
+                DBBancos.PushDefaultData(conn);
 
-                List<DBTipoRemito> tiposRemitos = new List<DBTipoRemito>();
-                tiposRemitos.Add(new DBTipoRemito("R"));
-
-                foreach (DBTipoRemito tipoRemito in tiposRemitos)
-                {
-                    tipoRemito.PushToDatabase(conn);
-                }
-
-                List<DBMoneda> monedasList = new List<DBMoneda>();
-                monedasList.Add(new DBMoneda("ARS", false));
-                monedasList.Add(new DBMoneda("USD", true));
-
-                foreach (DBMoneda moneda in monedasList)
-                {
-                    moneda.PushToDatabase(conn);
-                }
 
                 _outputStr = "Tipos de datos basicos generados nuevamente.";
             }
