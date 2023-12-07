@@ -149,6 +149,7 @@ namespace SistemaEMMG_Alpha
                     _db_bancos.Add(banco);
                     returnList.Add(banco);
                 }
+                reader.Close();
             } catch (Exception ex)
             {
                 MessageBox.Show("Error al tratar de actualizar todos los bancos. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
