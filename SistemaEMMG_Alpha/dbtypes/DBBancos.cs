@@ -166,6 +166,29 @@ namespace SistemaEMMG_Alpha
         public static IReadOnlyCollection<DBBancos> GetAllLocal() => _db_bancos;
         IReadOnlyCollection<DBBancos> IDBDataType<DBBancos>.GetAllLocal() => GetAllLocal();
 
+        public static DBBancos GetByCode(int bnk_code) => _db_bancos.Find(x => x.GetCode() == bnk_code);
+
+        public static DBBancos GetByCode(int bnk_code, MySqlConnection conn)
+        {
+            DBBancos returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {BancosData.NameOf_bnk_code} = {bnk_code}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    returnEnt = new DBBancos(reader);
+                }
+                reader.Close();
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener un tipo de entidad en DBBancos::GetByCode. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return returnEnt;
+        }
+
         public static DBBancos GetByID(long bnk_id) => _db_bancos.Find(x => x.GetID() == bnk_id);
 
         public static DBBancos GetByID(long bnk_id, MySqlConnection conn)
@@ -185,7 +208,7 @@ namespace SistemaEMMG_Alpha
 
             } catch (Exception ex)
             {
-                MessageBox.Show("Error al tratar de obtener un tipo de entidad en GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error al tratar de obtener un tipo de entidad en DBBancos::GetByID. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnEnt;
         }

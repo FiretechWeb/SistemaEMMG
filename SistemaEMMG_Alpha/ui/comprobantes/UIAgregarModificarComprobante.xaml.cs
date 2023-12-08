@@ -111,15 +111,9 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             }
         }
 
-        private bool inputFechaEmitidoIsValid()
-        {
-            DateTime fechaEmitido = new DateTime();
-            return DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido);
-        }
-
         private void CheckIfAbleToSubmit()
         {
-            if (!inputFechaEmitidoIsValid())
+            if (!txtFechaEmitido.Text.IsValidDateTime())
             {
                 btnGuardar.IsEnabled = false;
                 return;
@@ -152,7 +146,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
 
         private void RefreshFieldsColorState()
         {
-            if (inputFechaEmitidoIsValid())
+            if (txtFechaEmitido.Text.IsValidDateTime())
             {
                 txtFechaEmitido.ClearValue(TextBox.BorderBrushProperty);
             }

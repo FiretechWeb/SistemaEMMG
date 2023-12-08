@@ -444,8 +444,8 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string fechaPago = (_data.pg_fecha.HasValue) ? $"'{((DateTime)_data.pg_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaPagoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequePaguese()).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaDebitadoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequeDebito()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaPagoCheque = (_data.GetChequePaguese().HasValue) ? $"'{((DateTime)_data.GetChequePaguese()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaDebitadoCheque = (_data.GetChequeDebito().HasValue) ? $"'{((DateTime)_data.GetChequeDebito()).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"UPDATE {db_table} SET 
                                 {NameOf_pg_fp_id} = {_formaDePago.GetID()}, 
                                 {NameOf_pg_mn_id} = {_moneda.GetID()}, 
@@ -487,8 +487,8 @@ namespace SistemaEMMG_Alpha
             try
             {
                 string fechaPago = (_data.pg_fecha.HasValue) ? $"'{((DateTime)_data.pg_fecha).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaPagoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequePaguese()).ToString("yyyy-MM-dd")}'" : "NULL";
-                string fechaDebitadoCheque = (_data.pg_cheque.HasValue) ? $"'{((DateTime)_data.GetChequeDebito()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaPagoCheque = (_data.GetChequePaguese().HasValue) ? $"'{((DateTime)_data.GetChequePaguese()).ToString("yyyy-MM-dd")}'" : "NULL";
+                string fechaDebitadoCheque = (_data.GetChequeDebito().HasValue) ? $"'{((DateTime)_data.GetChequeDebito()).ToString("yyyy-MM-dd")}'" : "NULL";
                 string query = $@"INSERT INTO {db_table} (
                                 {NameOf_pg_em_id}, 
                                 {NameOf_pg_ec_id}, 

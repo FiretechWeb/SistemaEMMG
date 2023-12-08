@@ -39,10 +39,10 @@
                 <Label Grid.Column="1" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                      Código de banco:
                 </Label>
-                <TextBox Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtBankCode" Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" MaxLength="5" VerticalAlignment="Center" HorizontalAlignment="Left" TextChanged="txtBankCode_TextChanged" PreviewTextInput="txtBankCode_PreviewTextInput">
                     
                 </TextBox>
-                <Label Grid.Column="3" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left">
+                <Label x:Name="lblBankName" Grid.Column="3" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left">
                     Introduzca un código.
                 </Label>
             </Grid>
@@ -59,13 +59,13 @@
                     Sucursal:
                 </Label>
                 
-                <TextBox Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" MaxLength="6" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtSucursal" Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" MaxLength="6" VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="txtSucursal_PreviewTextInput" TextChanged="txtSucursal_TextChanged">
 
                 </TextBox>
                 <Label Grid.Column="3" FontFamily="Helvetica" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left">
                     Localidad:
                 </Label>
-                <TextBox Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" MaxLength="6" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtLocalidad" Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" MaxLength="6" VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="txtLocalidad_PreviewTextInput" TextChanged="txtLocalidad_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -81,13 +81,13 @@
                 <Label Grid.Column="1" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                     Serie: 
                 </Label>
-                <TextBox Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtSerie" Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left" TextChanged="txtSerie_TextChanged">
 
                 </TextBox>
                 <Label Grid.Column="3" FontFamily="Helvetica" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"  HorizontalAlignment="Left">
                     Num. Cheque:
                 </Label>
-                <TextBox Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtNumCheque" Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left" TextChanged="txtNumCheque_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -101,7 +101,7 @@
                 <Label Grid.Column="1" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                     Persona / Entidad:
                 </Label>
-                <TextBox Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtEntidadPersona" Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="250" VerticalAlignment="Center" HorizontalAlignment="Left" TextChanged="txtEntidadPersona_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -117,13 +117,13 @@
                 <Label Grid.Column="1" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                     Nro. Cuenta:
                 </Label>
-                <TextBox Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtCuenta" Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="150" VerticalAlignment="Center" HorizontalAlignment="Left" TextChanged="txtCuenta_TextChanged">
 
                 </TextBox>
                 <Label Grid.Column="3" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                     CUIT/CUIL:
                 </Label>
-                <TextBox Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtCUIT" Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="txtCUIT_PreviewTextInput" TextChanged="txtCUIT_TextChanged">
 
                 </TextBox>
             </Grid>
@@ -139,13 +139,13 @@
                 <Label Grid.Column="1" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                     Fecha de pago:
                 </Label>
-                <TextBox Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtFechaPago" Grid.Column="2" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="txtFechaPago_PreviewTextInput" TextChanged="txtFechaPago_TextChanged">
 
                 </TextBox>
                 <Label Grid.Column="3" FontFamily="Helvetica" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Left" FontWeight="Bold">
                     Fecha debitado:
                 </Label>
-                <TextBox Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <TextBox x:Name="txtFechaDebitado" Grid.Column="4" FontFamily="Helvetica" FontSize="20" Width="125" VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="txtFechaDebitado_PreviewTextInput" TextChanged="txtFechaDebitado_TextChanged">
 
                 </TextBox>
             </Grid>

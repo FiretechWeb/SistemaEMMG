@@ -23,5 +23,10 @@ namespace SistemaEMMG_Alpha
         {
             return Regex.Replace(text.Trim(), @"\s+", " ");
         }
+
+        public static bool IsValidDateTime(this string text)
+        {
+            return DateTime.TryParse(text, out DateTime _tmpDateTime);
+        }
     }
 }

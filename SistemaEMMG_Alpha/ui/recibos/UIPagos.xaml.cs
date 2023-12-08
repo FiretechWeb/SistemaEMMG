@@ -415,8 +415,7 @@ namespace SistemaEMMG_Alpha.ui.recibos
 
         private void btnCheque_Click(object sender, RoutedEventArgs e)
         {
-            uiChequeInfo.SetChequeData(GetChequeData());
-            uiChequeInfo.RefreshData();
+            uiChequeInfo.RefreshData(GetChequeData());
             uiChequeInfo.Visibility = Visibility.Visible;
         }
     }
