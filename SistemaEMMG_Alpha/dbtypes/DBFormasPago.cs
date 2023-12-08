@@ -364,6 +364,7 @@ namespace SistemaEMMG_Alpha
 
         public TipoFormaDePago GetTipo() => _data.fp_type;
 
+
         public void SetTipo(TipoFormaDePago newType) => _data.fp_type = newType;
 
         public override DBBaseClass GetLocalCopy()

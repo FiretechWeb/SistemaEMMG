@@ -672,6 +672,25 @@ namespace SistemaEMMG_Alpha
 
         }
 
+        public long GetCUITEmisor()
+        {
+            return GetRecibo().IsEmitido() ? GetEntidadComercial().GetCUIT() : GetCuenta().GetCUIT();
+        }
+
+        public string GetEmisorRazonSocial()
+        {
+            return GetRecibo().IsEmitido() ? GetEntidadComercial().GetRazonSocial() : GetCuenta().GetRazonSocial();
+        }
+
+        public long GetCUITRecibido()
+        {
+            return GetRecibo().IsEmitido() ? GetCuenta().GetCUIT() : GetEntidadComercial().GetCUIT();
+        }
+        public string GetRecibidoRazonSocial()
+        {
+            return GetRecibo().IsEmitido() ? GetCuenta().GetRazonSocial() : GetEntidadComercial().GetRazonSocial();
+        }
+
         public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _moneda, _data);
 
         public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - Moneda: {_moneda.GetName()} - {_data}";

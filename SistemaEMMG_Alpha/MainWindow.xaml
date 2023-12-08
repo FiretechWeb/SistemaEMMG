@@ -38,6 +38,9 @@
                 <TabItem x:Name="tabRemitos" Header="Remitos" FontWeight="Bold" IsEnabled="False">
                     <uc:UIRemitos x:Name="uiRemitosPanel"></uc:UIRemitos>
                 </TabItem>
+                <TabItem x:Name="tabPagos" Header="Pagos" FontWeight="Bold" IsEnabled="False">
+                    <uc:UIPagos x:Name="uiPagosPanel"></uc:UIPagos>
+                </TabItem>
             </TabControl>
         <!-- End: Conenido -->
         </DockPanel>

@@ -19,7 +19,8 @@ namespace SistemaEMMG_Alpha
             TI_ENTIDADES,
             TI_COMPROBANTES,
             TI_RECIBOS,
-            TI_REMITOS
+            TI_REMITOS,
+            TI_PAGOS
         };
         public short oldTabItemSelection = -1; //To avoid bug with Tab Items
 
@@ -49,6 +50,7 @@ namespace SistemaEMMG_Alpha
             tabEntidades.IsEnabled = true;
             tabRecibos.IsEnabled = true;
             tabRemitos.IsEnabled = true;
+            tabPagos.IsEnabled = true;
         }
         private void disableTabItems()
         {
@@ -56,6 +58,7 @@ namespace SistemaEMMG_Alpha
             tabEntidades.IsEnabled = false;
             tabRecibos.IsEnabled = false;
             tabRemitos.IsEnabled = false;
+            tabPagos.IsEnabled = false;
         }
 
         public void refreshTabItems()
@@ -74,6 +77,7 @@ namespace SistemaEMMG_Alpha
                 tabComprobantes.IsEnabled = false;
                 tabRecibos.IsEnabled = false;
                 tabRemitos.IsEnabled = false;
+                tabPagos.IsEnabled = false;
             }
         }
 
@@ -136,6 +140,7 @@ namespace SistemaEMMG_Alpha
             uiComprobantespanel.SetMainWindow(this);
             uiRecibosPanel.SetMainWindow(this);
             uiRemitosPanel.SetMainWindow(this);
+            uiPagosPanel.SetMainWindow(this);
             configWin.SetMainWindow(this);
             accessWin.SetMainWindow(this);
         }
@@ -208,6 +213,9 @@ namespace SistemaEMMG_Alpha
                 else if (tabRemitos.IsSelected)
                 {
                     newTabItemSelection = (short)TabItemsSelections.TI_REMITOS;
+                } else if (tabPagos.IsSelected)
+                {
+                    newTabItemSelection = (short)TabItemsSelections.TI_PAGOS;
                 }
 
                 if (oldTabItemSelection == newTabItemSelection || oldTabItemSelection == -1)
@@ -239,6 +247,10 @@ namespace SistemaEMMG_Alpha
                     case TabItemsSelections.TI_RECIBOS:
                         uiRecibosPanel.RefreshData();
                         Console.WriteLine("TI_RECIBOS");
+                        break;
+                    case TabItemsSelections.TI_PAGOS:
+                        uiPagosPanel.RefreshData();
+                        Console.WriteLine("TI_PAGOS");
                         break;
                 }
             }
