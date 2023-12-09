@@ -325,7 +325,103 @@ namespace SistemaEMMG_Alpha
             return -1;
         }
         public static bool CheckIfExistsInList(List<DBPago> listaPagosRecibos, DBPago ent) => FindInList(listaPagosRecibos, ent) != -1;
-        
+
+        /*****************
+         *  Filter / Search methods
+         * ****************/
+        /*
+         *                 txtFiltroEmisor.Text.Trim(),
+                txtFiltroReceptor.Text.Trim(),
+                txtFiltroNroCheque.Text.Trim(),
+                txtFiltroNroRecibo.Text.Trim()
+        */
+        public static List<DBPago> Search(MySqlConnection conn, DBCuenta cuenta, DBFormasPago formaDePago, DateTime? fechaInicial, DateTime? fechaFinal, string emisor, string receptor, string nroCheque, string nroRecibo)
+        {
+            List<DBPago> returnList = new List<DBPago>();
+
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_pg_em_id} = {cuenta.GetID()} ";
+
+                if (!(formaDePago is null))
+                {
+                    query += $"AND {NameOf_pg_fp_id} = {formaDePago.GetID()} ";
+                }
+
+                if (fechaInicial.HasValue)
+                {
+                    string fechaInicialStr = ((DateTime)fechaInicial).ToString("yyyy/MM/dd");
+                    query += $"AND {PagoData.NameOf_pg_fecha} >= '{fechaInicialStr}' ";
+                }
+                if (fechaFinal.HasValue)
+                {
+                    string fechaFinalStr = ((DateTime)fechaFinal).ToString("yyyy/MM/dd");
+                    query += $"AND {PagoData.NameOf_pg_fecha} <= '{fechaFinalStr}' ";
+                }
+                if (!string.IsNullOrEmpty(nroCheque.Trim()))
+                {
+                    query += $"AND UPPER({ChequeData.NameOf_pg_cheque_num}) LIKE '%{nroCheque.Trim().ToUpper()}%' ";
+                }
+                if (!string.IsNullOrEmpty(nroRecibo.Trim()))
+                {
+                    query += $"AND UPPER({ReciboData.NameOf_rc_nro}) LIKE '%{nroRecibo.Trim().ToUpper()}%' ";
+                }
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+
+                while (reader.Read())
+                {
+                    returnList.Add(new DBPago(new DBRecibo(new DBEntidades(cuenta, new DBTipoEntidad(reader), reader), new DBTipoRecibo(reader), reader), new DBFormasPago(reader), new DBMoneda(reader), reader));
+                }
+                reader.Close();
+            } catch(Exception ex)
+            {
+                MessageBox.Show("Error en DBPago::Search. Problemas con la consulta SQL: " + ex.Message, "Exception Message", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+
+
+            return returnList.FindAll(delegate (DBPago pago)
+            {
+                if (!string.IsNullOrEmpty(emisor.Trim()))
+                {
+                    if (long.TryParse(emisor.Trim(), out _)) //CUIT
+                    {
+                        if (pago.GetCUITEmisor().ToString().ToUpper().IndexOf(emisor.Trim().ToUpper()) <= -1)
+                        {
+                            return false;
+                        }
+                    } else //Razón social
+                    {
+                        if (pago.GetEmisorRazonSocial().ToUpper().IndexOf(emisor.Trim().ToUpper()) <= -1)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(receptor.Trim()))
+                {
+                    if (long.TryParse(receptor.Trim(), out _)) //CUIT
+                    {
+                        if (pago.GetCUITRecibido().ToString().ToUpper().IndexOf(receptor.Trim().ToUpper()) <= -1)
+                        {
+                            return false;
+                        }
+                    }
+                    else //Razón social
+                    {
+                        if (pago.GetRecibidoRazonSocial().ToUpper().IndexOf(receptor.Trim().ToUpper()) <= -1)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            });
+        }
 
         public DBPago(DBRecibo Recibo, long id, DBFormasPago formaDePago, DBMoneda moneda, PagoData newData) : base (id)
         {

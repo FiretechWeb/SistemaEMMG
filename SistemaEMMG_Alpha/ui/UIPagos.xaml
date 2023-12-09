@@ -65,48 +65,47 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Numero
+                    Forma Pago
                 </Label>
                 <Label Grid.Row="0" Grid.Column="1" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Estado
+                    Fecha Inicio
                 </Label>
                 <Label Grid.Row="0" Grid.Column="2" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Tipo
-                </Label>
-                <Label Grid.Row="0" Grid.Column="3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Tipo Ent.
-                </Label>
-                <Label Grid.Row="0" Grid.Column="4" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    Fecha inicio
-                </Label>
-                <Label Grid.Row="0" Grid.Column="5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
                     Fecha final
                 </Label>
-                <Label Grid.Row="0" Grid.Column="6" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    CUIT
+                <Label Grid.Row="0" Grid.Column="3" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    Emisor
                 </Label>
-                <TextBox x:Name="txtNumeroFiltro" MaxLength="49" Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <Label Grid.Row="0" Grid.Column="4" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    Receptor
+                </Label>
+                <Label Grid.Row="0" Grid.Column="5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    Nro. Recibo
+                </Label>
+                <Label Grid.Row="0" Grid.Column="6" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Black" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    Nro. Cheque
+                </Label>
+                <ComboBox x:Name="cmbFiltroFormaPago" Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5" FontFamily="Helvetica" Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
+                    
+                </ComboBox>
+                <TextBox x:Name="txtFiltroFechaInicial" Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <ComboBox x:Name="cmbFiltroEstado" Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
-                    <ComboBoxItem>Todos</ComboBoxItem>
-                    <ComboBoxItem>Recibido</ComboBoxItem>
-                    <ComboBoxItem>Emitido</ComboBoxItem>
-                </ComboBox>
-                <ComboBox x:Name="cmbFiltroTipoRemito" Grid.Row="1" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
-
-                </ComboBox>
-                <ComboBox x:Name="cmbFiltroTipoEnt" Grid.Row="1" Grid.Column="3" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" SelectedIndex="0">
-
-                </ComboBox>
-                <TextBox x:Name="txtFiltroFechaInicial" Grid.Row="1" Grid.Column="4" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtFiltroFechaFinal" Grid.Row="1" Grid.Column="2" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center">
 
                 </TextBox>
-                <TextBox x:Name="txtFiltroFechaFinal" Grid.Row="1" Grid.Column="5" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center">
+
+                <TextBox x:Name="txtFiltroEmisor" Grid.Row="1" Grid.Column="3" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
                 </TextBox>
-                <TextBox x:Name="textFiltroCUIT" Grid.Row="1" Grid.Column="6" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                <TextBox x:Name="txtFiltroReceptor" Grid.Row="1" Grid.Column="4" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
 
+                </TextBox>
+                <TextBox x:Name="txtFiltroNroRecibo" Grid.Row="1" Grid.Column="5" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+
+                </TextBox>
+                <TextBox x:Name="txtFiltroNroCheque" Grid.Row="1" Grid.Column="6" Margin="10, 5, 10, 5"  FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" >
+                    
                 </TextBox>
             </Grid>
             <Grid Grid.Row="4">
@@ -132,7 +131,7 @@
                 <Button x:Name="btnExportar" Grid.Column="4" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" IsEnabled="False">
                     Exportar
                 </Button>
-                <Button x:Name="btnBuscar" Grid.Column="5" Margin="5, 5, 5, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnBuscar" Grid.Column="5" Margin="5, 5, 5, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnBuscar_Click">
                     Buscar
                 </Button>
             </Grid>

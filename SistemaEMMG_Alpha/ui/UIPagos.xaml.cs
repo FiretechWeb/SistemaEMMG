@@ -27,6 +27,11 @@ namespace SistemaEMMG_Alpha.ui
 
         public DBPago GetPagoSeleccionado() => _pagoSeleccionado;
 
+        private void SetListaPagos(List<DBPago> newListaPagos) => _listaPagos = newListaPagos;
+
+        private List<DBPago> GetListaPagos() => _listaPagos;
+
+
         public void SetPagoSeleccionado(DBPago newPago)
         {
             _pagoSeleccionado = newPago;
@@ -76,11 +81,61 @@ namespace SistemaEMMG_Alpha.ui
 
             dbData.RefreshBasicDataDB(dbCon.Connection);
 
-            List<DBPago> listaPagos = DBPago.GetAll(dbCon.Connection, GetCuentaSeleccionada());
+            List<DBFormasPago> formasDePagos = DBFormasPago.GetAll();
+
+            cmbFiltroFormaPago.Items.Clear();
+            cmbFiltroFormaPago.SelectedValuePath = "Key";
+            cmbFiltroFormaPago.DisplayMemberPath = "Value";
+            cmbFiltroFormaPago.Items.Add(new KeyValuePair<long, string>(-1, "Todos"));
+
+            foreach(DBFormasPago formaPago in formasDePagos)
+            {
+                cmbFiltroFormaPago.Items.Add(new KeyValuePair<long, string>(formaPago.GetID(), formaPago.GetName()));
+            }
+
+            cmbFiltroFormaPago.SelectedIndex = 0;
+
+            RefreshWithFilter();
+        }
+
+
+        private void RefreshWithFilter()
+        {
+            if (dbCon is null)
+            {
+                dbCon = DBConnection.Instance();
+            }
+
+            DateTime _fechaInicial = new DateTime();
+            DateTime? fechaInicial = null;
+
+            if (DateTime.TryParse(txtFiltroFechaInicial.Text, out _fechaInicial))
+            {
+                fechaInicial = _fechaInicial;
+            }
+            DateTime _fechaFinal = new DateTime();
+            DateTime? fechaFinal = null;
+
+            if (DateTime.TryParse(txtFiltroFechaFinal.Text, out _fechaFinal))
+            {
+                fechaFinal = _fechaFinal;
+            }
+
+            SetListaPagos(DBPago.Search(
+                dbCon.Connection,
+                GetCuentaSeleccionada(),
+                (cmbFiltroFormaPago.SelectedItem is null) ? null : DBFormasPago.GetByID(((KeyValuePair<long, string>)cmbFiltroFormaPago.SelectedItem).Key),
+                fechaInicial,
+                fechaFinal,
+                txtFiltroEmisor.Text.Trim(),
+                txtFiltroReceptor.Text.Trim(),
+                txtFiltroNroCheque.Text.Trim(),
+                txtFiltroNroRecibo.Text.Trim()
+                ));
 
             dgPagos.Items.Clear();
 
-            foreach (DBPago pago in listaPagos)
+            foreach (DBPago pago in GetListaPagos())
             {
                 dgPagos.Items.Add(new
                 {
@@ -99,6 +154,11 @@ namespace SistemaEMMG_Alpha.ui
                 SetPagoSeleccionado(null);
             }
 
+        }
+
+        private void btnBuscar_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshWithFilter();
         }
     }
 }
