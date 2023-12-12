@@ -28,6 +28,7 @@ namespace SistemaEMMG_Alpha.ui.pagos
         public DBMain dbData = null;
         private UIPagos _ownerControl = null;
         private DBPago _pagoSeleccionado = null;
+        private DBEntidades _entidadSeleccionada = null;
         public void SetUIOwner(UIPagos ownerControl)
         {
             _ownerControl = ownerControl;
@@ -75,9 +76,73 @@ namespace SistemaEMMG_Alpha.ui.pagos
             dbData.RefreshBasicDataDB(dbCon.Connection);
 
             _pagoSeleccionado = selectedPago;
+            lblEntidadRazon.Content = "Seleccionar una entidad...";
+            _entidadSeleccionada = null;
 
             cmbFormaDePago.FillWithDBData(DBFormasPago.GetAll());
             cmbMoneda.FillWithDBData(DBMoneda.GetAll());
+
+            if (selectedPago is null)
+            {
+                txtCambio.Text = "";
+                txtChequeCuenta.Text = "";
+                txtChequeCUIT.Text = "";
+                txtChequeFechaDebito.Text = "";
+                txtChequeFechaPago.Text = "";
+                txtChequeLocalidad.Text = "";
+                txtChequeNroBanco.Text = "";
+                txtChequeNroSucursal.Text = "";
+                txtChequeNumero.Text = "";
+                txtChequePersona.Text = "";
+                txtChequeSerie.Text = "";
+                txtEntidadRecibo.Text = "";
+                txtFecha.Text = "";
+                txtImporte.Text = "";
+                txtObservacion.Text = "";
+                txtNroRecibo.Text = "";
+            } else
+            {
+                DBRecibo recibo = selectedPago.GetRecibo();
+                DBEntidades entidadComercial = selectedPago.GetEntidadComercial();
+
+                cmbFormaDePago.SelectedValue = selectedPago.GetFormaDePago().GetID();
+                cmbMoneda.SelectedValue = selectedPago.GetMoneda().GetID();
+                rdbReciboEmitido.IsChecked = selectedPago.GetRecibo().IsEmitido();
+                rdbReciboRecibido.IsChecked = !selectedPago.GetRecibo().IsEmitido();
+                txtNroRecibo.Text = selectedPago.GetRecibo().GetNumero();
+                txtImporte.Text = SafeConvert.ToString(selectedPago.GetImporte());
+                txtCambio.Text = SafeConvert.ToString(selectedPago.GetCambio());
+                txtFecha.Text = selectedPago.GetFecha().HasValue ? ((DateTime)selectedPago.GetFecha()).ToString("dd/MM/yyyy") : "";
+                txtEntidadRecibo.Text = SafeConvert.ToString(selectedPago.GetEntidadComercial().GetCUIT());
+                txtObservacion.Text = selectedPago.GetObservacion();
+                if (!selectedPago.GetCheque().HasValue || ((ChequeData)selectedPago.GetCheque()).pg_bnk_id <= -1)
+                {
+                    txtChequeCuenta.Text = "";
+                    txtChequeCUIT.Text = "";
+                    txtChequeFechaDebito.Text = "";
+                    txtChequeFechaPago.Text = "";
+                    txtChequeLocalidad.Text = "";
+                    txtChequeNroBanco.Text = "";
+                    txtChequeNroSucursal.Text = "";
+                    txtChequeNumero.Text = "";
+                    txtChequePersona.Text = "";
+                    txtChequeSerie.Text = "";
+                } else
+                {
+                    ChequeData dataCheque = (ChequeData)selectedPago.GetCheque();
+                    DBBancos chequeBanco = DBBancos.GetByID(dataCheque.pg_bnk_id);
+                    txtChequeCuenta.Text = dataCheque.pg_cheque_cta;
+                    txtChequeCUIT.Text = dataCheque.pg_cheque_cuit.ToString();
+                    txtChequeFechaDebito.Text = dataCheque.pg_cheque_debito.HasValue ? ((DateTime)dataCheque.pg_cheque_debito).ToString("dd/MM/yyyy") : "";
+                    txtChequeFechaPago.Text = dataCheque.pg_cheque_pay.HasValue ? ((DateTime)dataCheque.pg_cheque_pay).ToString("dd/MM/yyyy") : ""; ;
+                    txtChequeLocalidad.Text = dataCheque.pg_cheque_localidad.ToString();
+                    txtChequeNroBanco.Text = (chequeBanco is null) ? "" : chequeBanco.GetCode().ToString();
+                    txtChequeNroSucursal.Text = dataCheque.pg_cheque_sucursal.ToString();
+                    txtChequeNumero.Text = dataCheque.pg_cheque_num.ToString();
+                    txtChequePersona.Text = dataCheque.pg_cheque_persona;
+                    txtChequeSerie.Text = dataCheque.pg_cheque_serie;
+                }
+            }
 
             RefreshFormData();
             CheckIfAbleToSubmit();
@@ -86,6 +151,14 @@ namespace SistemaEMMG_Alpha.ui.pagos
 
         private void RefreshFormData()
         {
+            if (cmbFormaDePago is null)
+            {
+                return;
+            }
+            if (cmbMoneda is null)
+            {
+                return;
+            }
             DBFormasPago selectedFormaPago = cmbFormaDePago.SelectedItemAsFormaPago();
             DBMoneda selectedMoneda = cmbMoneda.SelectedItemAsMoneda();
 
@@ -115,10 +188,39 @@ namespace SistemaEMMG_Alpha.ui.pagos
             {
                 lblChequeNombreBanco.Content = bancoIntroducido.GetName();
             }
+
+            if (rdbReciboEmitido.IsChecked == true)
+            {
+                gridEntidadInput.Visibility = Visibility.Collapsed;
+                gridEntidadRazon.Visibility = Visibility.Collapsed;
+            } else
+            {
+                gridEntidadInput.Visibility = Visibility.Visible;
+                gridEntidadRazon.Visibility = Visibility.Visible;
+            }
+
+            AutocompletarEntidades();
+        }
+
+        private void AutocompletarEntidades()
+        {
+            if (txtEntidadRecibo.Text.Trim().Length >= 1)
+            {
+                List<DBEntidades> entidadesEncontradas = DBEntidades.Search(dbCon.Connection, GetCuentaSeleccionada(), txtEntidadRecibo.Text.Trim());
+                if (entidadesEncontradas.Count > 0)
+                {
+                    lblEntidadRazon.Content = entidadesEncontradas[0].GetRazonSocial();
+                    txtEntidadRecibo.Text = entidadesEncontradas[0].GetCUIT().ToString();
+                } else {
+                    lblEntidadRazon.Content = "No se encontró entidad...";
+                }
+            }
         }
 
         private void CheckIfAbleToSubmit()
         {
+            if (txtNroRecibo is null || txtFecha is null || txtImporte is null) return;
+
             if (txtNroRecibo.Text.Trim().Length < 1)
             {
                 btnAceptar.IsEnabled = false;
@@ -200,12 +302,18 @@ namespace SistemaEMMG_Alpha.ui.pagos
                 }
             }
 
+            if (rdbReciboEmitido.IsChecked != true && txtEntidadRecibo.Text.Trim().Length < 1)
+            {
+                btnAceptar.IsEnabled = false;
+                return;
+            }
+
             btnAceptar.IsEnabled = true;
         }
 
         private void RefreshFieldsColorState()
         {
-            
+            if (txtNroRecibo is null || txtFecha is null || txtImporte is null) return;
             if (txtNroRecibo.Text.Trim().Length >= 1)
             {
                 txtNroRecibo.ClearValue(TextBox.BorderBrushProperty);
@@ -328,6 +436,14 @@ namespace SistemaEMMG_Alpha.ui.pagos
                     txtChequeSerie.BorderBrush = System.Windows.Media.Brushes.Red;
                 }
             }
+
+            if (rdbReciboEmitido.IsChecked != true && txtEntidadRecibo.Text.Trim().Length < 1)
+            {
+                txtChequeSerie.BorderBrush = System.Windows.Media.Brushes.Red;
+            } else
+            {
+                txtChequeSerie.ClearValue(TextBox.BorderBrushProperty);
+            }
         }
 
         private void btnCancelar_Click(object sender, RoutedEventArgs e)
@@ -358,6 +474,92 @@ namespace SistemaEMMG_Alpha.ui.pagos
 
         private void btnAceptar_Click(object sender, RoutedEventArgs e)
         {
+            //Check that Recibo is valid
+            DBRecibo reciboSeleccionado = null;
+
+            if (rdbReciboEmitido.IsChecked == true)
+            {
+                reciboSeleccionado = DBRecibo.GetByNumber(dbCon.Connection, GetCuentaSeleccionada(), txtNroRecibo.Text.Trim(), true);
+            } else
+            {
+                DBEntidades entidadSeleccionada = DBEntidades.GetByCUIT(dbCon.Connection, GetCuentaSeleccionada(), SafeConvert.ToInt64(txtEntidadRecibo.Text.Trim()));
+                
+                if (entidadSeleccionada is null)
+                {
+                    MessageBox.Show("El CUIT ingresado no corresponde a ninguna entidad comercial", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                } else
+                {
+                    reciboSeleccionado = DBRecibo.GetByNumber(dbCon.Connection, entidadSeleccionada, txtNroRecibo.Text.Trim(), false);
+                }
+            }
+
+            if (reciboSeleccionado is null)
+            {
+                MessageBox.Show("El numero de recibo no corresponde a ningún recibo válido ingresado en el sistema.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                return;
+            }
+
+            DateTime fechaEmitido = new DateTime();
+            DateTime.TryParse(txtFecha.Text, out fechaEmitido);
+
+            DBMoneda monedaSelected = cmbMoneda.SelectedItemAsMoneda();
+            double cambio = 
+                cmbMoneda.SelectedItemAsMoneda().IsExtranjera() ?
+                SafeConvert.ToDouble(txtCambio.Text.Trim().Replace(".", ",")) : 
+                1.0;
+
+
+            ChequeData? pagoChequeData = null;
+
+            DBFormasPago formaPagoSeleccionada = cmbFormaDePago.SelectedItemAsFormaPago();
+
+            if (!(formaPagoSeleccionada is null) && formaPagoSeleccionada.GetTipo() == TipoFormaDePago.CHEQUE)
+            {
+                DBBancos bancoCheque = DBBancos.GetByCode(SafeConvert.ToInt32(txtChequeNroBanco.Text.Trim()));
+                
+                DateTime fechaChequePago = new DateTime();
+                DateTime.TryParse(txtChequeFechaPago.Text, out fechaChequePago);
+
+                DateTime fechaChequeDebitado = new DateTime();
+                bool chequeFueDebitado = false;
+                chequeFueDebitado = DateTime.TryParse(txtChequeFechaDebito.Text, out fechaChequeDebitado);
+
+                pagoChequeData = new ChequeData(
+                    (bancoCheque is null) ? -1 : bancoCheque.GetID(),
+                    SafeConvert.ToInt32(txtChequeNroSucursal.Text.Trim()),
+                    SafeConvert.ToInt64(txtChequeNumero.Text.Trim()),
+                    txtChequeSerie.Text.Trim(),
+                    txtChequePersona.Text.Trim(),
+                    txtChequeCuenta.Text.Trim(),
+                    fechaChequePago,
+                    SafeConvert.ToInt32(txtChequeLocalidad.Text.Trim()),
+                    chequeFueDebitado ? (DateTime?)fechaChequeDebitado : null,
+                    SafeConvert.ToInt64(txtChequeCUIT.Text.Trim())
+                    );
+            }
+
+
+            DBPago pagoToPush = new DBPago(
+                reciboSeleccionado,
+                cmbFormaDePago.SelectedItemAsFormaPago(),
+                cmbMoneda.SelectedItemAsMoneda(),
+                SafeConvert.ToDouble(txtImporte.Text.Trim()),
+                txtObservacion.Text.Trim(),
+                fechaEmitido,
+                cambio,
+                pagoChequeData);
+
+            if (pagoToPush.PushToDatabase(dbCon.Connection))
+            {
+                MessageBox.Show("¡Pago agregado a la base de datos correctamente!");
+            } else
+            {
+                MessageBox.Show("Error al agregar el pago.");
+
+            }
+
             //DBRecibo.GetByNumber(dbCon.Connection, )
         }
 
@@ -481,6 +683,33 @@ namespace SistemaEMMG_Alpha.ui.pagos
         private void txtChequeNroBanco_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = InputHandler.OnlyNumbers(e);
+        }
+
+        private void rdbReciboEmitido_Checked(object sender, RoutedEventArgs e)
+        {
+            RefreshFormData();
+            CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
+        }
+
+        private void rdbReciboRecibido_Checked(object sender, RoutedEventArgs e)
+        {
+            RefreshFormData();
+            CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
+        }
+
+        private void btnAutoCompletarEntidad_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshFormData();
+            CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
+        }
+
+        private void txtEntidadRecibo_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
         }
     }
 }

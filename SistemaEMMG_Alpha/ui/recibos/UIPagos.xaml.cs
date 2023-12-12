@@ -221,7 +221,6 @@ namespace SistemaEMMG_Alpha.ui.recibos
                 cambio = 1.0;
             }
 
-
             DateTime fechaEmitido = new DateTime();
             DateTime.TryParse(txtFecha.Text, out fechaEmitido);
 

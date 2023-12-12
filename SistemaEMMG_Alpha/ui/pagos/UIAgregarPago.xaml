@@ -8,8 +8,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="151*"/>
-            <ColumnDefinition Width="49*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="2"></RowDefinition>
@@ -44,6 +44,44 @@
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Recibo:
+                    </Label>
+                    <RadioButton x:Name="rdbReciboRecibido" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"  Grid.Column="1" GroupName="group_estado" IsChecked="True" Checked="rdbReciboRecibido_Checked">Recibido</RadioButton>
+                    <RadioButton x:Name="rdbReciboEmitido" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" GroupName="group_estado" IsChecked="False" Checked="rdbReciboEmitido_Checked">Emitido</RadioButton>
+                </Grid>
+                <Grid x:Name="gridEntidadInput" Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalAlignment="Left">
+                        Entidad:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtEntidadRecibo" FontSize="18" FontWeight="Bold" Height="30" TextChanged="txtEntidadRecibo_TextChanged">
+                        
+                    </TextBox>
+                    <Button Grid.Column="2" x:Name="btnAutoCompletarEntidad" FontSize="18" FontFamily="Helvetica" VerticalAlignment="Center" HorizontalAlignment="Center" Height="30" Click="btnAutoCompletarEntidad_Click"> Autocompletar </Button>
+                </Grid>
+                <Grid x:Name="gridEntidadRazon" Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalAlignment="Left">
+                        Entidad Razón:
+                    </Label>
+                    <Label x:Name="lblEntidadRazon" Grid.Column="1" FontFamily="Helvetica" FontSize="18" VerticalContentAlignment="Center" HorizontalAlignment="Left">
+                        Seleccionar una entidad...
+                    </Label>
+                </Grid>
+                <Grid Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
                         <ColumnDefinition Width="2*"></ColumnDefinition>
                         <ColumnDefinition Width="75"></ColumnDefinition>
                         <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -59,7 +97,7 @@
 
                     </ComboBox>
                 </Grid>
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"></ColumnDefinition>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -78,27 +116,23 @@
                     <TextBox Grid.Column="3" x:Name="txtCambio" VerticalAlignment="Center" FontSize="18" TextChanged="txtCambio_TextChanged" PreviewTextInput="txtCambio_PreviewTextInput"></TextBox>
 
                 </Grid>
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="6">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="75"></ColumnDefinition>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Importe:
                     </Label>
                     <TextBox Grid.Column="1" x:Name="txtImporte" VerticalAlignment="Center" FontSize="18" TextChanged="txtImporte_TextChanged" PreviewTextInput="txtImporte_PreviewTextInput"></TextBox>
-                </Grid>
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"></ColumnDefinition>
-                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Fecha:
                     </Label>
-                    <TextBox Grid.Column="1" x:Name="txtFecha" VerticalAlignment="Center" FontSize="18" TextChanged="txtFecha_TextChanged" PreviewTextInput="txtFecha_PreviewTextInput"></TextBox>
+                    <TextBox Grid.Column="3" x:Name="txtFecha" VerticalAlignment="Center" FontSize="18" TextChanged="txtFecha_TextChanged" PreviewTextInput="txtFecha_PreviewTextInput"></TextBox>
                 </Grid>
-                <Grid Grid.Row="5">
+                <Grid Grid.Row="7">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150"></ColumnDefinition>
                         <ColumnDefinition Width="1*"></ColumnDefinition>

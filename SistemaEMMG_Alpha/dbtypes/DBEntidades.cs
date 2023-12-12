@@ -178,6 +178,30 @@ namespace SistemaEMMG_Alpha
 
         public static bool CheckIfExistsInList(List<DBEntidades> listaEntidades, DBEntidades ent, bool strictNameAndCUIT = false) => FindInList(listaEntidades, ent, strictNameAndCUIT) != -1;
 
+        public static DBEntidades GetByCUIT(MySqlConnection conn, DBCuenta cuenta, long cuit)
+        {
+            DBEntidades returnEnt = null;
+
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_ec_em_id} = {cuenta.GetID()} AND {EntidadesComercialesData.NameOf_ec_cuit} = {cuit}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    returnEnt = new DBEntidades(cuenta, new DBTipoEntidad(reader), reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error SQL en  DBEntidades::GetByCUIT" + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+            }
+
+            return returnEnt;
+        }
         public static List<DBEntidades> Search(MySqlConnection conn, DBCuenta cuenta, string toFind)
         {
             List<DBEntidades> returnList = new List<DBEntidades>();

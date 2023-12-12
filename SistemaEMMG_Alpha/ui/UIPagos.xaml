@@ -35,7 +35,7 @@
                     No ha seleccionado ningun pago.
                 </Label>
             </Grid>
-            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgPagos" FontFamily="Helvetica" FontSize="14"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1">
+            <DataGrid Grid.Row="2" IsReadOnly="True"  x:Name="dgPagos" FontFamily="Helvetica" FontSize="14"  Margin="5" Padding="5"  Grid.Column="0" BorderThickness="2" BorderBrush="#FF437DD1" SelectionChanged="dgPagos_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding pg_id}"  Header="pg_id" Visibility="Collapsed"></DataGridTextColumn>
                     <DataGridTextColumn Binding="{Binding pg_ec_id}" Header="pg_ec_id" Visibility="Collapsed"></DataGridTextColumn>
@@ -123,7 +123,7 @@
                 <Button x:Name="btnAgregar" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnAgregar_Click">
                     Agregar
                 </Button>
-                <Button x:Name="btnModificar" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnModificar" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnModificar_Click">
                     Modificar
                 </Button>
                 <Button x:Name="btnEliminar" Grid.Column="3" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
