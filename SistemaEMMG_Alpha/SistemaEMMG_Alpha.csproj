@@ -213,6 +213,9 @@
       <DependentUpon>UIAgregarModificarEntidadComercial.xaml</DependentUpon>
     </Compile>
     <Compile Include="ui\InputHandler.cs" />
+    <Compile Include="ui\pagos\UIAgregarPago.xaml.cs">
+      <DependentUpon>UIAgregarPago.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\recibos\UIAComprobante.xaml.cs">
       <DependentUpon>UIAComprobante.xaml</DependentUpon>
     </Compile>
@@ -322,6 +325,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\ent_comerciales\UIAgregarModificarEntidadComercial.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\pagos\UIAgregarPago.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

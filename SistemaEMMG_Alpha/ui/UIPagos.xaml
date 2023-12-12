@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui"
+             xmlns:pagos="clr-namespace:SistemaEMMG_Alpha.ui.pagos"
              xmlns:myTypes="clr-namespace:SistemaEMMG_Alpha.ui"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -119,7 +120,7 @@
                     <ColumnDefinition Width="34*"></ColumnDefinition>
                     <ColumnDefinition Width="80*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnAgregar" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
+                <Button x:Name="btnAgregar" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnAgregar_Click">
                     Agregar
                 </Button>
                 <Button x:Name="btnModificar" Grid.Column="2" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold">
@@ -136,5 +137,6 @@
                 </Button>
             </Grid>
         </Grid>
+        <pagos:UIAgregarPago x:Name="winAgregarModificarPago" Visibility="Collapsed"></pagos:UIAgregarPago>
     </Grid>
 </myTypes:BaseUCClass>

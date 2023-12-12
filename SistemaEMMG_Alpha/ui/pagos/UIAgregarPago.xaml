@@ -1,0 +1,230 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.pagos.UIAgregarPago"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.pagos"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="15"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Label FontFamily="Helvetica" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalAlignment="Center">
+                        Información Básica
+                    </Label>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="75"></ColumnDefinition>
+                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        N. Recibo:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtNroRecibo" VerticalAlignment="Center" FontSize="18"></TextBox>
+                    <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Tipo:
+                    </Label>
+                    <ComboBox Grid.Column="3" x:Name="cmbFormaDePago" FontSize="18" VerticalAlignment="Center">
+
+                    </ComboBox>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="75"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Moneda:
+                    </Label>
+                    <ComboBox Grid.Column="1" x:Name="cmbMoneda" FontSize="18" VerticalAlignment="Center">
+
+                    </ComboBox>
+                    <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Cambio:
+                    </Label>
+                    <TextBox Grid.Column="3" x:Name="txtCambio" VerticalAlignment="Center" FontSize="18"></TextBox>
+
+                </Grid>
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Importe:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtImporte" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Fecha:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtFecha" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Observación:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtObservacion" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Label FontFamily="Helvetica" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalAlignment="Center">
+                        Cheque
+                    </Label>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Nro Banco:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeNroBanco" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Sucursal:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeNroSucursal" VerticalAlignment="Center" FontSize="18"></TextBox>
+                    <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Localidad:
+                    </Label>
+                    <TextBox Grid.Column="3" x:Name="txtChequeLocalidad" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="75"></ColumnDefinition>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Serie:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeSerie" VerticalAlignment="Center" FontSize="18"></TextBox>
+                    <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Numero:
+                    </Label>
+                    <TextBox Grid.Column="3" x:Name="txtChequeNumero" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Persona / Razón:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequePersona" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Nro. Cuenta:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeCuenta" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        CUIT Emisor:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeCUIT" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="7">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Fecha Pago:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeFechaPago" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+                <Grid Grid.Row="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        Fecha Débito:
+                    </Label>
+                    <TextBox Grid.Column="1" x:Name="txtChequeFechaDebito" VerticalAlignment="Center" FontSize="18"></TextBox>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnAceptar" Grid.Column="0" FontFamily="Helvetica" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10, 10, 10, 10">Aceptar</Button>
+            <Button x:Name="btnCancelar" Grid.Column="1" FontFamily="Helvetica" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10, 10, 10, 10" Click="btnCancelar_Click">Cancelar</Button>
+
+        </Grid>
+    </Grid>
+</UserControl>

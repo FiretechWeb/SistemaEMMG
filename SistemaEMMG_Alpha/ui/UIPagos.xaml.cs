@@ -54,6 +54,8 @@ namespace SistemaEMMG_Alpha.ui
             InitializeComponent();
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
+
+            winAgregarModificarPago.SetUIOwner(this);
         }
 
         public void RefreshData()
@@ -159,6 +161,11 @@ namespace SistemaEMMG_Alpha.ui
         private void btnBuscar_Click(object sender, RoutedEventArgs e)
         {
             RefreshWithFilter();
+        }
+
+        private void btnAgregar_Click(object sender, RoutedEventArgs e)
+        {
+            winAgregarModificarPago.Visibility = Visibility.Visible;
         }
     }
 }
