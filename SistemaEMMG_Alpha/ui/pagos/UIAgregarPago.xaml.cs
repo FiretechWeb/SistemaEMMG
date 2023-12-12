@@ -20,7 +20,10 @@ namespace SistemaEMMG_Alpha.ui.pagos
     /// </summary>
     public partial class UIAgregarPago : UserControl
     {
+        public DBConnection dbCon = null;
+        public DBMain dbData = null;
         private UIPagos _ownerControl = null;
+        private DBPago _pagoSeleccionado = null;
         public void SetUIOwner(UIPagos ownerControl)
         {
             _ownerControl = ownerControl;
@@ -40,11 +43,78 @@ namespace SistemaEMMG_Alpha.ui.pagos
         public UIAgregarPago()
         {
             InitializeComponent();
+            dbCon = DBConnection.Instance();
+            dbData = DBMain.Instance();
+        }
+
+        public void RefreshData(DBPago selectedPago = null)
+        {
+            if (GetOwnerControl() is null) return;
+
+            if (dbCon is null)
+            {
+                dbCon = DBConnection.Instance();
+            }
+
+            if (dbData is null)
+            {
+                dbData = DBMain.Instance();
+            }
+
+            if (!GetOwnerControl().GetMainWindow().CheckDBConnection())
+            {
+                return;
+            }
+
+            if (GetCuentaSeleccionada() is null) return;
+
+            dbData.RefreshBasicDataDB(dbCon.Connection);
+
+            _pagoSeleccionado = selectedPago;
+
+            cmbFormaDePago.FillWithDBData(DBFormasPago.GetAll());
+            cmbMoneda.FillWithDBData(DBMoneda.GetAll());
+
+            RefreshFormData();
+        }
+
+        private void RefreshFormData()
+        {
+            DBFormasPago selectedFormaPago = cmbFormaDePago.SelectedItemAsFormaPago();
+            DBMoneda selectedMoneda = cmbMoneda.SelectedItemAsMoneda();
+
+            if (!(selectedFormaPago is null) && selectedFormaPago.GetTipo() == TipoFormaDePago.CHEQUE)
+            {
+                gridCheques.Visibility = Visibility.Visible;
+            } else
+            {
+                gridCheques.Visibility = Visibility.Collapsed;
+            }
+
+            if (!(selectedMoneda is null) && selectedMoneda.IsExtranjera())
+            {
+                lblCambio.Visibility = Visibility.Visible;
+                txtCambio.Visibility = Visibility.Visible;
+            } else
+            {
+                lblCambio.Visibility = Visibility.Collapsed;
+                txtCambio.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void btnCancelar_Click(object sender, RoutedEventArgs e)
         {
             GetOwnerControl().winAgregarModificarPago.Visibility = Visibility.Collapsed;
+        }
+
+        private void cmbFormaDePago_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshFormData();
+        }
+
+        private void cmbMoneda_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshFormData();
         }
     }
 }

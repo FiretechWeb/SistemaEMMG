@@ -7,13 +7,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="151*"/>
+            <ColumnDefinition Width="49*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="2"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="25"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="15"></ColumnDefinition>
@@ -51,7 +55,7 @@
                     <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Tipo:
                     </Label>
-                    <ComboBox Grid.Column="3" x:Name="cmbFormaDePago" FontSize="18" VerticalAlignment="Center">
+                    <ComboBox Grid.Column="3" x:Name="cmbFormaDePago" FontSize="18" VerticalAlignment="Center" SelectionChanged="cmbFormaDePago_SelectionChanged">
 
                     </ComboBox>
                 </Grid>
@@ -65,10 +69,10 @@
                     <Label Grid.Column="0" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Moneda:
                     </Label>
-                    <ComboBox Grid.Column="1" x:Name="cmbMoneda" FontSize="18" VerticalAlignment="Center">
+                    <ComboBox Grid.Column="1" x:Name="cmbMoneda" FontSize="18" VerticalAlignment="Center" SelectionChanged="cmbMoneda_SelectionChanged">
 
                     </ComboBox>
-                    <Label Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Label x:Name="lblCambio" Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
                         Cambio:
                     </Label>
                     <TextBox Grid.Column="3" x:Name="txtCambio" VerticalAlignment="Center" FontSize="18"></TextBox>
@@ -106,6 +110,7 @@
                 </Grid>
             </Grid>
             <Grid Grid.Column="2">
+            <Grid x:Name="gridCheques">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"></RowDefinition>
                     <RowDefinition Height="40"></RowDefinition>
@@ -216,8 +221,9 @@
                     <TextBox Grid.Column="1" x:Name="txtChequeFechaDebito" VerticalAlignment="Center" FontSize="18"></TextBox>
                 </Grid>
             </Grid>
+            </Grid>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>

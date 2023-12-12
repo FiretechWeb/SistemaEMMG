@@ -165,6 +165,7 @@ namespace SistemaEMMG_Alpha.ui
 
         private void btnAgregar_Click(object sender, RoutedEventArgs e)
         {
+            winAgregarModificarPago.RefreshData();
             winAgregarModificarPago.Visibility = Visibility.Visible;
         }
     }

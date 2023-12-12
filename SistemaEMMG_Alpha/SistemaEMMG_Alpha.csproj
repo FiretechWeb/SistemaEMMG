@@ -265,6 +265,7 @@
       <DependentUpon>UIRemitos.xaml</DependentUpon>
     </Compile>
     <Compile Include="users\Users.cs" />
+    <Compile Include="WinComponentsExtensions.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
