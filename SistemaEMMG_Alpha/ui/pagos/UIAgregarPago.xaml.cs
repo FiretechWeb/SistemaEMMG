@@ -34,6 +34,10 @@ namespace SistemaEMMG_Alpha.ui.pagos
             _ownerControl = ownerControl;
         }
 
+        private DBPago GetPagoSeleccionado() => _pagoSeleccionado;
+
+        private void SetPagoSeleccionado(DBPago pago) => _pagoSeleccionado = pago;
+
         public UIPagos GetOwnerControl() => _ownerControl;
 
         public DBCuenta GetCuentaSeleccionada()
@@ -75,7 +79,7 @@ namespace SistemaEMMG_Alpha.ui.pagos
 
             dbData.RefreshBasicDataDB(dbCon.Connection);
 
-            _pagoSeleccionado = selectedPago;
+            SetPagoSeleccionado(selectedPago);
             lblEntidadRazon.Content = "Seleccionar una entidad...";
             _entidadSeleccionada = null;
 
@@ -501,6 +505,8 @@ namespace SistemaEMMG_Alpha.ui.pagos
                 return;
             }
 
+            DBPago pagoSeleccionado = GetPagoSeleccionado();
+
             DateTime fechaEmitido = new DateTime();
             DateTime.TryParse(txtFecha.Text, out fechaEmitido);
 
@@ -551,10 +557,28 @@ namespace SistemaEMMG_Alpha.ui.pagos
                 cambio,
                 pagoChequeData);
 
-            if (pagoToPush.PushToDatabase(dbCon.Connection))
+            long oldEntidadId;
+            long oldReciboId;
+
+            if (pagoSeleccionado is null)
+            {
+                pagoSeleccionado = pagoToPush;
+                oldEntidadId = pagoToPush.GetEntidadComercialID();
+                oldReciboId = pagoToPush.GetReciboID();
+            } else
+            {
+                oldEntidadId = pagoSeleccionado.GetEntidadComercialID();
+                oldReciboId = pagoSeleccionado.GetReciboID();
+                pagoSeleccionado.Update(pagoToPush);
+            }
+
+            if (pagoSeleccionado.PushToDatabase(dbCon.Connection, oldEntidadId, oldReciboId))
             {
                 MessageBox.Show("¡Pago agregado a la base de datos correctamente!");
-            } else
+                GetOwnerControl().RefreshData();
+                GetOwnerControl().winAgregarModificarPago.Visibility = Visibility.Collapsed;
+            }
+            else
             {
                 MessageBox.Show("Error al agregar el pago.");
 

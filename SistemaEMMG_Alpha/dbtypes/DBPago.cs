@@ -485,6 +485,38 @@ namespace SistemaEMMG_Alpha
             moneda,
             PagoData.CreateFromReader(reader)) { }
 
+        public bool PushToDatabase(MySqlConnection conn, long old_pg_ec_id, long old_pg_rc_id)
+        {
+            long old_pg_id = GetID();
+            bool wasAbleToPushAndDelete = false;
+            if (!IsLocal() && ((old_pg_ec_id != GetEntidadComercialID()) || (old_pg_rc_id != GetReciboID())))
+            {
+                MakeLocal();
+            }
+            else
+            {
+                return PushToDatabase(conn);
+            }
+            if (InsertIntoToDatabase(conn))
+            {
+                DBEntidades oldEntidad = DBEntidades.GetByID(conn, GetCuenta(), old_pg_ec_id);
+                DBRecibo oldRecibo = DBRecibo.GetByID(conn, oldEntidad, old_pg_rc_id);
+                DBPago oldPago = GetByID(conn, oldRecibo, old_pg_id);
+                if (!(oldPago is null))
+                {
+                    wasAbleToPushAndDelete = oldPago.DeleteFromDatabase(conn);
+                }
+                else
+                {
+                    wasAbleToPushAndDelete = true;
+                }
+                if (!wasAbleToPushAndDelete)
+                {
+                    DeleteFromDatabase(conn);
+                }
+            }
+            return wasAbleToPushAndDelete;
+        }
 
         public override bool PullFromDatabase(MySqlConnection conn)
         {
@@ -800,6 +832,12 @@ namespace SistemaEMMG_Alpha
             SetImporte(sourcePago.GetImporte());
             SetMoneda(sourcePago.GetMoneda());
             SetObservacion(sourcePago.GetObservacion());
+            SetRecibo(sourcePago.GetRecibo());
+        }
+
+        public void SetRecibo(DBRecibo newRecibo)
+        {
+            _recibo = newRecibo;
         }
 
         public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
