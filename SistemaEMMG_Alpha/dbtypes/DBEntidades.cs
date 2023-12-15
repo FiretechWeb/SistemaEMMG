@@ -669,6 +669,17 @@ namespace SistemaEMMG_Alpha
         }
 
         public override DBBaseClass GetLocalCopy() => new DBEntidades(_cuenta, -1, _tipoEntidad, _data);
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBEntidades)) return;
+            DBEntidades sourceEntidad = (DBEntidades)source;
+            SetCelular(sourceEntidad.GetCelular());
+            SetCuit(sourceEntidad.GetCUIT());
+            SetEmail(sourceEntidad.GetEmail());
+            SetRazonSocial(sourceEntidad.GetRazonSocial());
+            SetTelefono(sourceEntidad.GetTelefono());
+            SetTipoEntidad(sourceEntidad.GetTipoEntidad());
+        }
 
         public override string ToString() => $"ID: {GetID()} - Tipo Entidad: {_tipoEntidad.GetName()} - {_data}";
 

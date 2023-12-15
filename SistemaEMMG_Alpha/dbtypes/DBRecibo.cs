@@ -1170,6 +1170,18 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBRecibo(_entidadComercial, -1, _tipoRecibo, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBRecibo)) return;
+            DBRecibo sourceRecibo = (DBRecibo)source;
+            SetEmitido(sourceRecibo.IsEmitido());
+            SetEntidadComercial(sourceRecibo.GetEntidadComercial());
+            SetFecha(sourceRecibo.GetFecha());
+            SetNumero(sourceRecibo.GetNumero());
+            SetObservacion(sourceRecibo.GetObservacion());
+            SetTipoRecibo(sourceRecibo.GetTipoRecibo());
+        }
+
         public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoRecibo.GetName()} - {_data}";
 
         /***********************************************

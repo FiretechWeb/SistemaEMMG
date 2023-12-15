@@ -372,6 +372,13 @@ namespace SistemaEMMG_Alpha
             return new DBFormasPago(-1, _data);
         }
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBFormasPago)) return;
+            DBFormasPago sourceFormaDePago = (DBFormasPago)source;
+            SetName(sourceFormaDePago.GetName());
+            SetTipo(sourceFormaDePago.GetTipo());
+        }
         public override string ToString() => $"ID: {GetID()} - {_data}";
 
         /**********************

@@ -58,6 +58,13 @@ namespace SistemaEMMG_Alpha
         ///Delete this element from the database.
         ///</summary>
         abstract public bool DeleteFromDatabase(MySqlConnection conn);
+
+        ///<summary>
+        ///Update this element with the data from another element of the same class.
+        ///This method keeps the element ID intact.
+        ///</summary>
+        abstract public void Update(DBBaseClass source);
+
         ///<summary>
         ///Returns a Local copy of this element.
         ///</summary>

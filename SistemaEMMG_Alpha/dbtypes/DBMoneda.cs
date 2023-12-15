@@ -352,6 +352,14 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBMoneda(-1, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBMoneda)) return;
+            DBMoneda sourceMoneda = (DBMoneda)source;
+            SetName(sourceMoneda.GetName());
+            SetExtranjera(sourceMoneda.IsExtranjera());
+        }
+
         public override string ToString() => $"ID: {GetID()} - {_data}";
 
         /**********************

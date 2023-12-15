@@ -1737,6 +1737,25 @@ namespace SistemaEMMG_Alpha
         }
 
         public override DBBaseClass GetLocalCopy() => new DBComprobantes(_entidadComercial, -1, _tipoComprobante, _moneda, _data, _comprobanteAsociado);
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBComprobantes)) return;
+            DBComprobantes sourceComprobantes = (DBComprobantes)source;
+            SetCambio(sourceComprobantes.GetCambio());
+            SetComprobanteAsociadoID(sourceComprobantes.GetComprobanteAsociadoID());
+            SetEmitido(sourceComprobantes.IsEmitido());
+            SetEntidadComercial(sourceComprobantes.GetEntidadComercial());
+            SetFechaEmitido(sourceComprobantes.GetFechaEmitido());
+            SetGravado(sourceComprobantes.GetGravado());
+            SetIVA(sourceComprobantes.GetIVA());
+            SetMoneda(sourceComprobantes.GetMoneda());
+            SetNoGravado(sourceComprobantes.GetNoGravado());
+            SetNumeroComprobante(sourceComprobantes.GetNumeroComprobante());
+            SetObservacion(sourceComprobantes.GetObservacion());
+            SetPercepcion(sourceComprobantes.GetPercepcion());
+            SetSubTotal(sourceComprobantes.GetSubTotal());
+            SetTipoComprobante(sourceComprobantes.GetTipoComprobante());
+        }
 
         public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoComprobante.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
 

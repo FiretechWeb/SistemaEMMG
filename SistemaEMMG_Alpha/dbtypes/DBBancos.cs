@@ -417,6 +417,14 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBBancos(-1, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBBancos)) return;
+            DBBancos sourceBancos = (DBBancos)source;
+            SetCode(sourceBancos.GetCode());
+            SetName(sourceBancos.GetName());
+        }
+
         public override string ToString() => $"ID: {GetID()} - {_data}";
         
         public static string PrintAll()

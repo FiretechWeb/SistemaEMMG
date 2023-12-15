@@ -555,6 +555,13 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBCuenta(-1, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBCuenta)) return;
+            DBCuenta sourceCuenta = (DBCuenta)source;
+            SetRazonSocial(sourceCuenta.GetRazonSocial());
+            SetCUIT(sourceCuenta.GetCUIT());
+        }
         public override string ToString() => $"ID: {GetID()} - {_data}";
 
         /**********************

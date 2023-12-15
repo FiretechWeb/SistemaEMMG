@@ -1070,6 +1070,17 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBRemito(_entidadComercial, -1, _tipoRemito, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBRemito)) return;
+            DBRemito sourceRemito = (DBRemito)source;
+            SetEmitido(sourceRemito.IsEmitido());
+            SetEntidadComercial(sourceRemito.GetEntidadComercial());
+            SetFecha(sourceRemito.GetFecha());
+            SetNumero(sourceRemito.GetNumero());
+            SetObservacion(sourceRemito.GetObservacion());
+            SetTipoRemito(sourceRemito.GetTipoRemito());
+        }
         public override string ToString() => $"ID: {GetID()} - Tipo: {_tipoRemito.GetName()} - {_data}";
 
         /**********************

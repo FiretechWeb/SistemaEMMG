@@ -366,6 +366,13 @@ namespace SistemaEMMG_Alpha
             return new DBTipoEntidad(-1, _data);
         }
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBTipoEntidad)) return;
+            DBTipoEntidad sourceTipoEntidad = (DBTipoEntidad)source;
+            SetName(sourceTipoEntidad.GetName());
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/

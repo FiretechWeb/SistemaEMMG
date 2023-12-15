@@ -412,6 +412,14 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBTiposComprobantes(-1, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBTiposComprobantes)) return;
+            DBTiposComprobantes sourceTipoComprobantes = (DBTiposComprobantes)source;
+            SetName(sourceTipoComprobantes.GetName());
+            SetFlags(sourceTipoComprobantes.GetFlags());
+        }
+
         public override string ToString() => $"ID: {GetID()} - {_data}";
 
         /**********************

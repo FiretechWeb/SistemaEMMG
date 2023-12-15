@@ -789,6 +789,19 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBPago(_recibo, -1, _formaDePago, _moneda, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBPago)) return;
+            DBPago sourcePago = (DBPago)source;
+            SetCambio(sourcePago.GetCambio());
+            SetCheque(sourcePago.GetCheque());
+            SetFecha(sourcePago.GetFecha());
+            SetFormaDePago(sourcePago.GetFormaDePago());
+            SetImporte(sourcePago.GetImporte());
+            SetMoneda(sourcePago.GetMoneda());
+            SetObservacion(sourcePago.GetObservacion());
+        }
+
         public override string ToString() => $"ID: {GetID()} - Forma de pago: {_formaDePago.GetName()} - Moneda: {_moneda.GetName()} - {_data}";
 
         /***********************************************

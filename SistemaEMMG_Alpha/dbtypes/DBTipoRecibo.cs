@@ -342,6 +342,13 @@ namespace SistemaEMMG_Alpha
 
         public override DBBaseClass GetLocalCopy() => new DBTipoRecibo(-1, _data);
 
+        public override void Update(DBBaseClass source)
+        {
+            if (!(source is DBTipoRecibo)) return;
+            DBTipoRecibo sourceTipoRecibo = (DBTipoRecibo)source;
+            SetName(sourceTipoRecibo.GetName());
+        }
+
         /**********************
          * DEBUG STUFF ONLY
          * ********************/
