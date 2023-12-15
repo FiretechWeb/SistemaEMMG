@@ -210,5 +210,26 @@ namespace SistemaEMMG_Alpha.ui
             winAgregarModificarPago.RefreshData(GetPagoSeleccionado());
             winAgregarModificarPago.Visibility = Visibility.Visible;
         }
+
+        private void btnEliminar_Click(object sender, RoutedEventArgs e)
+        {
+            DBPago pagoAEliminar = GetPagoSeleccionado();
+
+            Trace.Assert(!(pagoAEliminar is null));
+
+            MessageBoxResult msgBoxConfirmationResult = System.Windows.MessageBox.Show("¿Está seguro que desea eliminar este pago?.", "Confirmar eliminación", System.Windows.MessageBoxButton.YesNo);
+            if (msgBoxConfirmationResult == MessageBoxResult.Yes)
+            {
+                if (pagoAEliminar.DeleteFromDatabase(dbCon.Connection))
+                {
+                    MessageBox.Show("Pago eliminado exitosamente");
+                    RefreshData();
+                }
+                else
+                {
+                    MessageBox.Show("Error tratando de eliminar el pago.");
+                }
+            }
+        }
     }
 }
