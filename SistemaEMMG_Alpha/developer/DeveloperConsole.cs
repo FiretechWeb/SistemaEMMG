@@ -132,6 +132,8 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("remove user", (x) => _CMD_RemoveUser(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("login", (x) => _CMD_UserLogin(x)));
 
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("import comprobantes", (x) => _CMD_ImportComprobantes(x)));
+
             //Patch commands only. Used when porting some DB changes to a new version of the software.
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("install patch", (x) => _CMD_InstallPatch()));
 
@@ -1915,6 +1917,38 @@ namespace SistemaEMMG_Alpha
             {
                 _outputStr = $"Datos ingresados incorrectos.\nPassword: {tmpUser.GetPassword()}\n Encrypted password: {tmpUser.GetEncryptedPassword()}";
             }
+        }
+
+        private void _CMD_ImportComprobantes(string fileName)
+        {
+            if ((_seleccion is null) || !(_seleccion is DBCuenta))
+            {
+                _outputStr = "No hay cuenta seleccionada.";
+                return;
+            }
+            if (!System.IO.File.Exists(fileName.Trim()) || fileName.Trim().Length < 2)
+            {
+                _outputStr = "El archivo indicado no existe!";
+            }
+            List<DBTiposComprobantes> missingTiposComprobantes = new List<DBTiposComprobantes>();
+            List<DBEntidades> missingEntidades = new List<DBEntidades>();
+            List<DBMoneda> missingMonedas = new List<DBMoneda>();
+            AFIPComprobantes.GetMissingTypesFromFile((DBCuenta)_seleccion, fileName.Trim(), missingEntidades, missingTiposComprobantes, missingMonedas);
+
+            foreach (DBEntidades entidad in missingEntidades)
+            {
+                _outputStr += $"Entidad no encontrada: \n{entidad}\n\n";
+            }
+            foreach (DBMoneda moneda in missingMonedas)
+            {
+                _outputStr += $"Moneda no encontrada: \n{moneda}\n\n";
+            }
+            foreach (DBTiposComprobantes tipoComprobante in missingTiposComprobantes)
+            {
+                _outputStr += $"Tipo de Comprobante no encontrado: \n{tipoComprobante}\n\n";
+            }
+
+            _outputStr += $"\n{AFIPComprobantes.ImportFromFile((DBCuenta)_seleccion, fileName.Trim())}";
         }
 
         private void _CMD_InstallPatch()

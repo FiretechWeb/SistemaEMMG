@@ -173,6 +173,7 @@
     <Compile Include="dbtypes\DBTipoRemito.cs" />
     <Compile Include="developer\DeveloperConsole.cs" />
     <Compile Include="encryption\EncryptManager.cs" />
+    <Compile Include="fastexcel\AFIP\AFIPComprobantes.cs" />
     <Compile Include="fastexcel\components\xlsComprobantes.cs" />
     <Compile Include="fastexcel\components\xlsRecibos.cs" />
     <Compile Include="fastexcel\ExcelExport.cs" />

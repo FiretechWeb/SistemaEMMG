@@ -143,6 +143,7 @@ namespace SistemaEMMG_Alpha
             uiPagosPanel.SetMainWindow(this);
             configWin.SetMainWindow(this);
             accessWin.SetMainWindow(this);
+            developerWin.SetMainWindow(this);
         }
         
         public MainWindow()

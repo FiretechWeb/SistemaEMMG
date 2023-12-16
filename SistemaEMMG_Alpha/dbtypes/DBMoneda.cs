@@ -154,6 +154,30 @@ namespace SistemaEMMG_Alpha
             return returnEnt;
         }
 
+        public static DBMoneda GetByName(string mn_name) => _db_monedas.Find(x => x.GetName().DeepNormalize().Equals(mn_name.DeepNormalize()));
+
+        public static DBMoneda GetByName(string mn_name, MySqlConnection conn)
+        {
+            DBMoneda returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE LOWER({MonedaData.NameOf_mn_name}) = '{mn_name.Trim().ToLower()}'";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    returnEnt = new DBMoneda(reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener una moneda en GetByName. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
         public DBMoneda(long id, MonedaData newData) : base(id) { _data = newData; }
 
         public DBMoneda(MonedaData newData) : this(-1, newData) { }

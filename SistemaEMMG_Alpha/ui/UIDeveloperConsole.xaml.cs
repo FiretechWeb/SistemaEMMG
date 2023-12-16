@@ -6,7 +6,7 @@ namespace SistemaEMMG_Alpha.ui
     /// <summary>
     /// Interaction logic for UIDeveloperConsole.xaml
     /// </summary>
-    public partial class UIDeveloperConsole : UserControl
+    public partial class UIDeveloperConsole : BaseUCClass
     {
         public UIDeveloperConsole()
         {

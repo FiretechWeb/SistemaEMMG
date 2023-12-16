@@ -443,6 +443,42 @@ namespace SistemaEMMG_Alpha
             return returnList;
         }
 
+        public static DBComprobantes GetByNumberNormalized(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido)
+        {
+            DBComprobantes returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE {NameOf_cm_em_id} = {entidadComercial.GetCuentaID()}";
+                
+                if (!isEmitido)
+                {
+                    query += $" AND {NameOf_cm_ec_id} = {entidadComercial.GetID()}";
+                }
+                query += $" AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(isEmitido)}";
+
+
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DBComprobantes dbComprobante = new DBComprobantes(entidadComercial, new DBTiposComprobantes(reader), new DBMoneda(reader), reader);
+                    if (numeroComprobante.KeepNumbersAndMinus().Equals(dbComprobante.GetNumeroComprobante().KeepNumbersAndMinus()))
+                    {
+                        returnEnt = dbComprobante;
+                        break; //entity found
+                    }
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en DBComprobantes::GetByNumberNormalized. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return returnEnt;
+        }
+
         public static DBComprobantes GetByNumber(MySqlConnection conn, DBEntidades entidadComercial, string numeroComprobante, bool isEmitido, int asociado = -1)
         { 
             DBComprobantes returnEnt = null;
@@ -489,7 +525,7 @@ namespace SistemaEMMG_Alpha
         /****************
          * Constructors 
          * **************/
-        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado=null) : base (id)
+                public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado=null) : base (id)
         {
             _entidadComercial = entidadComercial;
             _moneda = newMoneda;

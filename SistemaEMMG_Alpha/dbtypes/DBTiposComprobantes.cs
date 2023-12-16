@@ -195,6 +195,30 @@ namespace SistemaEMMG_Alpha
             return returnEnt;
         }
 
+        public static DBTiposComprobantes GetByName(string tc_nombre) => _db_tipos_comprobantes.Find(x => x.GetName().DeepNormalize().Equals(tc_nombre.DeepNormalize()));
+
+        public static DBTiposComprobantes GetByName(string tc_nombre, MySqlConnection conn)
+        {
+            DBTiposComprobantes returnEnt = null;
+            try
+            {
+                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE LOWER({TiposComprobantesData.NameOf_tc_nombre}) = '{tc_nombre.Trim().ToLower()}'";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    returnEnt = new DBTiposComprobantes(reader);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener un tipo de entidad en GetByName. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
         public DBTiposComprobantes(long id, TiposComprobantesData newData) : base(id) { _data = newData; }
 
         public DBTiposComprobantes(TiposComprobantesData newData) : this(-1, newData) { }
