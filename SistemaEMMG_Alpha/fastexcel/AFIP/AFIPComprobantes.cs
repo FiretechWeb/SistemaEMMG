@@ -117,7 +117,7 @@ namespace SistemaEMMG_Alpha
             }
         }
 
-        public static string ImportFromFile(DBCuenta cuenta, string excelFileName)
+        public static List<DBComprobantes> ImportFromFile(DBCuenta cuenta, string excelFileName)
         {
             List<DBComprobantes> comprobantes = new List<DBComprobantes>();
             string returnStr = "";
@@ -127,6 +127,8 @@ namespace SistemaEMMG_Alpha
             using (SLDocument sl = new SLDocument(excelFileName))
             {
                 //Try to loop through comprobantes data
+                bool isEmitido = sl.HasCellValue($"A{1}") && sl.GetCellValueAsString(1, 1).Trim().ToLower().Contains("emitidos");
+
                 for (int row=3; sl.HasCellValue($"A{row}"); row++)
                 {
                     DBTiposComprobantes tipoComprobante = GetTipoComprobanteFromCell(sl.GetCellValueAsString(row, CP_CLMN_TIPO));
@@ -145,19 +147,58 @@ namespace SistemaEMMG_Alpha
                     if (entidadComercial is null) continue;
 
                     string numeroFactura = $"{sl.GetCellValueAsString(row, CP_CLMN_PVENTA)}-{sl.GetCellValueAsString(row, CP_CLMN_NUMEROD)}";
-                    DBComprobantes comprobante = DBComprobantes.GetByNumberNormalized(conn, entidadComercial, numeroFactura, true);
+                    DBComprobantes comprobante = DBComprobantes.GetByNumberNormalized(conn, entidadComercial, numeroFactura, isEmitido);
+
+                    /*
+                     *             DBEntidades entidadComercial,
+            DBTiposComprobantes newTipo,
+            DBMoneda newMoneda,
+            bool emitido,
+            DateTime? fecha,
+            string numero,
+            double gravado,
+            double iva,
+            double no_gravado = 0.0,
+            double percepcion = 0.0,
+            double cambio = 1.0,
+            string obs = "",
+            double subtotal = 0.0,
+            DBComprobantes comprobanteAsociado = null
+
+                                DateTime fechaEmitido = new DateTime();
+            DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido);
+
+                     */
 
                     if (!(comprobante is null)) {
                         returnStr += $"Comprobante ya existe:\n{comprobante}\n\n";
                     } else
                     {
                         returnStr += $"Agregando nuevo comprobante:\n{numeroFactura}\n\n";
+
+                        DateTime fechaEmitido = new DateTime();
+                        DateTime.TryParse(sl.GetCellValueAsString(row, CP_CLMN_FECHA), out fechaEmitido);
+
+                        comprobante = new DBComprobantes(
+                            entidadComercial,
+                            tipoComprobante,
+                            moneda,
+                            isEmitido,
+                            fechaEmitido,
+                            numeroFactura,
+                            sl.GetCellValueAsDouble(row, CP_CLMN_GRAVADO),
+                            sl.GetCellValueAsDouble(row, CP_CLMN_IVA),
+                            sl.GetCellValueAsDouble(row, CP_CLMN_NOGRAVADO),
+                            0.0,
+                            sl.GetCellValueAsDouble(row, CP_CLMN_CAMBIO)
+                            );
+                        comprobantes.Add(comprobante);
                     }
                 }
                 sl.CloseWithoutSaving();
             }
 
-            return returnStr;
+            return comprobantes;
         }
     }
 }

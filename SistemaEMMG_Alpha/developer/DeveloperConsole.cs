@@ -1948,7 +1948,11 @@ namespace SistemaEMMG_Alpha
                 _outputStr += $"Tipo de Comprobante no encontrado: \n{tipoComprobante}\n\n";
             }
 
-            _outputStr += $"\n{AFIPComprobantes.ImportFromFile((DBCuenta)_seleccion, fileName.Trim())}";
+            List<DBComprobantes> comprobantesAFIP = AFIPComprobantes.ImportFromFile((DBCuenta)_seleccion, fileName.Trim());
+
+            foreach(DBComprobantes comprobante in comprobantesAFIP){
+                _outputStr += $"Comprobante: \n{comprobante}\n\n";
+            }
         }
 
         private void _CMD_InstallPatch()

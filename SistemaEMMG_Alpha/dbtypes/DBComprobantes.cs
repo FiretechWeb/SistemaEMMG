@@ -456,7 +456,6 @@ namespace SistemaEMMG_Alpha
                 }
                 query += $" AND {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(isEmitido)}";
 
-
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
@@ -525,7 +524,7 @@ namespace SistemaEMMG_Alpha
         /****************
          * Constructors 
          * **************/
-                public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado=null) : base (id)
+        public DBComprobantes(DBEntidades entidadComercial, long id, DBTiposComprobantes newTipo, DBMoneda newMoneda, ComprobantesData newData, DBComprobantes comprobanteAsociado=null) : base (id)
         {
             _entidadComercial = entidadComercial;
             _moneda = newMoneda;
