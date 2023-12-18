@@ -16,7 +16,7 @@ namespace SistemaEMMG_Alpha
         Percepcion = 1 << 3,
         Total = 1 << 4,
         Acredita = 1 << 5,
-        Asociado = 1 << 6 //asociado a otro comprobante o no. (Comun para notas de crédito y débito)
+        Asociado = 1 << 6, //asociado a otro comprobante o no. (Comun para notas de crédito y débito)
     }
     public struct TiposComprobantesData
     {

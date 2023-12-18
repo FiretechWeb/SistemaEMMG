@@ -9,7 +9,7 @@ namespace SistemaEMMG_Alpha
 {
     public struct ComprobantesData
     {
-        public ComprobantesData(DateTime? fecha, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido, double cambio, string obs, double subtotal)
+        public ComprobantesData(DateTime? fecha, string numero, double gravado, double iva, double no_gravado, double percepcion, bool emitido, double cambio, string obs, double subtotal, double extentas, double otro_tributo)
         {
             cm_fecha = fecha;
             cm_numero = numero;
@@ -21,6 +21,9 @@ namespace SistemaEMMG_Alpha
             cm_cambio = cambio;
             cm_obs = obs;
             cm_subtotal = subtotal;
+            cm_extentas = extentas;
+            cm_otributos = otro_tributo;
+
         }
         public DateTime? cm_fecha { get; set; }
         public string cm_numero { get; set; }
@@ -31,7 +34,8 @@ namespace SistemaEMMG_Alpha
         public bool cm_emitido { get; set; }
         public double cm_cambio { get; set; }
         public double cm_subtotal { get; set; }
-
+        public double cm_extentas { get; set; }
+        public double cm_otributos { get; set; }
         public string cm_obs { get; set; }
 
         public static readonly string NameOf_cm_fecha = nameof(cm_fecha);
@@ -44,6 +48,8 @@ namespace SistemaEMMG_Alpha
         public static readonly string NameOf_cm_cambio = nameof(cm_cambio);
         public static readonly string NameOf_cm_obs = nameof(cm_obs);
         public static readonly string NameOf_cm_subtotal = nameof(cm_subtotal);
+        public static readonly string NameOf_cm_extentas = nameof(cm_extentas);
+        public static readonly string NameOf_cm_otributos = nameof(cm_otributos);
 
         public static ComprobantesData CreateFromReader(MySqlDataReader reader)
         {
@@ -56,11 +62,13 @@ namespace SistemaEMMG_Alpha
                                         Convert.ToBoolean(reader.GetInt32Safe(NameOf_cm_emitido)),
                                         reader.GetDoubleSafe(NameOf_cm_cambio),
                                         reader.GetStringSafe(NameOf_cm_obs), 
-                                        reader.GetDoubleSafe(NameOf_cm_subtotal));
+                                        reader.GetDoubleSafe(NameOf_cm_subtotal),
+                                        reader.GetDoubleSafe(NameOf_cm_extentas),
+                                        reader.GetDoubleSafe(NameOf_cm_otributos));
         }
         public override string ToString()
         {
-            return $"Emitido: {cm_emitido} - Fecha: {cm_fecha} - Número: {cm_numero} - Gravado: {cm_gravado} - IVA: {cm_iva} - No Gravado: {cm_no_gravado} - Percepción: {cm_percepcion} - Cambio: {cm_cambio} - Subtotal: {cm_subtotal} - Observación: {cm_obs}";
+            return $"Emitido: {cm_emitido} - Fecha: {cm_fecha} - Número: {cm_numero} - Gravado: {cm_gravado} - IVA: {cm_iva} - No Gravado: {cm_no_gravado} - Percepción: {cm_percepcion} - Cambio: {cm_cambio} - Subtotal: {cm_subtotal} - Imp. Op. Extentas: {cm_extentas} - Otros Tributos: {cm_otributos} - Observación: {cm_obs}";
         }
     }
     public class DBComprobantes : DBBaseClass, IDBase<DBComprobantes>, IDBCuenta<DBCuenta>, IDBEntidadComercial<DBEntidades>
@@ -611,13 +619,15 @@ namespace SistemaEMMG_Alpha
             double cambio=1.0,
             string obs="",
             double subtotal=0.0,
+            double op_extentas=0.0,
+            double otros_tributos=0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         ) { }
 
@@ -635,13 +645,15 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             -1,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -661,13 +673,15 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             id,
             tc_id,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -685,13 +699,15 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             entidadComercial,
             -1,
             tc_id,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -711,6 +727,8 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
@@ -718,7 +736,7 @@ namespace SistemaEMMG_Alpha
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -737,6 +755,8 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
@@ -744,7 +764,7 @@ namespace SistemaEMMG_Alpha
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -765,6 +785,8 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
@@ -773,7 +795,7 @@ namespace SistemaEMMG_Alpha
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -793,6 +815,8 @@ namespace SistemaEMMG_Alpha
             double cambio = 1.0,
             string obs = "",
             double subtotal = 0.0,
+            double op_extentas = 0.0,
+            double otros_tributos = 0.0,
             DBComprobantes comprobanteAsociado = null
         ) : this(
             cuentaSeleccioanda,
@@ -801,7 +825,7 @@ namespace SistemaEMMG_Alpha
             ec_id,
             newTipo,
             newMoneda,
-            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal),
+            new ComprobantesData(fecha, numero, gravado, iva, no_gravado, percepcion, emitido, cambio, obs, subtotal, op_extentas, otros_tributos),
             comprobanteAsociado
         )
         { }
@@ -929,7 +953,9 @@ namespace SistemaEMMG_Alpha
                                 {ComprobantesData.NameOf_cm_emitido} = {Convert.ToInt32(_data.cm_emitido)}, 
                                 {ComprobantesData.NameOf_cm_cambio} = {_data.cm_cambio.ToString().Replace(",", ".")}, 
                                 {ComprobantesData.NameOf_cm_subtotal} = {_data.cm_subtotal.ToString().Replace(",", ".")}, 
-                                {ComprobantesData.NameOf_cm_obs} = '{_data.cm_obs}' 
+                                {ComprobantesData.NameOf_cm_obs} = '{_data.cm_obs}', 
+                                {ComprobantesData.NameOf_cm_extentas} = {_data.cm_extentas.ToString().Replace(",", ".")}, 
+                                {ComprobantesData.NameOf_cm_otributos} = {_data.cm_otributos.ToString().Replace(",", ".")} 
                                 WHERE {NameOf_cm_em_id} = {_entidadComercial.GetCuentaID()} AND {NameOf_cm_ec_id} = {_entidadComercial.GetID()} AND {NameOf_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToUpdate = cmd.ExecuteNonQuery() > 0;
@@ -969,7 +995,9 @@ namespace SistemaEMMG_Alpha
                                 {ComprobantesData.NameOf_cm_emitido}, 
                                 {ComprobantesData.NameOf_cm_cambio}, 
                                 {ComprobantesData.NameOf_cm_subtotal}, 
-                                {ComprobantesData.NameOf_cm_obs}) 
+                                {ComprobantesData.NameOf_cm_obs}, 
+                                {ComprobantesData.NameOf_cm_extentas}, 
+                                {ComprobantesData.NameOf_cm_otributos}) 
                                 VALUES (
                                 {_entidadComercial.GetCuentaID()}, 
                                 {_entidadComercial.GetID()}, 
@@ -985,7 +1013,9 @@ namespace SistemaEMMG_Alpha
                                 {Convert.ToInt32(_data.cm_emitido)}, 
                                 {_data.cm_cambio.ToString().Replace(",", ".")}, 
                                 {_data.cm_subtotal.ToString().Replace(",", ".")}, 
-                                '{_data.cm_obs}')";
+                                '{_data.cm_obs}', 
+                                {_data.cm_extentas.ToString().Replace(",", ".")}, 
+                                {_data.cm_otributos.ToString().Replace(",", ".")})";
 
                 var cmd = new MySqlCommand(query, conn);
                 wasAbleToInsert = cmd.ExecuteNonQuery() > 0;
@@ -1636,6 +1666,10 @@ namespace SistemaEMMG_Alpha
         public string GetObservacion() => _data.cm_obs;
         public double GetSubTotal() => _data.cm_subtotal;
         public DBMoneda GetMoneda() => _moneda;
+        public double GetOpExtentas() => _data.cm_extentas;
+        public double GetOtrosTributos() => _data.cm_otributos;
+
+
 
         ///<summary>
         ///Returns if this business receipt was emitted to get payed or received to be payed.
@@ -1738,6 +1772,18 @@ namespace SistemaEMMG_Alpha
             _data.cm_subtotal = subtotal;
         }
 
+        public void SetOpExtentas(double op_extentas)
+        {
+            _shouldPush = _shouldPush || (op_extentas != _data.cm_extentas);
+            _data.cm_extentas = op_extentas;
+        }
+
+        public void SetOtrosTributos(double otros_tributos)
+        {
+            _shouldPush = _shouldPush || (otros_tributos != _data.cm_otributos);
+            _data.cm_otributos = otros_tributos;
+        }
+
         public void SetComprobanteAsociadoID(long newId) => _comprobante_asociado_id = newId;
 
         public long GetComprobanteAsociadoID()
@@ -1798,13 +1844,15 @@ namespace SistemaEMMG_Alpha
          * Useful functions for Real world applications
          * ********************************************/
 
-        public double GetTotal() => _data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion + _data.cm_subtotal;
+        public double GetTotal() => _data.cm_extentas + _data.cm_otributos + _data.cm_gravado + _data.cm_iva + _data.cm_no_gravado + _data.cm_percepcion + _data.cm_subtotal;
 
         public double GetTotal_MonedaLocal() => GetTotal() * _data.cm_cambio;
         public double GetGravado_MonedaLocal() => _data.cm_gravado * _data.cm_cambio;
         public double GetIVA_MonedaLocal() => _data.cm_iva * _data.cm_cambio;
         public double GetNoGravado_MonedaLocal() => _data.cm_no_gravado * _data.cm_cambio;
         public double GetPercepcion_MonedaLocal() => _data.cm_percepcion * _data.cm_cambio;
+        public double GetOtrosTributos_MonedaLocal() => _data.cm_otributos * _data.cm_cambio;
+        public double GetOpExtentas_MonedaLocal() => _data.cm_extentas * _data.cm_cambio;
 
         public double GetTotalReal_MonedaLocal(MySqlConnection conn)
         {

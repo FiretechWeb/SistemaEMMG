@@ -76,6 +76,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 gridPercepcion.Visibility = Visibility.Collapsed;
                 gridTipoComprobante.Visibility = Visibility.Collapsed;
                 gridTotal.Visibility = Visibility.Collapsed;
+                gridOpExtentas.Visibility = Visibility.Collapsed;
+                gridOtrosTributos.Visibility = Visibility.Collapsed;
             } else
             {
                 gridCambio.Visibility = Visibility.Visible;
@@ -91,6 +93,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 gridPercepcion.Visibility = Visibility.Visible;
                 gridTipoComprobante.Visibility = Visibility.Visible;
                 gridTotal.Visibility = Visibility.Visible;
+                gridOpExtentas.Visibility = Visibility.Visible;
+                gridOtrosTributos.Visibility = Visibility.Visible;
 
                 if (!(_comprobanteSeleccionado is null) && _comprobanteSeleccionado.IsLocal())
                 {
@@ -275,6 +279,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 txtObservacion.Text = "";
                 txtCambio.Text = "1.0";
                 txtTotal.Text = "";
+                txtOpExtentas.Text = "";
+                txtOtrosTributos.Text = "";
                 cmbMoneda.SelectedIndex = 0;
                 RefreshMonedaSelected();
                 cmbTipoComprobante.SelectedIndex = 0;
@@ -301,6 +307,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
                 cmbTipoComprobante.SelectedValue = _comprobanteSeleccionado.GetTipoComprobante().GetID();
                 txtCambio.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetCambio());
                 txtTotal.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetSubTotal());
+                txtOtrosTributos.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetOtrosTributos());
+                txtOpExtentas.Text = SafeConvert.ToString(_comprobanteSeleccionado.GetOpExtentas());
             }
 
             if (selectedComprobante is null)
@@ -365,7 +373,7 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             {
                 gridTotal.Visibility = Visibility.Collapsed;
             }
-            //Stradex: Esto significa que si el tipo de comprobante se un comprobante que se asocia a otros (notas de crédito y débito)
+            //Stradex: Esto significa que si el tipo de comprobante es un comprobante que se asocia a otros (notas de crédito y débito)
             //Entonces no hay que mostrar el botón con la lista de comprobantes asociados, ya que este tipo de comprobante no tiene comprobantes asociados
             //Sino que está asociado a otro comprobante .
             if (tipoComprobanteSeleccionado.HasFlag(TipoComprobanteFlag.Asociado))
@@ -399,6 +407,8 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
             _comprobanteSeleccionado.SetNoGravado(SafeConvert.ToDouble(txtNoGravado.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetPercepcion(SafeConvert.ToDouble(txtPercepcion.Text.Replace(".", ",")));
             _comprobanteSeleccionado.SetSubTotal(SafeConvert.ToDouble(txtTotal.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetOpExtentas(SafeConvert.ToDouble(txtOpExtentas.Text.Replace(".", ",")));
+            _comprobanteSeleccionado.SetOtrosTributos(SafeConvert.ToDouble(txtOtrosTributos.Text.Replace(".", ",")));
 
             _comprobanteSeleccionado.SetObservacion(txtObservacion.Text);
 
@@ -627,6 +637,30 @@ namespace SistemaEMMG_Alpha.ui.comprobantes
         {
             CheckIfAbleToSubmit();
             RefreshFieldsColorState();
+        }
+
+        private void txtOpExtentas_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
+        }
+
+        private void txtOtrosTributos_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckIfAbleToSubmit();
+            RefreshFieldsColorState();
+        }
+
+        private void txtOtrosTributos_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txtOpExtentas_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9,.]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

@@ -109,39 +109,51 @@
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Grid x:Name="gridGravado" Grid.Row="0">
+                    <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Gravado:</Label>
-                        <TextBox x:Name="txtGravado" Grid.Column="1" VerticalAlignment="Center" TextChanged="txtGravado_TextChanged" PreviewTextInput="txtGravado_PreviewTextInput"></TextBox>
+                        <Grid x:Name="gridGravado" Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="150"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Gravado:</Label>
+                            <TextBox x:Name="txtGravado" Grid.Column="1" VerticalAlignment="Center" TextChanged="txtGravado_TextChanged" PreviewTextInput="txtGravado_PreviewTextInput"></TextBox>
+                        </Grid>
+                        <Grid x:Name="gridIVA" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="150"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">IVA:</Label>
+                            <TextBox x:Name="txtIVA" Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtIVA_PreviewTextInput"></TextBox>
+                        </Grid>
                     </Grid>
-                    <Grid  x:Name="gridIVA" Grid.Row="1">
+                    <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">IVA:</Label>
-                        <TextBox x:Name="txtIVA" Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtIVA_PreviewTextInput"></TextBox>
+                        <Grid x:Name="gridNoGravado" Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="150"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">No Gravado:</Label>
+                            <TextBox x:Name="txtNoGravado" Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtNoGravado_PreviewTextInput"></TextBox>
+                        </Grid>
+                        <Grid x:Name="gridPercepcion" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="150"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
+                            <TextBox x:Name="txtPercepcion"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtPercepcion_PreviewTextInput"></TextBox>
+                        </Grid>
                     </Grid>
-                    <Grid x:Name="gridNoGravado" Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">No Gravado:</Label>
-                        <TextBox x:Name="txtNoGravado" Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtNoGravado_PreviewTextInput"></TextBox>
-                    </Grid>
-                    <Grid x:Name="gridPercepcion" Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Percepción:</Label>
-                        <TextBox x:Name="txtPercepcion"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtPercepcion_PreviewTextInput"></TextBox>
-                    </Grid>
-                    <Grid x:Name="gridTotal" Grid.Row="4">
+                    <Grid x:Name="gridTotal" Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -149,23 +161,45 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Total:</Label>
                         <TextBox x:Name="txtTotal"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtTotal_PreviewTextInput" TextChanged="txtTotal_TextChanged"></TextBox>
                     </Grid>
-                    <Grid x:Name="gridMoneda" Grid.Row="5">
+                    <Grid x:Name="gridOpExtentas" Grid.Row="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Moneda:</Label>
-                        <ComboBox x:Name="cmbMoneda" Grid.Column="1" MinWidth="125" HorizontalAlignment="Left" SelectionChanged="cmbMoneda_SelectionChanged"></ComboBox>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Op. Exentas:</Label>
+                        <TextBox x:Name="txtOpExtentas"  Grid.Column="1" VerticalAlignment="Center" TextChanged="txtOpExtentas_TextChanged" PreviewTextInput="txtOpExtentas_PreviewTextInput"></TextBox>
                     </Grid>
-                    <Grid x:Name="gridCambio" Grid.Row="6">
+                    <Grid x:Name="gridOtrosTributos" Grid.Row="4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Cambio:</Label>
-                        <TextBox x:Name="txtCambio"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtCambio_PreviewTextInput"></TextBox>
+                        <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Otros Tributos:</Label>
+                        <TextBox x:Name="txtOtrosTributos"  Grid.Column="1" VerticalAlignment="Center" TextChanged="txtOtrosTributos_TextChanged" PreviewTextInput="txtOtrosTributos_PreviewTextInput"></TextBox>
                     </Grid>
-                    <Grid x:Name="gridObservacion" Grid.Row="7">
+                    <Grid Grid.Row="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid  x:Name="gridMoneda" Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="150"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Moneda:</Label>
+                            <ComboBox x:Name="cmbMoneda" Grid.Column="1" MinWidth="75" HorizontalAlignment="Left" SelectionChanged="cmbMoneda_SelectionChanged"></ComboBox>
+                        </Grid>
+                        <Grid x:Name="gridCambio" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" MinWidth="100" MaxWidth="150"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Cambio:</Label>
+                            <TextBox x:Name="txtCambio"  Grid.Column="1" VerticalAlignment="Center" PreviewTextInput="txtCambio_PreviewTextInput"></TextBox>
+                        </Grid>
+                    </Grid>
+                    <Grid x:Name="gridObservacion" Grid.Row="6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MaxWidth="150"></ColumnDefinition>
                             <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -173,7 +207,7 @@
                         <Label Grid.Column="0" FontFamily="Helvetica"  Foreground="Black" FontSize="15" FontWeight="Bold"  VerticalAlignment="Center" HorizontalAlignment="Left">Observación:</Label>
                         <TextBox x:Name="txtObservacion" MaxLength="126"  Grid.Column="1" VerticalAlignment="Center"></TextBox>
                     </Grid>
-                    <Grid x:Name="gridDatosAsociados" Grid.Row="8">
+                    <Grid x:Name="gridDatosAsociados" Grid.Row="7">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition Width="auto"></ColumnDefinition>

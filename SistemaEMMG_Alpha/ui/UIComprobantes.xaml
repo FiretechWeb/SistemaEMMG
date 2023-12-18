@@ -49,6 +49,8 @@
                     <DataGridTextColumn Header="IVA" Binding="{Binding iva}"></DataGridTextColumn>
                     <DataGridTextColumn Header="No Gravado" Binding="{Binding no_gravado}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Percepción" Binding="{Binding percepcion}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Op. Exentas" Binding="{Binding op_extentas}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Otros Tributos" Binding="{Binding otros_tributos}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Total" Binding="{Binding total}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>

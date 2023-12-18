@@ -149,27 +149,6 @@ namespace SistemaEMMG_Alpha
                     string numeroFactura = $"{sl.GetCellValueAsString(row, CP_CLMN_PVENTA)}-{sl.GetCellValueAsString(row, CP_CLMN_NUMEROD)}";
                     DBComprobantes comprobante = DBComprobantes.GetByNumberNormalized(conn, entidadComercial, numeroFactura, isEmitido);
 
-                    /*
-                     *             DBEntidades entidadComercial,
-            DBTiposComprobantes newTipo,
-            DBMoneda newMoneda,
-            bool emitido,
-            DateTime? fecha,
-            string numero,
-            double gravado,
-            double iva,
-            double no_gravado = 0.0,
-            double percepcion = 0.0,
-            double cambio = 1.0,
-            string obs = "",
-            double subtotal = 0.0,
-            DBComprobantes comprobanteAsociado = null
-
-                                DateTime fechaEmitido = new DateTime();
-            DateTime.TryParse(txtFechaEmitido.Text, out fechaEmitido);
-
-                     */
-
                     if (!(comprobante is null)) {
                         returnStr += $"Comprobante ya existe:\n{comprobante}\n\n";
                     } else
@@ -190,7 +169,11 @@ namespace SistemaEMMG_Alpha
                             sl.GetCellValueAsDouble(row, CP_CLMN_IVA),
                             sl.GetCellValueAsDouble(row, CP_CLMN_NOGRAVADO),
                             0.0,
-                            sl.GetCellValueAsDouble(row, CP_CLMN_CAMBIO)
+                            sl.GetCellValueAsDouble(row, CP_CLMN_CAMBIO),
+                            "",
+                            0.0,
+                            sl.GetCellValueAsDouble(row, CP_CLMN_OPEXT),
+                            sl.GetCellValueAsDouble(row, CP_CLMN_OTRIBUTOS)
                             );
                         comprobantes.Add(comprobante);
                     }

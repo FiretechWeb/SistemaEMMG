@@ -150,6 +150,8 @@ namespace SistemaEMMG_Alpha.ui
                     iva = $"{comprobante.GetIVA().ToString("0.00")} {comprobante.GetMoneda().GetName()}",
                     no_gravado = $"{comprobante.GetNoGravado().ToString("0.00")} {comprobante.GetMoneda().GetName()}",
                     percepcion = $"{comprobante.GetPercepcion().ToString("0.00")} {comprobante.GetMoneda().GetName()}",
+                    op_extentas = $"{comprobante.GetOpExtentas().ToString("0.00")} {comprobante.GetMoneda().GetName()}",
+                    otros_tributos = $"{comprobante.GetOtrosTributos().ToString("0.00")} {comprobante.GetMoneda().GetName()}",
                     total = $"{comprobante.GetTotal_MonedaLocal().ToString("0.00")} ARS"
                 });
             }
