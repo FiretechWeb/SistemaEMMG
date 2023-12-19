@@ -74,6 +74,7 @@ namespace SistemaEMMG_Alpha
         public const string db_table = "tipos_comprobantes";
         public const string NameOf_id = "tc_id";
         private TiposComprobantesData _data;
+        private readonly List<DBTipoComprobanteAlias> _db_alias_comprobantes = new List<DBTipoComprobanteAlias>();
         private static readonly List<DBTiposComprobantes> _db_tipos_comprobantes = new List<DBTiposComprobantes>();
         public static string GetSQL_SelectQueryWithRelations(string fieldsToGet) => $"SELECT {fieldsToGet} FROM {db_table}";
         string IDBase<DBTiposComprobantes>.GetSQL_SelectQueryWithRelations(string fieldsToGet) => GetSQL_SelectQueryWithRelations(fieldsToGet);
@@ -398,6 +399,43 @@ namespace SistemaEMMG_Alpha
             }
             return existsInDB;
         }
+
+        public List<DBTipoComprobanteAlias> GetAliases(MySqlConnection conn)
+        {
+            List<DBTipoComprobanteAlias> returnList = new List<DBTipoComprobanteAlias>();
+
+            _db_alias_comprobantes.Clear();
+            try
+            {
+                string query = $"SELECT * FROM {DBTipoComprobanteAlias.db_table} WHERE {DBTipoComprobanteAlias.NameOf_tc_id} = {GetID()}";
+                var cmd = new MySqlCommand(query, conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    DBTipoComprobanteAlias aliasComprobante = new DBTipoComprobanteAlias(reader);
+                    _db_alias_comprobantes.Add(aliasComprobante);
+                    returnList.Add(aliasComprobante);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en el método DBTipoComprobanteAlias::GetAliases: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return returnList;
+        }
+        public List<DBTipoComprobanteAlias> GetAliases() => _db_alias_comprobantes;
+
+        public void AddAlias(string alias)
+        {
+            if (!_db_alias_comprobantes.Exists(x => x.GetAlias().DeepNormalize().Equals(alias.DeepNormalize())))
+                return;
+            _db_alias_comprobantes.Add(new DBTipoComprobanteAlias(this, alias));
+        }
+
+        public void PushAliases(MySqlConnection conn) => _db_alias_comprobantes.ForEach(x => x.PushToDatabase(conn));
+
         public void SetName(string newName)
         {
             _shouldPush = _shouldPush || !_data.tc_nombre.Equals(newName);

@@ -165,6 +165,7 @@
     <Compile Include="config\ConfigType.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DBInterfaces.cs" />
+    <Compile Include="dbtypes\DBTipoComprobanteAlias.cs" />
     <Compile Include="dbtypes\DBBancos.cs" />
     <Compile Include="dbtypes\DBMoneda.cs" />
     <Compile Include="dbtypes\DBRecibo.cs" />
