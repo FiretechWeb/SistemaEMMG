@@ -46,6 +46,8 @@ namespace SistemaEMMG_Alpha
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo comprobante", (x) => _CMD_SelectTipoComprobante(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo comprobante", (x) => _CMD_CrearTipoComprobante(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("tipo comprobante set name", (x) => _CMD_TipoComprobanteSetName(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("add alias", (x) => _CMD_TipoComprobanteAddAlias(x)));
+            internalCommandsList.Add(new KeyValuePair<string, Action<string>>("print aliases", (x) => _CMD_TipoComprobanteGetAlias()));
 
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("select tipo recibo", (x) => _CMD_SelectTipoRecibo(x)));
             internalCommandsList.Add(new KeyValuePair<string, Action<string>>("make tipo recibo", (x) => _CMD_CrearTipoRecibo(x)));
@@ -548,6 +550,39 @@ namespace SistemaEMMG_Alpha
             DBBancos bancoSeleccionado = (DBBancos)_seleccion;
             bancoSeleccionado.SetCode(SafeConvert.ToInt32(code));
             _outputStr = "Código del banco cambiado.";
+        }
+        private void _CMD_TipoComprobanteGetAlias()
+        {
+            if (_seleccion is null || !(_seleccion is DBTiposComprobantes))
+            {
+                _outputStr = "No hay un tipo de comprobante seleccionado.";
+                return;
+            }
+            DBTiposComprobantes tipoComprobanteSeleccionado = (DBTiposComprobantes)_seleccion;
+            MySqlConnection conn = DBConnection.Instance().Connection;
+
+            List<DBTipoComprobanteAlias> aliases = tipoComprobanteSeleccionado.GetAliases(conn);
+            _outputStr = "::Aliases::\n";
+            foreach (DBTipoComprobanteAlias alias in aliases)
+            {
+                _outputStr += $"\tAlias: {alias}\n";
+            }
+        }
+        private void _CMD_TipoComprobanteAddAlias(string alias)
+        {
+            if (_seleccion is null || !(_seleccion is DBTiposComprobantes))
+            {
+                _outputStr = "No hay un tipo de comprobante seleccionado.";
+                return;
+            }
+
+            MySqlConnection conn = DBConnection.Instance().Connection;
+
+            DBTiposComprobantes tipoComprobanteSeleccionado = (DBTiposComprobantes)_seleccion;
+            tipoComprobanteSeleccionado.AddAlias(alias.Trim());
+            tipoComprobanteSeleccionado.PushAliases(conn);
+
+            _outputStr += $"Alias {alias.Trim()} agregado.";
         }
 
         private void _CMD_TipoComprobanteSetName(string name)
@@ -1800,6 +1835,11 @@ namespace SistemaEMMG_Alpha
                 return;
             }
             fileName = fileName.Trim();
+            if (fileName.Length <= 1)
+            {
+                _outputStr = "Formato: create pdf nombre_archivo.pdf";
+                return;
+            }
             string fileNameExcel = System.IO.Path.GetFileNameWithoutExtension(fileName) + "_tmp.xlsx";
             if (_seleccion is DBCuenta cuenta)
             {

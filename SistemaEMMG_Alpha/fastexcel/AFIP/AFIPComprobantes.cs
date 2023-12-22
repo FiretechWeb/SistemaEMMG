@@ -41,34 +41,8 @@ namespace SistemaEMMG_Alpha
         private static DBTiposComprobantes GetTipoComprobanteFromCell(string cellText)
         {
             MySqlConnection conn = DBConnection.Instance().Connection;
-            cellText = cellText.DeepNormalize();
-            //HARDCODED
-            if (cellText.Contains("factura a"))
-            {
-                return DBTiposComprobantes.GetByName("factura a", conn);
-            } else if (cellText.Contains("factura b"))
-            {
-                return DBTiposComprobantes.GetByName("factura b", conn);
-            }
-            else if (cellText.Contains("factura c"))
-            {
-                return DBTiposComprobantes.GetByName("factura c", conn);
-            }
-            else if (cellText.Contains("nota de credito"))
-            {
-                return DBTiposComprobantes.GetByName("nota de crédito", conn);
-            }
-            else if (cellText.Contains("nota de debito"))
-            {
-                return DBTiposComprobantes.GetByName("nota de débito", conn);
-            }
-            else if (cellText.Contains("ticket"))
-            {
-                return DBTiposComprobantes.GetByName("ticket", conn);
-            }
 
-            return null;
-
+            return DBTiposComprobantes.GetByAlias(cellText, conn, true);
         }
 
         public static void GetMissingTypesFromFile(DBCuenta cuenta, string excelFileName, List<DBEntidades> entidades, List<DBTiposComprobantes> tiposComprobantes, List<DBMoneda> monedas)

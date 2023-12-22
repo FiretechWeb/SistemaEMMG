@@ -84,10 +84,27 @@ namespace SistemaEMMG_Alpha
             List<DBTiposComprobantes> defaulData = new List<DBTiposComprobantes>();
             defaulData.Add(new DBTiposComprobantes("Factura A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
             defaulData.Add(new DBTiposComprobantes("Factura B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Factura T", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
             defaulData.Add(new DBTiposComprobantes("Factura C", (int)TipoComprobanteFlag.Total | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Factura de Crédito Electrónica MiPyMEs (FCE) A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Factura de Crédito Electrónica MiPyMEs (FCE) B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
+
+            defaulData.Add(new DBTiposComprobantes("Recibo A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Recibo B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
+
+            defaulData.Add(new DBTiposComprobantes("Nota de Débito A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Nota de Débito B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Nota de Débito T", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Nota de Débito electrónica MiPyMEs (FCE) A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
+            defaulData.Add(new DBTiposComprobantes("Nota de Débito electrónica MiPyMEs (FCE) B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
+
+            defaulData.Add(new DBTiposComprobantes("Nota de Crédito A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
+            defaulData.Add(new DBTiposComprobantes("Nota de Crédito B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
+            defaulData.Add(new DBTiposComprobantes("Nota de Crédito T", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
+            defaulData.Add(new DBTiposComprobantes("Nota de Crédito electrónica MiPyMEs (FCE) A", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
+            defaulData.Add(new DBTiposComprobantes("Nota de Crédito electrónica MiPyMEs (FCE) B", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
+
             defaulData.Add(new DBTiposComprobantes("Ticket", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Acredita));
-            defaulData.Add(new DBTiposComprobantes("Nota de crédito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado));
-            defaulData.Add(new DBTiposComprobantes("Nota de débito", (int)TipoComprobanteFlag.Gravado | (int)TipoComprobanteFlag.IVA | (int)TipoComprobanteFlag.NoGravado | (int)TipoComprobanteFlag.Percepcion | (int)TipoComprobanteFlag.Asociado | (int)TipoComprobanteFlag.Acredita));
 
             return defaulData;
         }
@@ -104,6 +121,7 @@ namespace SistemaEMMG_Alpha
             foreach (DBTiposComprobantes tipoComprobante in defaultData)
             {
                 tipoComprobante.PushToDatabase(conn);
+                tipoComprobante.PushAliases(conn);
             }
 
             return true;
@@ -216,6 +234,24 @@ namespace SistemaEMMG_Alpha
             catch (Exception ex)
             {
                 MessageBox.Show("Error al tratar de obtener un tipo de entidad en GetByName. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return returnEnt;
+        }
+
+        public static DBTiposComprobantes GetByAlias(string alias, MySqlConnection conn, bool normalized = false)
+        {
+            DBTiposComprobantes returnEnt = null;
+
+            try
+            {
+                DBTipoComprobanteAlias aliasEnt = DBTipoComprobanteAlias.GetByAlias(alias, conn, normalized);
+                if (!(aliasEnt is null))
+                {
+                    returnEnt = aliasEnt.GetTipoComprobante();
+                }
+            } catch(Exception ex)
+            {
+                MessageBox.Show("Error al tratar de obtener un tipo comprobante en GetByAlias. Problemas con la consulta SQL: " + ex.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return returnEnt;
         }
@@ -407,7 +443,10 @@ namespace SistemaEMMG_Alpha
             _db_alias_comprobantes.Clear();
             try
             {
-                string query = $"SELECT * FROM {DBTipoComprobanteAlias.db_table} WHERE {DBTipoComprobanteAlias.NameOf_tc_id} = {GetID()}";
+                string ta_table = DBTipoComprobanteAlias.db_table;
+                string query = $@"SELECT * FROM {ta_table} 
+                    JOIN {db_table} ON {db_table}.{NameOf_id} = {ta_table}.{DBTipoComprobanteAlias.NameOf_tc_id} 
+                    WHERE {DBTipoComprobanteAlias.NameOf_tc_id} = {GetID()}";
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -429,7 +468,7 @@ namespace SistemaEMMG_Alpha
 
         public void AddAlias(string alias)
         {
-            if (!_db_alias_comprobantes.Exists(x => x.GetAlias().DeepNormalize().Equals(alias.DeepNormalize())))
+            if (_db_alias_comprobantes.Exists(x => x.GetAlias().DeepNormalize().Equals(alias.DeepNormalize())))
                 return;
             _db_alias_comprobantes.Add(new DBTipoComprobanteAlias(this, alias));
         }

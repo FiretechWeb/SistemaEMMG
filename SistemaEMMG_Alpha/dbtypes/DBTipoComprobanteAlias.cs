@@ -122,18 +122,34 @@ namespace SistemaEMMG_Alpha
 
         public static DBTipoComprobanteAlias GetByAlias(string alias) => _db_afip_tipos_alias.Find(x => x.GetAlias().DeepNormalize().Equals(alias.DeepNormalize()));
 
-        public static DBTipoComprobanteAlias GetByAlias(string alias, MySqlConnection conn)
+        public static DBTipoComprobanteAlias GetByAlias(string alias, MySqlConnection conn, bool normalized=false)
         {
             DBTipoComprobanteAlias returnEnt = null;
             try
             {
-                string query = $"{GetSQL_SelectQueryWithRelations("*")} WHERE LOWER({TipoComprobanteAlias.NameOf_afip_nombre}) = '{alias.Trim().ToLower()}'";
+                string query = $"{GetSQL_SelectQueryWithRelations("*")}";
+                if (!normalized)
+                {
+                    query += $" WHERE LOWER({TipoComprobanteAlias.NameOf_afip_nombre}) = '{alias.Trim().ToLower()}'";
+                }
                 var cmd = new MySqlCommand(query, conn);
                 var reader = cmd.ExecuteReader();
 
-                if (reader.Read())
+                while (reader.Read())
                 {
-                    returnEnt = new DBTipoComprobanteAlias(reader);
+                    DBTipoComprobanteAlias currentAlias = new DBTipoComprobanteAlias(reader);
+                    if (!normalized)
+                    {
+                        returnEnt = currentAlias;
+                        break;
+                    } else
+                    {
+                        if (currentAlias.GetAlias().DeepNormalize().Equals(alias.DeepNormalize()))
+                        {
+                            returnEnt = currentAlias;
+                            break;
+                        }
+                    }
                 }
                 reader.Close();
             }
@@ -207,7 +223,7 @@ namespace SistemaEMMG_Alpha
 
         public override bool UpdateToDatabase(MySqlConnection conn)
         {
-            if (IsLocal())
+            if (IsLocal() || GetTipoComprobante().IsLocal())
             {
                 return false;
             }
@@ -237,6 +253,8 @@ namespace SistemaEMMG_Alpha
 
         public override bool InsertIntoToDatabase(MySqlConnection conn)
         {
+            if (GetTipoComprobante().IsLocal()) return false;
+
             bool? doesDuplicateExistsDB = DuplicatedExistsInDatabase(conn);
             if (doesDuplicateExistsDB == true || doesDuplicateExistsDB == null)
             {
