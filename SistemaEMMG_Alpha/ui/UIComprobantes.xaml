@@ -130,8 +130,8 @@
                     <ColumnDefinition Width="115*"></ColumnDefinition>
                     <ColumnDefinition Width="114*"></ColumnDefinition>
                     <ColumnDefinition Width="114*"></ColumnDefinition>
-                    <ColumnDefinition Width="34*"></ColumnDefinition>
-                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="114*"></ColumnDefinition>
+                    <ColumnDefinition Width="114*"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="btnAgregar" Grid.Column="1" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnAgregar_Click">
                     Agregar
@@ -145,7 +145,10 @@
                 <Button x:Name="btnExportar" Grid.Column="4" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnExportar_Click">
                     Exportar
                 </Button>
-                <Button x:Name="btnBuscar" Grid.Column="5" Margin="5, 5, 5, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnBuscar_Click">
+                <Button x:Name="btnImportar" Grid.Column="5" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnImportar_Click">
+                    Importar
+                </Button>
+                <Button x:Name="btnBuscar" Grid.Column="6" Margin="5, 5, 5, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="16" FontWeight="Bold" Click="btnBuscar_Click">
                     Buscar
                 </Button>
             </Grid>

@@ -264,5 +264,40 @@ namespace SistemaEMMG_Alpha.ui
         {
             e.Handled = InputHandler.OnlyNumbers(e);
         }
+
+        private void btnImportar_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            if (openDialog.ShowDialog() == true)
+            {
+                List<DBTiposComprobantes> missingTiposComprobantes = new List<DBTiposComprobantes>();
+                List<DBEntidades> missingEntidades = new List<DBEntidades>();
+                List<DBMoneda> missingMonedas = new List<DBMoneda>();
+                AFIPComprobantes.GetMissingTypesFromFile(GetCuentaSeleccionada(), openDialog.FileName, missingEntidades, missingTiposComprobantes, missingMonedas);
+
+                string messageStr="";
+                foreach (DBEntidades entidad in missingEntidades)
+                {
+                    messageStr += $"Entidad no encontrada: \n{entidad}\n\n";
+                }
+                foreach (DBMoneda moneda in missingMonedas)
+                {
+                    messageStr += $"Moneda no encontrada: \n{moneda}\n\n";
+                }
+                foreach (DBTiposComprobantes tipoComprobante in missingTiposComprobantes)
+                {
+                    messageStr += $"Tipo de Comprobante no encontrado: \n{tipoComprobante}\n\n";
+                }
+
+                List<DBComprobantes> comprobantesAFIP = AFIPComprobantes.ImportFromFile(GetCuentaSeleccionada(), openDialog.FileName);
+
+                foreach (DBComprobantes comprobante in comprobantesAFIP)
+                {
+                    messageStr += $"Comprobante: \n{comprobante}\n\n";
+                }
+
+                MessageBox.Show(messageStr, "Archivo abierto");
+            }
+        }
     }
 }

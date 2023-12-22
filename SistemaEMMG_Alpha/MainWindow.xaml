@@ -48,7 +48,7 @@
     <Label VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3, 3, 3, 3" Foreground="BlueViolet">Versión 0.2.5</Label>
     <!-- END: Version info -->
      <!-- START: Login Screen-->
-        <uc:UILoginScreen x:Name="accessWin"></uc:UILoginScreen>
+        <uc:UILoginScreen x:Name="accessWin" Visibility="Visible"></uc:UILoginScreen>
     <!-- END: Login Screen -->
     <!-- START: Error Database Connection -->
         <uc:UIErrorScreen x:Name="errorScreen" Visibility="Collapsed"></uc:UIErrorScreen>
