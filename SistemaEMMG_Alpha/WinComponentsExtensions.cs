@@ -47,5 +47,14 @@ namespace SistemaEMMG_Alpha
         {
             return (cmbBox.SelectedItem is null) ? null : DBMoneda.GetByID(((KeyValuePair<long, string>)cmbBox.SelectedItem).Key);
         }
+
+        public static DBTipoEntidad SelectedItemAsTipoEntidad(this ComboBox cmbBox)
+        {
+            return (cmbBox.SelectedItem is null) ? null : DBTipoEntidad.GetByID(((KeyValuePair<long, string>)cmbBox.SelectedItem).Key);
+        }
+        public static DBTiposComprobantes SelectedItemAsTipoComprobante(this ComboBox cmbBox)
+        {
+            return (cmbBox.SelectedItem is null) ? null : DBTiposComprobantes.GetByID(((KeyValuePair<long, string>)cmbBox.SelectedItem).Key);
+        }
     }
 }

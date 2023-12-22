@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.comprobantes.UIFixMissing"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.comprobantes"
+             mc:Ignorable="d" 
+             xmlns:myTypes="clr-namespace:SistemaEMMG_Alpha.ui"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="50"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <Label x:Name="lblPendientes" FontFamily="Helvetica" FontSize="22" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalAlignment="Center">
+                Problemas pendientes: 0
+            </Label>
+            
+            <local:UIMissTipoComprobante x:Name="uiMissingTipoComprobante" Visibility="Collapsed" Grid.Row="1"></local:UIMissTipoComprobante>
+            <local:UIMissEntidad x:Name="uiMissingEntidad" Visibility="Collapsed" Grid.Row="1"></local:UIMissEntidad>
+            
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="15"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="15"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnCancelar" Grid.Column="1" FontFamily="Helvetica" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5, 5, 5, 5" Click="btnCancelar_Click">
+                    Cancelar
+                </Button>
+                <Button x:Name="btnContinuar" Grid.Column="3" FontFamily="Helvetica" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5, 5, 5, 5" Click="btnContinuar_Click">
+                    Continuar
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

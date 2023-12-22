@@ -27,6 +27,7 @@ namespace SistemaEMMG_Alpha
         private static DBMoneda GetTipoMonedaFromCell(string cellText)
         {
             MySqlConnection conn = DBConnection.Instance().Connection;
+
             cellText = cellText.DeepNormalize();
             if (cellText.Contains("$"))
             {
@@ -35,6 +36,7 @@ namespace SistemaEMMG_Alpha
             {
                 return DBMoneda.GetByName("usd", conn);
             }
+
             return null;
         }
 

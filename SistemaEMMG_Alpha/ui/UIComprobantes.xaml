@@ -153,6 +153,7 @@
                 </Button>
             </Grid>
         </Grid>
+        <comprobantes:UIFixMissing x:Name="uiFixMissing" Visibility="Collapsed"></comprobantes:UIFixMissing>
         <comprobantes:UIAgregarModificarComprobante x:Name="uiAgregarModificarPanel" Visibility="Collapsed"></comprobantes:UIAgregarModificarComprobante>
     </Grid>
 </myTypes:BaseUCClass>

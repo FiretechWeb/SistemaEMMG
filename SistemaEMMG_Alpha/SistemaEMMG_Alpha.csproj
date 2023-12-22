@@ -193,6 +193,15 @@
     <Compile Include="ui\comprobantes\UICRemito.xaml.cs">
       <DependentUpon>UICRemito.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\comprobantes\UIFixMissing.xaml.cs">
+      <DependentUpon>UIFixMissing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\comprobantes\UIMissEntidad.xaml.cs">
+      <DependentUpon>UIMissEntidad.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\comprobantes\UIMissTipoComprobante.xaml.cs">
+      <DependentUpon>UIMissTipoComprobante.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\comprobantes\UIRecibo.xaml.cs">
       <DependentUpon>UIRecibo.xaml</DependentUpon>
     </Compile>
@@ -300,6 +309,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ui\comprobantes\UICRemito.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\comprobantes\UIFixMissing.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\comprobantes\UIMissEntidad.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\comprobantes\UIMissTipoComprobante.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

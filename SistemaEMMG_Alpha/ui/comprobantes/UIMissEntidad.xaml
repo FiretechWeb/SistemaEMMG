@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="SistemaEMMG_Alpha.ui.comprobantes.UIMissEntidad"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SistemaEMMG_Alpha.ui.comprobantes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                CUIT Entidad faltante:
+            </Label>
+            <Label x:Name="lblMissingCUIT" Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                Missing CUIT...
+            </Label>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                Razón Social:
+            </Label>
+            <TextBox x:Name="txtMissingRazon" Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Width="150" Height="30" HorizontalAlignment="Left">
+
+            </TextBox>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                Seleccionar tipo entidad:
+            </Label>
+            <ComboBox x:Name="cmbTipoEntidad"  Grid.Column="2" Width="250" Margin="10, 5, 10, 5" FontFamily="Helvetica"  Foreground="Black" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" SelectedIndex="0">
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                Email:
+            </Label>
+            <TextBox x:Name="txtMissingEmail" Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Width="150" Height="30" HorizontalAlignment="Left">
+                
+            </TextBox>
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                Teléfono:
+            </Label>
+            <TextBox x:Name="txtMissingTelefono" Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Width="150" Height="30" HorizontalAlignment="Left">
+
+            </TextBox>
+        </Grid>
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left">
+                Celular:
+            </Label>
+            <TextBox x:Name="txtMissingCel" Grid.Column="2" FontFamily="Helvetica" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Width="150" Height="30" HorizontalAlignment="Left">
+
+            </TextBox>
+        </Grid>
+    </Grid>
+</UserControl>

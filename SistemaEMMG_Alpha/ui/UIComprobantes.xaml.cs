@@ -163,6 +163,7 @@ namespace SistemaEMMG_Alpha.ui
             dbCon = DBConnection.Instance();
             dbData = DBMain.Instance();
             uiAgregarModificarPanel.SetUIOwner(this);
+            uiFixMissing.SetUIOwner(this);
         }
 
         private void btnBuscar_Click(object sender, RoutedEventArgs e)
@@ -240,7 +241,7 @@ namespace SistemaEMMG_Alpha.ui
             {
                 if (comprobanteAEliminar.DeleteFromDatabase(dbCon.Connection))
                 {
-                    MessageBox.Show("Comprobante eliminadi exitosamente");
+                    MessageBox.Show("Comprobante eliminado exitosamente");
                     RefreshData();
                 }
                 else
@@ -275,28 +276,33 @@ namespace SistemaEMMG_Alpha.ui
                 List<DBMoneda> missingMonedas = new List<DBMoneda>();
                 AFIPComprobantes.GetMissingTypesFromFile(GetCuentaSeleccionada(), openDialog.FileName, missingEntidades, missingTiposComprobantes, missingMonedas);
 
-                string messageStr="";
-                foreach (DBEntidades entidad in missingEntidades)
+                List<DBBaseClass> missingList = new List<DBBaseClass>();
+                missingList.AddRange(missingTiposComprobantes);
+                missingList.AddRange(missingEntidades);
+
+                if (missingList.Count > 0)
                 {
-                    messageStr += $"Entidad no encontrada: \n{entidad}\n\n";
-                }
-                foreach (DBMoneda moneda in missingMonedas)
+                    uiFixMissing.RefreshData(missingList);
+                    uiFixMissing.Visibility = Visibility.Visible;
+                } else
                 {
-                    messageStr += $"Moneda no encontrada: \n{moneda}\n\n";
-                }
-                foreach (DBTiposComprobantes tipoComprobante in missingTiposComprobantes)
-                {
-                    messageStr += $"Tipo de Comprobante no encontrado: \n{tipoComprobante}\n\n";
+                    List<DBComprobantes> comprobantesAFIP = AFIPComprobantes.ImportFromFile(GetCuentaSeleccionada(), openDialog.FileName);
+
+                    foreach (DBComprobantes comprobante in comprobantesAFIP)
+                    {
+                        comprobante.PushToDatabase(dbCon.Connection);
+                    }
+
+                    if (comprobantesAFIP.Count > 0)
+                    {
+                        MessageBox.Show("Comprobantes importados exitosamente");
+                    } else
+                    {
+                        MessageBox.Show("¡Todos los comprobantes ya estaban en el sistema!");
+                    }
+                    RefreshData();
                 }
 
-                List<DBComprobantes> comprobantesAFIP = AFIPComprobantes.ImportFromFile(GetCuentaSeleccionada(), openDialog.FileName);
-
-                foreach (DBComprobantes comprobante in comprobantesAFIP)
-                {
-                    messageStr += $"Comprobante: \n{comprobante}\n\n";
-                }
-
-                MessageBox.Show(messageStr, "Archivo abierto");
             }
         }
     }
