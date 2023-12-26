@@ -143,7 +143,7 @@ namespace SistemaEMMG_Alpha
                         0.0,
                         sl.GetCellValueAsDouble(row, CP_CLMN_CAMBIO),
                         "",
-                        0.0,
+                        tipoComprobante.HasFlag(TipoComprobanteFlag.Total) ? sl.GetCellValueAsDouble(row, CP_CLMN_TOTAL) : 0.0,
                         sl.GetCellValueAsDouble(row, CP_CLMN_OPEXT),
                         sl.GetCellValueAsDouble(row, CP_CLMN_OTRIBUTOS)
                         );
