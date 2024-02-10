@@ -9,9 +9,9 @@ Este es un sistema para llevar control de los comprobantes de una empresa, clien
 * C#
 * WPF
 * MySQL
-* SpreadSheet Light: [https://spreadsheetlight.com/(https://spreadsheetlight.com]https://spreadsheetlight.com/(https://spreadsheetlight.com/)
-* PDFtoPrinter: [(https://github.com/svishnevsky/PDFtoPrinter](https://github.com/svishnevsky/PDFtoPrinter)
-* Json.NET: [https://www.newtonsoft.com/json](https://www.newtonsoft.com/json)
+* SpreadSheet Light: https://spreadsheetlight.com/
+* PDFtoPrinter: https://github.com/svishnevsky/PDFtoPrinter
+* Json.NET: https://www.newtonsoft.com/json
 
 
 ## How to install
