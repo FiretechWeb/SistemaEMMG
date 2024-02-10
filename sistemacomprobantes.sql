@@ -1,337 +1,479 @@
--- MySqlBackup.NET 2.3.8.0
--- Dump Time: 2023-03-20 12:17:50
--- --------------------------------------
--- Server version 5.7.11 MySQL Community Server (GPL)
+-- phpMyAdmin SQL Dump
+-- version 4.5.4.1
+-- http://www.phpmyadmin.net
+--
+-- Servidor: localhost
+-- Tiempo de generación: 10-02-2024 a las 00:17:51
+-- Versión del servidor: 5.7.11
+-- Versión de PHP: 5.6.18
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES latin1 */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Base de datos: `sistemacomprobantes`
+--
 
--- 
--- Definition of bancos
--- 
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `bancos`;
-CREATE TABLE IF NOT EXISTS `bancos` (
-  `bc_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `bc_nombre` varchar(64) NOT NULL,
-  PRIMARY KEY (`bc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+--
+-- Estructura de tabla para la tabla `afip_tipos_comprobantes`
+--
 
--- 
--- Dumping data for table bancos
--- 
+CREATE TABLE `afip_tipos_comprobantes` (
+  `afip_tc_id` bigint(20) NOT NULL,
+  `afip_id` bigint(20) NOT NULL,
+  `afip_nombre` varchar(64) COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-/*!40000 ALTER TABLE `bancos` DISABLE KEYS */;
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `bancos` ENABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `bancos`
+--
 
--- 
--- Definition of comprobantes
--- 
+CREATE TABLE `bancos` (
+  `bnk_id` bigint(20) NOT NULL,
+  `bnk_name` varchar(128) COLLATE utf8_spanish_ci NOT NULL,
+  `bnk_code` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-DROP TABLE IF EXISTS `comprobantes`;
-CREATE TABLE IF NOT EXISTS `comprobantes` (
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `comprobantes`
+--
+
+CREATE TABLE `comprobantes` (
   `cm_em_id` bigint(20) NOT NULL,
   `cm_ec_id` bigint(20) NOT NULL,
-  `cm_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `cm_id` bigint(20) NOT NULL,
   `cm_tc_id` bigint(20) NOT NULL,
+  `cm_mn_id` bigint(20) NOT NULL,
+  `cm_cm_id` bigint(20) DEFAULT '-1',
   `cm_fecha` date DEFAULT NULL,
   `cm_numero` varchar(50) NOT NULL,
   `cm_gravado` double DEFAULT NULL,
   `cm_iva` double DEFAULT NULL,
   `cm_no_gravado` double DEFAULT NULL,
   `cm_percepcion` double DEFAULT NULL,
+  `cm_subtotal` double DEFAULT '0',
   `cm_emitido` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`cm_em_id`,`cm_ec_id`,`cm_id`),
-  KEY `fk_tipo` (`cm_tc_id`)
+  `cm_cambio` double DEFAULT NULL,
+  `cm_obs` varchar(128) DEFAULT NULL,
+  `cm_extentas` double NOT NULL DEFAULT '0',
+  `cm_otributos` double NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table comprobantes
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `comprobantes` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `cuentas`
+--
 
-/*!40000 ALTER TABLE `comprobantes` ENABLE KEYS */;
-
--- 
--- Definition of comprobantes_pagos
--- 
-
-DROP TABLE IF EXISTS `comprobantes_pagos`;
-CREATE TABLE IF NOT EXISTS `comprobantes_pagos` (
-  `cp_em_id` bigint(20) NOT NULL,
-  `cp_ec_id` bigint(20) NOT NULL,
-  `cp_cm_id` bigint(20) NOT NULL,
-  `cp_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `cp_fp_id` bigint(20) NOT NULL,
-  `cp_importe` double NOT NULL,
-  `cp_obs` varchar(128) DEFAULT NULL,
-  `cp_fecha` datetime DEFAULT NULL,
-  PRIMARY KEY (`cp_em_id`,`cp_ec_id`,`cp_cm_id`,`cp_id`),
-  KEY `fk_formapago` (`cp_fp_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table comprobantes_pagos
--- 
-
-/*!40000 ALTER TABLE `comprobantes_pagos` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `comprobantes_pagos` ENABLE KEYS */;
-
--- 
--- Definition of cuentas
--- 
-
-DROP TABLE IF EXISTS `cuentas`;
-CREATE TABLE IF NOT EXISTS `cuentas` (
-  `em_id` bigint(20) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `cuentas` (
+  `em_id` bigint(20) NOT NULL,
   `em_cuit` bigint(20) DEFAULT NULL,
-  `em_rs` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`em_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+  `em_rs` varchar(64) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table cuentas
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `cuentas` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `ent_comerciales`
+--
 
-/*!40000 ALTER TABLE `cuentas` ENABLE KEYS */;
-
--- 
--- Definition of cuentas_bancos
--- 
-
-DROP TABLE IF EXISTS `cuentas_bancos`;
-CREATE TABLE IF NOT EXISTS `cuentas_bancos` (
-  `cb_em_id` bigint(20) NOT NULL,
-  `cb_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `cb_bc_id` bigint(20) NOT NULL,
-  `cb_nro` varchar(32) DEFAULT NULL,
-  `cb_cbu` varchar(32) DEFAULT NULL,
-  `cb_cuit` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`cb_em_id`,`cb_id`),
-  KEY `fk_banco` (`cb_bc_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table cuentas_bancos
--- 
-
-/*!40000 ALTER TABLE `cuentas_bancos` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `cuentas_bancos` ENABLE KEYS */;
-
--- 
--- Definition of ent_comerciales
--- 
-
-DROP TABLE IF EXISTS `ent_comerciales`;
-CREATE TABLE IF NOT EXISTS `ent_comerciales` (
+CREATE TABLE `ent_comerciales` (
   `ec_em_id` bigint(20) NOT NULL,
-  `ec_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ec_id` bigint(20) NOT NULL,
   `ec_te_id` bigint(20) NOT NULL,
   `ec_cuit` bigint(20) DEFAULT NULL,
-  `ec_rs` varchar(64) DEFAULT NULL,
+  `ec_rs` varchar(128) DEFAULT NULL,
   `ec_email` varchar(64) DEFAULT NULL,
   `ec_telefono` varchar(50) DEFAULT NULL,
-  `ec_celular` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`ec_em_id`,`ec_id`),
-  KEY `fk_tipos_entidad` (`ec_te_id`)
+  `ec_celular` varchar(50) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table ent_comerciales
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `ent_comerciales` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `formas_pago`
+--
 
-/*!40000 ALTER TABLE `ent_comerciales` ENABLE KEYS */;
-
--- 
--- Definition of entidades_bancos
--- 
-
-DROP TABLE IF EXISTS `entidades_bancos`;
-CREATE TABLE IF NOT EXISTS `entidades_bancos` (
-  `eb_em_id` bigint(20) NOT NULL,
-  `eb_ec_id` bigint(20) NOT NULL,
-  `eb_cb_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`eb_em_id`,`eb_ec_id`,`eb_cb_id`),
-  CONSTRAINT `entidades_bancos_ibfk_1` FOREIGN KEY (`eb_em_id`) REFERENCES `cuentas` (`em_id`)
+CREATE TABLE `formas_pago` (
+  `fp_id` bigint(20) NOT NULL,
+  `fp_nombre` varchar(50) NOT NULL,
+  `fp_type` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table entidades_bancos
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `entidades_bancos` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `monedas`
+--
 
-/*!40000 ALTER TABLE `entidades_bancos` ENABLE KEYS */;
+CREATE TABLE `monedas` (
+  `mn_id` bigint(20) NOT NULL,
+  `mn_name` varchar(50) NOT NULL,
+  `mn_extranjera` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- 
--- Definition of formas_pago
--- 
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `formas_pago`;
-CREATE TABLE IF NOT EXISTS `formas_pago` (
-  `fp_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `fp_nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`fp_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+--
+-- Estructura de tabla para la tabla `pagos`
+--
 
--- 
--- Dumping data for table formas_pago
--- 
+CREATE TABLE `pagos` (
+  `pg_em_id` bigint(20) NOT NULL,
+  `pg_ec_id` bigint(20) NOT NULL,
+  `pg_rc_id` bigint(20) NOT NULL,
+  `pg_id` bigint(20) NOT NULL,
+  `pg_fp_id` bigint(20) NOT NULL,
+  `pg_mn_id` bigint(20) NOT NULL,
+  `pg_importe` double NOT NULL,
+  `pg_cambio` double NOT NULL,
+  `pg_fecha` datetime NOT NULL,
+  `pg_obs` varchar(128) DEFAULT NULL,
+  `pg_bnk_id` bigint(20) NOT NULL DEFAULT '-1',
+  `pg_cheque_sucursal` int(11) DEFAULT NULL,
+  `pg_cheque_num` bigint(20) NOT NULL DEFAULT '0',
+  `pg_cheque_serie` varchar(32) NOT NULL DEFAULT '',
+  `pg_cheque_persona` varchar(128) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL DEFAULT '',
+  `pg_cheque_cta` varchar(64) NOT NULL DEFAULT '',
+  `pg_cheque_pay` date DEFAULT NULL,
+  `pg_cheque_localidad` int(11) DEFAULT NULL,
+  `pg_cheque_debito` date DEFAULT NULL,
+  `pg_cheque_cuit` bigint(20) DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-/*!40000 ALTER TABLE `formas_pago` DISABLE KEYS */;
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `formas_pago` ENABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `recibos`
+--
 
--- 
--- Definition of recibos
--- 
+CREATE TABLE `recibos` (
+  `rc_em_id` bigint(20) NOT NULL,
+  `rc_ec_id` bigint(20) NOT NULL,
+  `rc_id` bigint(20) NOT NULL,
+  `rc_tr_id` bigint(20) NOT NULL,
+  `rc_emitido` tinyint(1) NOT NULL,
+  `rc_nro` varchar(50) DEFAULT NULL,
+  `rc_fecha` datetime DEFAULT NULL,
+  `rc_obs` varchar(128) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `recibos`;
-CREATE TABLE IF NOT EXISTS `recibos` (
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `recibos_comprobantes`
+--
+
+CREATE TABLE `recibos_comprobantes` (
+  `rp_em_id` bigint(20) NOT NULL,
+  `rp_ec_id` bigint(20) NOT NULL,
+  `rp_rc_id` bigint(20) NOT NULL,
+  `rp_cm_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `remitos`
+--
+
+CREATE TABLE `remitos` (
   `rm_em_id` bigint(20) NOT NULL,
   `rm_ec_id` bigint(20) NOT NULL,
-  `rm_cm_id` bigint(20) NOT NULL,
-  `rm_cp_id` bigint(20) NOT NULL,
-  `rm_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `rm_tr_id` bigint(20) DEFAULT NULL,
-  `rm_numero` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`rm_em_id`,`rm_ec_id`,`rm_cm_id`,`rm_cp_id`,`rm_id`),
-  KEY `fk_tr_id` (`rm_tr_id`)
+  `rm_id` bigint(20) NOT NULL,
+  `rm_ts_id` bigint(20) NOT NULL,
+  `rm_emitido` tinyint(1) NOT NULL,
+  `rm_fecha` datetime NOT NULL,
+  `rm_nro` varchar(50) DEFAULT NULL,
+  `rm_obs` varchar(128) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table recibos
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `recibos` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `remitos_comprobantes`
+--
 
-/*!40000 ALTER TABLE `recibos` ENABLE KEYS */;
-
--- 
--- Definition of remitos
--- 
-
-DROP TABLE IF EXISTS `remitos`;
-CREATE TABLE IF NOT EXISTS `remitos` (
+CREATE TABLE `remitos_comprobantes` (
   `rt_em_id` bigint(20) NOT NULL,
   `rt_ec_id` bigint(20) NOT NULL,
-  `rt_cm_id` bigint(20) NOT NULL,
-  `rt_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `rt_ts_id` bigint(20) NOT NULL,
-  `rt_numero` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`rt_em_id`,`rt_ec_id`,`rt_cm_id`,`rt_id`),
-  KEY `fk_ts_id` (`rt_ts_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `rt_rm_id` bigint(20) NOT NULL,
+  `rt_cm_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table remitos
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `remitos` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `tipos_comprobantes`
+--
 
-/*!40000 ALTER TABLE `remitos` ENABLE KEYS */;
-
--- 
--- Definition of tipos_comprobantes
--- 
-
-DROP TABLE IF EXISTS `tipos_comprobantes`;
-CREATE TABLE IF NOT EXISTS `tipos_comprobantes` (
-  `tc_id` bigint(20) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `tipos_comprobantes` (
+  `tc_id` bigint(20) NOT NULL,
   `tc_nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`tc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table tipos_comprobantes
--- 
-
-/*!40000 ALTER TABLE `tipos_comprobantes` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `tipos_comprobantes` ENABLE KEYS */;
-
--- 
--- Definition of tipos_entidades
--- 
-
-DROP TABLE IF EXISTS `tipos_entidades`;
-CREATE TABLE IF NOT EXISTS `tipos_entidades` (
-  `te_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `te_nombre` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`te_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table tipos_entidades
--- 
-
-/*!40000 ALTER TABLE `tipos_entidades` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `tipos_entidades` ENABLE KEYS */;
-
--- 
--- Definition of tipos_recibos
--- 
-
-DROP TABLE IF EXISTS `tipos_recibos`;
-CREATE TABLE IF NOT EXISTS `tipos_recibos` (
-  `tr_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `tr_nombre` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`tr_id`)
+  `tc_bitflags` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table tipos_recibos
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `tipos_recibos` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `tipos_entidades`
+--
 
-/*!40000 ALTER TABLE `tipos_recibos` ENABLE KEYS */;
-
--- 
--- Definition of tipos_remitos
--- 
-
-DROP TABLE IF EXISTS `tipos_remitos`;
-CREATE TABLE IF NOT EXISTS `tipos_remitos` (
-  `ts_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `ts_nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`ts_id`)
+CREATE TABLE `tipos_entidades` (
+  `te_id` bigint(20) NOT NULL,
+  `te_nombre` varchar(32) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- 
--- Dumping data for table tipos_remitos
--- 
+-- --------------------------------------------------------
 
-/*!40000 ALTER TABLE `tipos_remitos` DISABLE KEYS */;
+--
+-- Estructura de tabla para la tabla `tipos_recibos`
+--
 
-/*!40000 ALTER TABLE `tipos_remitos` ENABLE KEYS */;
+CREATE TABLE `tipos_recibos` (
+  `tr_id` bigint(20) NOT NULL,
+  `tr_nombre` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+--
+-- Estructura de tabla para la tabla `tipos_remitos`
+--
+
+CREATE TABLE `tipos_remitos` (
+  `ts_id` bigint(20) NOT NULL,
+  `ts_nombre` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `user_id` bigint(20) NOT NULL,
+  `user_name` varchar(32) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `user_pass` varchar(256) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `user_admin` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `afip_tipos_comprobantes`
+--
+ALTER TABLE `afip_tipos_comprobantes`
+  ADD PRIMARY KEY (`afip_tc_id`,`afip_id`);
+
+--
+-- Indices de la tabla `bancos`
+--
+ALTER TABLE `bancos`
+  ADD PRIMARY KEY (`bnk_id`);
+
+--
+-- Indices de la tabla `comprobantes`
+--
+ALTER TABLE `comprobantes`
+  ADD PRIMARY KEY (`cm_em_id`,`cm_ec_id`,`cm_id`),
+  ADD KEY `fk_tipo` (`cm_tc_id`);
+
+--
+-- Indices de la tabla `cuentas`
+--
+ALTER TABLE `cuentas`
+  ADD PRIMARY KEY (`em_id`);
+
+--
+-- Indices de la tabla `ent_comerciales`
+--
+ALTER TABLE `ent_comerciales`
+  ADD PRIMARY KEY (`ec_em_id`,`ec_id`),
+  ADD KEY `fk_tipos_entidad` (`ec_te_id`);
+
+--
+-- Indices de la tabla `formas_pago`
+--
+ALTER TABLE `formas_pago`
+  ADD PRIMARY KEY (`fp_id`);
+
+--
+-- Indices de la tabla `monedas`
+--
+ALTER TABLE `monedas`
+  ADD PRIMARY KEY (`mn_id`);
+
+--
+-- Indices de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD PRIMARY KEY (`pg_em_id`,`pg_ec_id`,`pg_rc_id`,`pg_id`);
+
+--
+-- Indices de la tabla `recibos`
+--
+ALTER TABLE `recibos`
+  ADD PRIMARY KEY (`rc_em_id`,`rc_ec_id`,`rc_id`);
+
+--
+-- Indices de la tabla `recibos_comprobantes`
+--
+ALTER TABLE `recibos_comprobantes`
+  ADD PRIMARY KEY (`rp_em_id`,`rp_ec_id`,`rp_rc_id`,`rp_cm_id`);
+
+--
+-- Indices de la tabla `remitos`
+--
+ALTER TABLE `remitos`
+  ADD PRIMARY KEY (`rm_em_id`,`rm_ec_id`,`rm_id`);
+
+--
+-- Indices de la tabla `remitos_comprobantes`
+--
+ALTER TABLE `remitos_comprobantes`
+  ADD PRIMARY KEY (`rt_em_id`,`rt_ec_id`,`rt_rm_id`,`rt_cm_id`);
+
+--
+-- Indices de la tabla `tipos_comprobantes`
+--
+ALTER TABLE `tipos_comprobantes`
+  ADD PRIMARY KEY (`tc_id`);
+
+--
+-- Indices de la tabla `tipos_entidades`
+--
+ALTER TABLE `tipos_entidades`
+  ADD PRIMARY KEY (`te_id`);
+
+--
+-- Indices de la tabla `tipos_recibos`
+--
+ALTER TABLE `tipos_recibos`
+  ADD PRIMARY KEY (`tr_id`);
+
+--
+-- Indices de la tabla `tipos_remitos`
+--
+ALTER TABLE `tipos_remitos`
+  ADD PRIMARY KEY (`ts_id`);
+
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `afip_tipos_comprobantes`
+--
+ALTER TABLE `afip_tipos_comprobantes`
+  MODIFY `afip_id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT de la tabla `bancos`
+--
+ALTER TABLE `bancos`
+  MODIFY `bnk_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+--
+-- AUTO_INCREMENT de la tabla `comprobantes`
+--
+ALTER TABLE `comprobantes`
+  MODIFY `cm_id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT de la tabla `cuentas`
+--
+ALTER TABLE `cuentas`
+  MODIFY `em_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT de la tabla `ent_comerciales`
+--
+ALTER TABLE `ent_comerciales`
+  MODIFY `ec_id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT de la tabla `formas_pago`
+--
+ALTER TABLE `formas_pago`
+  MODIFY `fp_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--
+-- AUTO_INCREMENT de la tabla `monedas`
+--
+ALTER TABLE `monedas`
+  MODIFY `mn_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `pg_id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT de la tabla `recibos`
+--
+ALTER TABLE `recibos`
+  MODIFY `rc_id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT de la tabla `remitos`
+--
+ALTER TABLE `remitos`
+  MODIFY `rm_id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT de la tabla `tipos_comprobantes`
+--
+ALTER TABLE `tipos_comprobantes`
+  MODIFY `tc_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+--
+-- AUTO_INCREMENT de la tabla `tipos_entidades`
+--
+ALTER TABLE `tipos_entidades`
+  MODIFY `te_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT de la tabla `tipos_recibos`
+--
+ALTER TABLE `tipos_recibos`
+  MODIFY `tr_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT de la tabla `tipos_remitos`
+--
+ALTER TABLE `tipos_remitos`
+  MODIFY `ts_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `recibos_comprobantes`
+--
+ALTER TABLE `recibos_comprobantes`
+  ADD CONSTRAINT `recibos_comprobantes_ibfk_1` FOREIGN KEY (`rp_em_id`) REFERENCES `cuentas` (`em_id`);
+
+--
+-- Filtros para la tabla `remitos_comprobantes`
+--
+ALTER TABLE `remitos_comprobantes`
+  ADD CONSTRAINT `remitos_comprobantes_ibfk_1` FOREIGN KEY (`rt_em_id`) REFERENCES `cuentas` (`em_id`);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
-
--- Dump completed on 2023-03-20 12:17:50
--- Total time: 0:0:0:0:134 (d:h:m:s:ms)
